@@ -128,6 +128,20 @@ export interface AiValidationResult {
   notes: string;
 }
 
+export interface AiTrustAudit {
+  overall_trust_score: number;
+  geo_consistency_score: number;
+  distance_to_destination_km?: number | null;
+  image_authenticity_score: number;
+  is_synthetic_image: boolean;
+  text_safety_score: number;
+  spam_risk_score: number;
+  duplicate_risk_score: number;
+  ai_fallback_triggered: boolean;
+  flags: string[];
+  summary_notes: string;
+}
+
 export interface ContributionPayload {
   author_name?: string;
   title: string;
@@ -157,11 +171,19 @@ export interface ContributionRecord {
   longitude?: number;
   exif_metadata: ExifMetadata;
   ai_validation_result: AiValidationResult;
+  ai_trust_audit?: AiTrustAudit;
   ai_confidence_score: number;
   status: string;
   moderation_status: string;
   reputation_points_awarded: number;
   created_at: string;
+}
+
+export interface ModerationQueueResponse {
+  queue: ContributionRecord[];
+  total_pending: number;
+  flagged_count: number;
+  average_trust_score: number;
 }
 
 export async function fetchFromBackend<T>(
@@ -306,6 +328,30 @@ export async function reportContent(payload: {
   description?: string;
 }): Promise<{ id: number; message: string } | null> {
   return fetchFromBackend<{ id: number; message: string }>('/contribution/report', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getModerationQueue(
+  flagFilter?: string
+): Promise<ModerationQueueResponse | null> {
+  const query = new URLSearchParams();
+  if (flagFilter) query.append('flag_filter', flagFilter);
+  const qStr = query.toString() ? `?${query.toString()}` : '';
+  return fetchFromBackend<ModerationQueueResponse>(`/contribution/moderation-queue${qStr}`);
+}
+
+export async function moderateContribution(
+  id: number,
+  payload: {
+    action: 'approve' | 'reject';
+    moderator_name?: string;
+    feedback?: string;
+    rejection_category?: string;
+  }
+): Promise<ContributionRecord | null> {
+  return fetchFromBackend<ContributionRecord>(`/contribution/${id}/moderate`, {
     method: 'POST',
     body: JSON.stringify(payload),
   });

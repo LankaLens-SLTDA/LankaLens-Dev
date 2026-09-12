@@ -30,6 +30,7 @@ export default function Sidebar() {
     { name: 'Community', href: '/community', icon: 'forum', badge: null },
     { name: 'Sustainability', href: '/sustainability', icon: 'security', badge: 'Live' },
     { name: 'Contribute', href: '/contribution', icon: 'add_location_alt', badge: null },
+    { name: 'AI Trust Hub', href: '/moderation', icon: 'verified_user', badge: 'Shield' },
   ];
 
   const expanded = !isCollapsed || isHovered;

@@ -1,24 +1,28 @@
 from fastapi import APIRouter, HTTPException, Query, status
 
 from app.routers.community import IN_MEMORY_POSTS, format_post_record
+from app.routers.destinations import IN_MEMORY_DESTINATIONS
 from app.schemas.contribution import (
     AiValidationResult,
     Contribution,
     ContributionCreate,
     ExifMetadata,
+    ModerationQueueResponse,
     ModerationRequest,
     ReportRequest,
     ReportResponse,
 )
+from app.services.ai_trust import AiTrustEngine
 from app.supabase_client import supabase
 
 router = APIRouter(
     prefix="/api/contribution", tags=["Contribution Pipeline & Moderation"]
 )
 
-# In-memory stores for contributions & reports
+# In-memory stores for contributions, reports, and moderation audit trail
 IN_MEMORY_CONTRIBUTIONS: list[dict] = []
 IN_MEMORY_REPORTS: list[dict] = []
+IN_MEMORY_MODERATION_LOGS: list[dict] = []
 
 
 def run_ai_validation_guard(
@@ -38,7 +42,6 @@ def run_ai_validation_guard(
 
     # 1. Geofence & GPS check
     if lat is not None and lng is not None:
-        # Check if coordinates are within Sri Lanka bounding box: Lat (5.8° to 9.9° N), Lng (79.6° to 81.9° E)
         if not (5.5 <= lat <= 10.0 and 79.5 <= lng <= 82.2):
             score -= 0.40
             boundary_msg = "FAILED (Coordinates Outside Sri Lanka Geographic Boundary)"
@@ -112,13 +115,13 @@ def extract_photo_metadata(
     response_model=Contribution,
     status_code=status.HTTP_201_CREATED,
     summary="Submit tourism contribution to validation pipeline",
-    description="Submit photo contribution through EXIF extraction, AI Integrity Guard validation, moderation, and feed publishing.",
+    description="Submit photo contribution through EXIF extraction, multi-layered AI Trust Engine verification, moderation queue, and feed publishing.",
 )
 def submit_contribution(payload: ContributionCreate):
-    """Submit contribution through the verification pipeline."""
+    """Submit contribution through the multi-layered AI Trust & verification pipeline."""
     new_id = len(IN_MEMORY_CONTRIBUTIONS) + 1
 
-    # Extract EXIF metadata
+    # 1. Extract EXIF metadata
     exif = ExifMetadata(
         camera="Canon EOS R5",
         lens="RF 15-35mm f/2.8L",
@@ -130,13 +133,20 @@ def submit_contribution(payload: ContributionCreate):
         has_gps=payload.latitude is not None and payload.longitude is not None,
     )
 
-    # Run AI Validation Guard
-    ai_result, auto_status = run_ai_validation_guard(
+    # 2. Run AI Guard & Multi-Layered AI Trust Engine
+    ai_validation_result, _ = run_ai_validation_guard(
         lat=payload.latitude,
         lng=payload.longitude,
         alt_text=payload.alt_text,
         description=payload.description,
         has_gps=exif.has_gps,
+    )
+
+    ai_trust_audit, auto_status = AiTrustEngine.evaluate_contribution(
+        payload=payload,
+        exif=exif,
+        destinations=IN_MEMORY_DESTINATIONS,
+        existing_contributions=IN_MEMORY_CONTRIBUTIONS,
     )
 
     moderation_status = "approved" if auto_status == "approved" else "pending_review"
@@ -156,8 +166,9 @@ def submit_contribution(payload: ContributionCreate):
         "latitude": payload.latitude,
         "longitude": payload.longitude,
         "exif_metadata": exif.model_dump(),
-        "ai_validation_result": ai_result.model_dump(),
-        "ai_confidence_score": ai_result.confidence_score,
+        "ai_validation_result": ai_validation_result.model_dump(),
+        "ai_trust_audit": ai_trust_audit.model_dump(),
+        "ai_confidence_score": ai_trust_audit.overall_trust_score,
         "status": auto_status,
         "moderation_status": moderation_status,
         "reputation_points_awarded": points,
@@ -166,7 +177,7 @@ def submit_contribution(payload: ContributionCreate):
 
     IN_MEMORY_CONTRIBUTIONS.insert(0, record)
 
-    # If approved by AI, publish directly to community feed!
+    # If approved by AI Trust Engine, publish directly to community feed!
     if auto_status == "approved":
         post_id = max([p["id"] for p in IN_MEMORY_POSTS] or [0]) + 1
         post_record = {
@@ -227,6 +238,62 @@ def get_user_submissions(
     return results
 
 
+@router.get(
+    "/moderation-queue",
+    response_model=ModerationQueueResponse,
+    summary="Get submissions pending human moderation review",
+    description="Retrieve queue of flagged or suspicious contributions needing human moderation with AI trust scores.",
+)
+def get_moderation_queue(
+    flag_filter: str | None = Query(
+        None,
+        description="Optional risk flag filter (e.g. 'GEOGRAPHIC_MISMATCH', 'SYNTHETIC_IMAGE_PROBABLE', 'SUSPICIOUS_SPAM')",
+    )
+):
+    """Retrieve moderation queue with summary stats."""
+    flag_filter = flag_filter if isinstance(flag_filter, str) else None
+
+    queue = [
+        c
+        for c in IN_MEMORY_CONTRIBUTIONS
+        if c.get("status") in ["pending_review", "flagged"]
+        or c.get("moderation_status") == "pending_review"
+    ]
+
+    if flag_filter:
+        queue = [
+            c
+            for c in queue
+            if flag_filter in c.get("ai_trust_audit", {}).get("flags", [])
+        ]
+
+    # Sort queue by trust score ascending (lowest trust score first)
+    queue.sort(
+        key=lambda item: item.get("ai_trust_audit", {}).get("overall_trust_score", 0.50)
+    )
+
+    flagged_count = sum(1 for c in queue if c.get("status") == "flagged")
+    avg_score = (
+        round(
+            sum(
+                c.get("ai_trust_audit", {}).get("overall_trust_score", 0.50)
+                for c in queue
+            )
+            / len(queue),
+            2,
+        )
+        if queue
+        else 0.00
+    )
+
+    return ModerationQueueResponse(
+        queue=queue,
+        total_pending=len(queue),
+        flagged_count=flagged_count,
+        average_trust_score=avg_score,
+    )
+
+
 @router.post(
     "/report",
     response_model=ReportResponse,
@@ -259,6 +326,12 @@ def report_content(payload: ReportRequest):
             if c["id"] == payload.target_id:
                 c["status"] = "flagged"
                 c["moderation_status"] = "pending_review"
+                # Add flag to audit
+                flags = c.get("ai_trust_audit", {}).get("flags", [])
+                if "COMMUNITY_REPORTED" not in flags:
+                    flags.append("COMMUNITY_REPORTED")
+                    if "ai_trust_audit" in c:
+                        c["ai_trust_audit"]["flags"] = flags
                 break
 
     if supabase:
@@ -277,10 +350,10 @@ def report_content(payload: ReportRequest):
     "/{id}/moderate",
     response_model=Contribution,
     summary="Moderate contribution submission",
-    description="Admin / Moderator endpoint to approve or reject pending contributions.",
+    description="Admin / Moderator endpoint to approve or reject pending contributions with auditable decision logs.",
 )
 def moderate_contribution(id: int, payload: ModerationRequest):
-    """Moderate pending contribution."""
+    """Moderate pending contribution with full decision audit log."""
     target = None
     for c in IN_MEMORY_CONTRIBUTIONS:
         if c["id"] == id:
@@ -294,13 +367,77 @@ def moderate_contribution(id: int, payload: ModerationRequest):
         )
 
     action = payload.action.lower()
+    moderator = payload.moderator_name or "Chief Moderator"
+
     if action == "approve":
         target["status"] = "approved"
         target["moderation_status"] = "approved"
         target["reputation_points_awarded"] = 50
+
+        # Publish to public feed if not already present
+        existing_post = next(
+            (p for p in IN_MEMORY_POSTS if p.get("location") == target["title"]), None
+        )
+        if not existing_post:
+            post_id = max([p["id"] for p in IN_MEMORY_POSTS] or [0]) + 1
+            post_record = {
+                "id": post_id,
+                "author": target["author_name"],
+                "role": "Cartographer Explorer",
+                "avatar": "/stitch_images/planner.png",
+                "time": "Just now",
+                "verified": True,
+                "location": target["title"],
+                "destination_id": target.get("destination_id"),
+                "latitude": target.get("latitude"),
+                "longitude": target.get("longitude"),
+                "rating": target.get("rating", 5.0),
+                "image": target["image_url"],
+                "caption": target["description"],
+                "tags": target.get("tags", []),
+                "ecoPoints": 50,
+                "likes_count": 0,
+                "commentsCount": 0,
+                "saves_count": 0,
+                "comments": [],
+            }
+            IN_MEMORY_POSTS.insert(0, format_post_record(post_record))
+        else:
+            existing_post["verified"] = True
+
     elif action == "reject":
         target["status"] = "rejected"
         target["moderation_status"] = "rejected"
         target["reputation_points_awarded"] = 0
+
+        # Unverify or remove from feed if present
+        for p in IN_MEMORY_POSTS:
+            if p.get("location") == target["title"]:
+                p["verified"] = False
+
+    # Record immutable audit log entry
+    log_entry = {
+        "id": len(IN_MEMORY_MODERATION_LOGS) + 1,
+        "contribution_id": id,
+        "moderator": moderator,
+        "action": action,
+        "feedback": payload.feedback or "",
+        "rejection_category": payload.rejection_category or "",
+        "created_at": "Just now",
+    }
+    IN_MEMORY_MODERATION_LOGS.append(log_entry)
+
+    if supabase:
+        try:
+            supabase.table("contributions").update(
+                {
+                    "status": target["status"],
+                    "moderation_status": target["moderation_status"],
+                    "reputation_points_awarded": target["reputation_points_awarded"],
+                }
+            ).eq("id", id).execute()
+            supabase.table("moderation_history").insert(log_entry).execute()
+        except Exception as e:
+            print(f"[LankaLens Supabase moderation update error] {e}")
 
     return target

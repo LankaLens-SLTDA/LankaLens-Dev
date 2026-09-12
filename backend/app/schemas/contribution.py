@@ -124,6 +124,42 @@ class ContributionCreate(BaseModel):
     )
 
 
+class AiTrustAudit(BaseModel):
+    overall_trust_score: float = Field(
+        0.94, description="Composite trust score from 0.00 to 1.00"
+    )
+    geo_consistency_score: float = Field(
+        1.00, description="Geographic score based on PostGIS bounds & distance"
+    )
+    distance_to_destination_km: float | None = Field(
+        None, description="Calculated spherical distance to linked destination in km"
+    )
+    image_authenticity_score: float = Field(
+        0.95, description="Image authenticity & real-world natural photo score"
+    )
+    is_synthetic_image: bool = Field(
+        False, description="Flag if image exhibits synthetic/AI-generated markers"
+    )
+    text_safety_score: float = Field(
+        1.00, description="NLP content safety and profanity score"
+    )
+    spam_risk_score: float = Field(
+        0.00, description="Commercial link and spam risk score"
+    )
+    duplicate_risk_score: float = Field(
+        0.00, description="Duplicate text and image content similarity score"
+    )
+    ai_fallback_triggered: bool = Field(
+        False, description="Flag indicating if AI engine fallback was invoked"
+    )
+    flags: list[str] = Field(
+        default_factory=list, description="Active anomaly detection flags"
+    )
+    summary_notes: str = Field(
+        "Verified cartographic discovery", description="Audit summary"
+    )
+
+
 class Contribution(BaseModel):
     id: int = Field(
         ..., description="Unique contribution ID", json_schema_extra={"example": 1}
@@ -145,10 +181,13 @@ class Contribution(BaseModel):
     ai_validation_result: AiValidationResult = Field(
         default_factory=AiValidationResult, description="AI Guard validation result"
     )
+    ai_trust_audit: AiTrustAudit = Field(
+        default_factory=AiTrustAudit, description="Detailed AI Trust & Moderation Audit"
+    )
     ai_confidence_score: float = Field(0.92, description="Confidence score")
     status: str = Field(
         "approved",
-        description="Status: 'pending', 'ai_validating', 'approved', 'rejected', 'flagged'",
+        description="Status: 'pending', 'pending_review', 'approved', 'rejected', 'flagged'",
     )
     moderation_status: str = Field(
         "approved", description="Moderation: 'pending_review', 'approved', 'rejected'"
@@ -193,4 +232,21 @@ class ModerationRequest(BaseModel):
         description="Moderation action: 'approve' or 'reject'",
         json_schema_extra={"example": "approve"},
     )
+    moderator_name: str | None = Field(
+        "Chief Moderator", description="Moderator identity"
+    )
     feedback: str | None = Field(None, description="Moderator feedback note")
+    rejection_category: str | None = Field(
+        None, description="Category of rejection if action is 'reject'"
+    )
+
+
+class ModerationQueueResponse(BaseModel):
+    queue: list[Contribution] = Field(
+        default_factory=list, description="Submissions pending moderation"
+    )
+    total_pending: int = Field(0, description="Total items pending review")
+    flagged_count: int = Field(0, description="Count of flagged items")
+    average_trust_score: float = Field(
+        0.00, description="Average trust score in current queue"
+    )
