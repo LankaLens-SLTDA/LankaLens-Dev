@@ -26,9 +26,9 @@ def test_nearby_and_filtering():
     )
     community_res = get_destinations(verification_state="community_submitted")
     print(f"Community submitted destinations: {community_res['total']}")
-    assert community_res["total"] >= 2, (
-        "Expected at least 2 community submitted destinations"
-    )
+    assert (
+        community_res["total"] >= 2
+    ), "Expected at least 2 community submitted destinations"
 
     print(
         "\nTesting PostGIS GET /api/destinations/nearby (Origin: Sigiriya, Radius: 50km)..."

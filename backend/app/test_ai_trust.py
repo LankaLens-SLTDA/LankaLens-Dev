@@ -85,9 +85,9 @@ def run_all_ai_trust_tests():
     )
     print(f"   Status: {res2['status']}")
     print(f"   Active Flags: {res2['ai_trust_audit']['flags']}")
-    assert res2["status"] == "pending_review", (
-        "Geographic mismatch must route to moderation"
-    )
+    assert (
+        res2["status"] == "pending_review"
+    ), "Geographic mismatch must route to moderation"
     assert "GEOGRAPHIC_MISMATCH" in res2["ai_trust_audit"]["flags"]
     assert res2["ai_trust_audit"]["distance_to_destination_km"] > 25.0
 
