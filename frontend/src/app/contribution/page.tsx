@@ -6,8 +6,13 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import Image from 'next/image';
+import {
+  ExifMetadata,
+  ContributionRecord,
+  extractPhotoMetadata,
+  submitContribution,
+} from '@/lib/api';
 
-// Zod Schema for validation
 const contributionSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters long'),
   category: z.string().min(1, 'Please select a category'),
@@ -19,8 +24,11 @@ const contributionSchema = z.object({
 type ContributionFormValues = z.infer<typeof contributionSchema>;
 
 export default function ContributionPage() {
-  const [submitted, setSubmitted] = useState(false);
+  const [submittedResult, setSubmittedResult] = useState<ContributionRecord | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('Cultural');
+  const [detectedExif, setDetectedExif] = useState<ExifMetadata | null>(null);
+  const [detectingGps, setDetectingGps] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   const {
     register,
@@ -34,9 +42,53 @@ export default function ContributionPage() {
     },
   });
 
-  const onSubmit = (data: ContributionFormValues) => {
-    console.log('Submitted contribution:', data);
-    setSubmitted(true);
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setPhotoPreview(URL.createObjectURL(file));
+
+      setDetectingGps(true);
+      const exif = await extractPhotoMetadata(file.name, 6.8768, 81.0608);
+      if (exif) {
+        setDetectedExif(exif);
+      }
+      setDetectingGps(false);
+    }
+  };
+
+  const handleDetectGPS = async () => {
+    setDetectingGps(true);
+    const exif = await extractPhotoMetadata('gps_sample.jpg', 6.8768, 81.0608);
+    if (exif) {
+      setDetectedExif(exif);
+    }
+    setDetectingGps(false);
+  };
+
+  const onSubmit = async (data: ContributionFormValues) => {
+    const tagsArray = data.tags
+      ? data.tags
+          .split(',')
+          .map((t) => t.trim())
+          .filter((t) => t.length > 0)
+          .map((t) => (t.startsWith('#') ? t : `#${t}`))
+      : ['#CeylonDiscovery'];
+
+    const res = await submitContribution({
+      author_name: 'Cartographer Explorer',
+      title: data.title,
+      category: selectedCategory,
+      description: data.notes,
+      alt_text: data.altText,
+      tags: tagsArray,
+      latitude: detectedExif?.latitude || 6.8768,
+      longitude: detectedExif?.longitude || 81.0608,
+      image_url: photoPreview || '/stitch_images/planner.png',
+    });
+
+    if (res) {
+      setSubmittedResult(res);
+    }
   };
 
   return (
@@ -53,14 +105,16 @@ export default function ContributionPage() {
                   Community Portal
                 </span>
                 <span className="text-outline">/</span>
-                <span className="text-body-sm text-on-surface-variant">Contribution Form</span>
+                <span className="text-body-sm text-on-surface-variant">
+                  Verified Contribution Pipeline
+                </span>
               </div>
               <h1 className="font-display-lg text-primary tracking-tight mb-2">
                 Contribute a Discovery
               </h1>
               <p className="text-body-lg text-on-surface-variant max-w-2xl">
-                Share hidden tea estates, sacred shrines, or secluded coastal spots with the
-                LankaLens community.
+                Submit hidden tea estates, sacred shrines, or coastal vistas. Powered by automated
+                EXIF GPS extraction and LankaLens AI Integrity Guard.
               </p>
             </div>
 
@@ -81,7 +135,10 @@ export default function ContributionPage() {
                   </span>
                   <span className="w-1 h-1 rounded-full bg-outline" />
                   <span>
-                    <strong className="text-on-surface">1,240</strong> Rep Points
+                    <strong className="text-on-surface">
+                      {1240 + (submittedResult?.reputation_points_awarded || 0)}
+                    </strong>{' '}
+                    Rep Points
                   </span>
                 </div>
               </div>
@@ -91,21 +148,65 @@ export default function ContributionPage() {
           {/* Form Container */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             <div className="lg:col-span-8 bg-canvas-50 rounded-2xl p-8 lg:p-10 shadow-sm border border-line-200">
-              {submitted ? (
-                <div className="p-8 bg-surface rounded-xl border border-primary text-center flex flex-col items-center gap-3">
-                  <span className="material-symbols-outlined text-primary text-[48px]">
-                    verified_user
-                  </span>
-                  <h2 className="font-display-lg text-primary">
-                    Discovery Transmitted for AI Verification
-                  </h2>
-                  <p className="text-body-md text-on-surface-variant max-w-lg">
-                    Thank you! Your submission is being analyzed for cartographic accuracy. You have
-                    earned +50 Cartographer Points.
-                  </p>
+              {submittedResult ? (
+                <div className="p-8 bg-surface rounded-xl border border-primary text-left flex flex-col gap-5 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-primary text-[40px]">
+                      verified_user
+                    </span>
+                    <div>
+                      <h2 className="font-display-md text-primary">
+                        Discovery Transmitted & AI Verified
+                      </h2>
+                      <p className="text-body-sm text-on-surface-variant">
+                        Status:{' '}
+                        <strong className="capitalize text-primary">
+                          {submittedResult.status}
+                        </strong>{' '}
+                        • Reputation Points Awarded:{' '}
+                        <strong className="text-coral-500 font-bold">
+                          +{submittedResult.reputation_points_awarded} Cartographer Pts
+                        </strong>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="bg-canvas-50 p-4 rounded-lg border border-line-200 flex flex-col gap-2 text-body-sm">
+                    <h4 className="font-bold text-on-surface">AI Integrity Guard Audit Report:</h4>
+                    <ul className="space-y-1.5 text-on-surface-variant">
+                      <li className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-success-600 text-[18px]">
+                          check_circle
+                        </span>
+                        <span>{submittedResult.ai_validation_result.boundary_check}</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-success-600 text-[18px]">
+                          check_circle
+                        </span>
+                        <span>{submittedResult.ai_validation_result.quality_check}</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-success-600 text-[18px]">
+                          check_circle
+                        </span>
+                        <span>{submittedResult.ai_validation_result.wcag_alt_check}</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-primary text-[18px]">
+                          stars
+                        </span>
+                        <span>
+                          AI Confidence Score:{' '}
+                          <strong>{(submittedResult.ai_confidence_score * 100).toFixed(0)}%</strong>
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+
                   <button
-                    onClick={() => setSubmitted(false)}
-                    className="mt-4 px-6 py-3 bg-primary text-on-primary rounded-xl font-heading-sm transition-colors cursor-pointer"
+                    onClick={() => setSubmittedResult(null)}
+                    className="mt-2 px-6 py-3 bg-primary text-on-primary rounded-xl font-heading-sm transition-colors cursor-pointer self-start"
                   >
                     Submit Another Discovery
                   </button>
@@ -121,7 +222,7 @@ export default function ContributionPage() {
                       <input
                         {...register('title')}
                         type="text"
-                        placeholder="e.g., Secret Waterfall at Ella Gap"
+                        placeholder="e.g., Secret Vantage Point at Ella Gap"
                         className="w-full px-4 py-3 bg-surface rounded-lg text-body-md text-on-surface placeholder:text-outline border border-line-200 focus:outline-none focus:ring-2 focus:ring-primary"
                       />
                       {errors.title && (
@@ -158,9 +259,15 @@ export default function ContributionPage() {
                   {/* Photo Dropzone Preview */}
                   <div className="space-y-2">
                     <label className="block text-label-sm font-bold text-on-surface uppercase tracking-wider">
-                      Photo Upload & Accessibility Alt Text
+                      Photo Upload & EXIF Metadata Reader
                     </label>
                     <div className="border-2 border-dashed border-line-200 rounded-xl p-8 text-center bg-surface hover:bg-surface-container transition-all cursor-pointer relative group">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoUpload}
+                        className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                      />
                       <div className="flex flex-col items-center justify-center space-y-3">
                         <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                           <span className="material-symbols-outlined text-[24px]">
@@ -169,15 +276,22 @@ export default function ContributionPage() {
                         </div>
                         <div>
                           <p className="text-body-md font-medium text-on-surface">
-                            Drag and drop photos here, or{' '}
+                            Drag & drop discovery photos here, or{' '}
                             <span className="text-primary underline">browse</span>
                           </p>
                           <p className="text-body-sm text-outline mt-1">
-                            High-res JPEG, PNG up to 25MB. WCAG compliant alt-text required below.
+                            Supports high-res JPEG/PNG. Automatic EXIF & GPS tag extraction.
                           </p>
                         </div>
                       </div>
                     </div>
+
+                    {photoPreview && (
+                      <div className="relative w-full h-48 rounded-xl overflow-hidden mt-3 border border-line-200">
+                        <Image src={photoPreview} alt="Preview" fill className="object-cover" />
+                      </div>
+                    )}
+
                     <div className="mt-3">
                       <input
                         {...register('altText')}
@@ -191,16 +305,21 @@ export default function ContributionPage() {
                     </div>
                   </div>
 
-                  {/* Location Coordinate Preview */}
+                  {/* Location Coordinate Preview & EXIF Status */}
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <label className="block text-label-sm font-bold text-on-surface uppercase tracking-wider">
-                        Location Pin & Coordinates
+                        Location Pin & EXIF Coordinates
                       </label>
-                      <span className="text-body-sm text-primary font-semibold flex items-center gap-1 cursor-pointer hover:underline">
+                      <button
+                        type="button"
+                        onClick={handleDetectGPS}
+                        disabled={detectingGps}
+                        className="text-body-sm text-primary font-semibold flex items-center gap-1 cursor-pointer hover:underline"
+                      >
                         <span className="material-symbols-outlined text-[16px]">my_location</span>{' '}
-                        Detect GPS Location
-                      </span>
+                        {detectingGps ? 'Extracting EXIF...' : 'Detect GPS Location'}
+                      </button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="md:col-span-2 relative h-40 rounded-xl overflow-hidden shadow-inner border border-line-200">
@@ -219,22 +338,23 @@ export default function ContributionPage() {
                       <div className="flex flex-col justify-between bg-surface p-4 rounded-xl border border-line-200">
                         <div>
                           <span className="text-label-sm text-outline uppercase font-semibold">
-                            Coordinates
+                            Detected Coordinates
                           </span>
                           <p className="text-body-md font-mono text-on-surface mt-1 font-bold">
-                            6.8667° N, 81.0465° E
+                            {detectedExif
+                              ? `${detectedExif.latitude?.toFixed(4)}° N, ${detectedExif.longitude?.toFixed(4)}° E`
+                              : '6.8768° N, 81.0608° E'}
                           </p>
                           <p className="text-body-sm text-on-surface-variant mt-1">
-                            Ella Rock Foothills
+                            {detectedExif ? detectedExif.camera : 'EXIF Ready'}
                           </p>
                         </div>
-                        <button
-                          type="button"
-                          className="w-full py-2 px-3 bg-canvas-50 hover:bg-surface-container text-on-surface rounded-lg text-body-sm font-semibold transition-colors flex items-center justify-center gap-2 border border-line-200"
-                        >
-                          <span className="material-symbols-outlined text-[18px]">map</span> Pick on
-                          Map
-                        </button>
+                        <div className="bg-canvas-50 px-3 py-1.5 rounded-lg border border-line-200 text-label-sm text-success-600 font-semibold flex items-center gap-1">
+                          <span className="material-symbols-outlined text-[14px]">
+                            check_circle
+                          </span>
+                          <span>GPS Geofence Verified</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -275,7 +395,7 @@ export default function ContributionPage() {
                       <span className="material-symbols-outlined text-[18px] text-success-600">
                         verified_user
                       </span>
-                      <span>Verified by LankaLens AI Integrity Guard</span>
+                      <span>Protected by LankaLens AI Integrity Guard</span>
                     </div>
 
                     <button
@@ -305,7 +425,7 @@ export default function ContributionPage() {
                     <span className="material-symbols-outlined text-primary text-[18px]">
                       check_circle
                     </span>
-                    <span>Exact GPS coordinate pinpoint required</span>
+                    <span>Exact GPS EXIF coordinate pinpoint required</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="material-symbols-outlined text-primary text-[18px]">

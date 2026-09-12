@@ -107,6 +107,63 @@ export interface LeaderboardContributor {
   verified_count: number;
 }
 
+export interface ExifMetadata {
+  camera: string;
+  lens: string;
+  timestamp: string;
+  latitude?: number;
+  longitude?: number;
+  width: number;
+  height: number;
+  has_gps: boolean;
+}
+
+export interface AiValidationResult {
+  passed: boolean;
+  confidence_score: number;
+  boundary_check: string;
+  quality_check: string;
+  text_safety_check: string;
+  wcag_alt_check: string;
+  notes: string;
+}
+
+export interface ContributionPayload {
+  author_name?: string;
+  title: string;
+  category?: string;
+  destination_id?: number;
+  description: string;
+  alt_text: string;
+  tags?: string[];
+  rating?: number;
+  latitude?: number;
+  longitude?: number;
+  image_url?: string;
+}
+
+export interface ContributionRecord {
+  id: number;
+  author_name: string;
+  title: string;
+  category: string;
+  destination_id?: number;
+  description: string;
+  image_url: string;
+  alt_text: string;
+  tags: string[];
+  rating: number;
+  latitude?: number;
+  longitude?: number;
+  exif_metadata: ExifMetadata;
+  ai_validation_result: AiValidationResult;
+  ai_confidence_score: number;
+  status: string;
+  moderation_status: string;
+  reputation_points_awarded: number;
+  created_at: string;
+}
+
 export async function fetchFromBackend<T>(
   endpoint: string,
   options?: RequestInit
@@ -215,4 +272,41 @@ export async function createCommunityPost(payload: {
 
 export async function getCommunityLeaderboard(): Promise<LeaderboardContributor[] | null> {
   return fetchFromBackend<LeaderboardContributor[]>('/community/leaderboard');
+}
+
+export async function extractPhotoMetadata(
+  filename?: string,
+  lat?: number,
+  lng?: number
+): Promise<ExifMetadata | null> {
+  const query = new URLSearchParams();
+  if (filename) query.append('filename', filename);
+  if (lat !== undefined) query.append('lat', lat.toString());
+  if (lng !== undefined) query.append('lng', lng.toString());
+  const qStr = query.toString() ? `?${query.toString()}` : '';
+
+  return fetchFromBackend<ExifMetadata>(`/contribution/extract-metadata${qStr}`, {
+    method: 'POST',
+  });
+}
+
+export async function submitContribution(
+  payload: ContributionPayload
+): Promise<ContributionRecord | null> {
+  return fetchFromBackend<ContributionRecord>('/contribution/submit', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function reportContent(payload: {
+  target_type: 'contribution' | 'post' | 'comment';
+  target_id: number;
+  reason: 'spam' | 'inaccurate_gps' | 'inappropriate' | 'copyright';
+  description?: string;
+}): Promise<{ id: number; message: string } | null> {
+  return fetchFromBackend<{ id: number; message: string }>('/contribution/report', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
 }

@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "LankaLens FastAPI Backend",
-    "description": "**LankaLens API Platform**: Precision Cartography & Intelligent Sustainable Tourism API for Sri Lanka.\n\nProvides REST endpoints for exploring destinations, building dynamic multi-day itineraries, interacting with AI assistants, tracking real-time site crowd density, and reporting eco hazards.",
+    "description": "**LankaLens API Platform**: Precision Cartography & Intelligent Sustainable Tourism API for Sri Lanka.\n\nProvides REST endpoints for exploring destinations, building dynamic multi-day itineraries, interacting with AI assistants, tracking real-time site crowd density, and submitting verified contributions.",
     "contact": {
       "name": "LankaLens Platform Engineering",
       "url": "https://github.com/LankaLens-SLTDA/LankaLens-Dev",
@@ -968,6 +968,287 @@
         }
       }
     },
+    "/api/contribution/extract-metadata": {
+      "post": {
+        "tags": [
+          "Contribution Pipeline & Moderation"
+        ],
+        "summary": "Extract photo EXIF & GPS metadata",
+        "description": "Simulate/process photo upload to extract camera EXIF tags, GPS coordinates, timestamp, and dimensions.",
+        "operationId": "extract_photo_metadata_api_contribution_extract_metadata_post",
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Uploaded file name",
+              "title": "Filename"
+            },
+            "description": "Uploaded file name"
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional override latitude",
+              "title": "Lat"
+            },
+            "description": "Optional override latitude"
+          },
+          {
+            "name": "lng",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional override longitude",
+              "title": "Lng"
+            },
+            "description": "Optional override longitude"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExifMetadata"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contribution/submit": {
+      "post": {
+        "tags": [
+          "Contribution Pipeline & Moderation"
+        ],
+        "summary": "Submit tourism contribution to validation pipeline",
+        "description": "Submit photo contribution through EXIF extraction, AI Integrity Guard validation, moderation, and feed publishing.",
+        "operationId": "submit_contribution_api_contribution_submit_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContributionCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Contribution"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contribution/submissions": {
+      "get": {
+        "tags": [
+          "Contribution Pipeline & Moderation"
+        ],
+        "summary": "Get user contribution history",
+        "description": "Retrieve user submitted contributions and their moderation/validation statuses.",
+        "operationId": "get_user_submissions_api_contribution_submissions_get",
+        "parameters": [
+          {
+            "name": "status_filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by status ('approved', 'pending_review', 'rejected', 'flagged')",
+              "title": "Status Filter"
+            },
+            "description": "Filter by status ('approved', 'pending_review', 'rejected', 'flagged')"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Contribution"
+                  },
+                  "title": "Response Get User Submissions Api Contribution Submissions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contribution/report": {
+      "post": {
+        "tags": [
+          "Contribution Pipeline & Moderation"
+        ],
+        "summary": "Report / Flag inappropriate content",
+        "description": "Report inaccurate GPS, spam, or policy-violating contributions.",
+        "operationId": "report_content_api_contribution_report_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contribution/{id}/moderate": {
+      "post": {
+        "tags": [
+          "Contribution Pipeline & Moderation"
+        ],
+        "summary": "Moderate contribution submission",
+        "description": "Admin / Moderator endpoint to approve or reject pending contributions.",
+        "operationId": "moderate_contribution_api_contribution__id__moderate_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModerationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Contribution"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/health": {
       "get": {
         "tags": [
@@ -991,6 +1272,55 @@
   },
   "components": {
     "schemas": {
+      "AiValidationResult": {
+        "properties": {
+          "passed": {
+            "type": "boolean",
+            "title": "Passed",
+            "description": "Overall AI verification decision",
+            "default": true
+          },
+          "confidence_score": {
+            "type": "number",
+            "title": "Confidence Score",
+            "description": "Confidence score out of 1.00",
+            "default": 0.92,
+            "example": 0.94
+          },
+          "boundary_check": {
+            "type": "string",
+            "title": "Boundary Check",
+            "description": "Geofence result",
+            "default": "PASSED (Sri Lanka Boundary & Destination Geofence Verified)"
+          },
+          "quality_check": {
+            "type": "string",
+            "title": "Quality Check",
+            "description": "Image quality decision",
+            "default": "PASSED (High Resolution & Natural Image Stream)"
+          },
+          "text_safety_check": {
+            "type": "string",
+            "title": "Text Safety Check",
+            "description": "NLP text analysis decision",
+            "default": "PASSED (No Profanity or Spam Detected)"
+          },
+          "wcag_alt_check": {
+            "type": "string",
+            "title": "Wcag Alt Check",
+            "description": "WCAG accessibility decision",
+            "default": "PASSED (WCAG Compliant Alt-Text)"
+          },
+          "notes": {
+            "type": "string",
+            "title": "Notes",
+            "description": "AI summary notes",
+            "default": "Verified cartographic discovery ready for publication."
+          }
+        },
+        "type": "object",
+        "title": "AiValidationResult"
+      },
       "BudgetItem": {
         "properties": {
           "name": {
@@ -1179,6 +1509,253 @@
         },
         "type": "object",
         "title": "CommunityStats"
+      },
+      "Contribution": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Unique contribution ID",
+            "example": 1
+          },
+          "author_name": {
+            "type": "string",
+            "title": "Author Name",
+            "description": "Author name",
+            "default": "Cartographer Explorer"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Contribution title"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "Category",
+            "default": "Cultural"
+          },
+          "destination_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Id",
+            "description": "Associated destination ID"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Discovery notes"
+          },
+          "image_url": {
+            "type": "string",
+            "title": "Image Url",
+            "description": "Photo URL",
+            "default": "/stitch_images/discover.png"
+          },
+          "alt_text": {
+            "type": "string",
+            "title": "Alt Text",
+            "description": "Alt-text"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags",
+            "description": "Tags"
+          },
+          "rating": {
+            "type": "number",
+            "title": "Rating",
+            "description": "Rating",
+            "default": 5.0
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude",
+            "description": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude",
+            "description": "Longitude"
+          },
+          "exif_metadata": {
+            "$ref": "#/components/schemas/ExifMetadata",
+            "description": "EXIF camera & GPS metadata"
+          },
+          "ai_validation_result": {
+            "$ref": "#/components/schemas/AiValidationResult",
+            "description": "AI Guard validation result"
+          },
+          "ai_confidence_score": {
+            "type": "number",
+            "title": "Ai Confidence Score",
+            "description": "Confidence score",
+            "default": 0.92
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Status: 'pending', 'ai_validating', 'approved', 'rejected', 'flagged'",
+            "default": "approved"
+          },
+          "moderation_status": {
+            "type": "string",
+            "title": "Moderation Status",
+            "description": "Moderation: 'pending_review', 'approved', 'rejected'",
+            "default": "approved"
+          },
+          "reputation_points_awarded": {
+            "type": "integer",
+            "title": "Reputation Points Awarded",
+            "description": "Eco points awarded",
+            "default": 50
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At",
+            "description": "Creation timestamp",
+            "default": "Just now"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "description",
+          "alt_text"
+        ],
+        "title": "Contribution"
+      },
+      "ContributionCreate": {
+        "properties": {
+          "author_name": {
+            "type": "string",
+            "title": "Author Name",
+            "description": "Author name",
+            "default": "Cartographer Explorer",
+            "example": "Chaminda Perera"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Discovery title",
+            "example": "Secret Waterfall at Ella Gap"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "Category tag (Cultural, Nature, Beach, Dining, Stay)",
+            "default": "Cultural",
+            "example": "Nature"
+          },
+          "destination_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Id",
+            "description": "Linked destination ID",
+            "example": 1
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Discovery notes and access story",
+            "example": "Follow the trail past the second tea bungalow at dawn."
+          },
+          "alt_text": {
+            "type": "string",
+            "title": "Alt Text",
+            "description": "WCAG accessible alt-text",
+            "example": "A green misty tea estate valley at sunrise."
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags",
+            "description": "Hashtags list",
+            "example": [
+              "#EllaGap",
+              "#Waterfall"
+            ]
+          },
+          "rating": {
+            "type": "number",
+            "title": "Rating",
+            "description": "Rating from 1.0 to 5.0",
+            "default": 5.0,
+            "example": 4.9
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude",
+            "description": "GPS Latitude coordinate",
+            "example": 6.8768
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude",
+            "description": "GPS Longitude coordinate",
+            "example": 81.0608
+          },
+          "image_url": {
+            "type": "string",
+            "title": "Image Url",
+            "description": "Photo asset path or URL",
+            "default": "/stitch_images/discover.png",
+            "example": "/stitch_images/discover.png"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "description",
+          "alt_text"
+        ],
+        "title": "ContributionCreate"
       },
       "Coords": {
         "properties": {
@@ -2035,6 +2612,80 @@
         "type": "object",
         "title": "DestinationUpdate"
       },
+      "ExifMetadata": {
+        "properties": {
+          "camera": {
+            "type": "string",
+            "title": "Camera",
+            "description": "Camera make & model",
+            "default": "Generic Smartphone / Camera",
+            "example": "Apple iPhone 15 Pro"
+          },
+          "lens": {
+            "type": "string",
+            "title": "Lens",
+            "description": "Lens specification",
+            "default": "Standard Wide Lens",
+            "example": "24mm f/1.78"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp",
+            "description": "Photo capture timestamp",
+            "default": "2026-09-12 08:30:00",
+            "example": "2026-09-12 06:15:00"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude",
+            "description": "Extracted GPS Latitude",
+            "example": 6.8768
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude",
+            "description": "Extracted GPS Longitude",
+            "example": 81.0608
+          },
+          "width": {
+            "type": "integer",
+            "title": "Width",
+            "description": "Image width in pixels",
+            "default": 1920,
+            "example": 4032
+          },
+          "height": {
+            "type": "integer",
+            "title": "Height",
+            "description": "Image height in pixels",
+            "default": 1080,
+            "example": 3024
+          },
+          "has_gps": {
+            "type": "boolean",
+            "title": "Has Gps",
+            "description": "Flag indicating if valid GPS EXIF tag was detected",
+            "default": true,
+            "example": true
+          }
+        },
+        "type": "object",
+        "title": "ExifMetadata"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -2179,6 +2830,33 @@
           "verified_count"
         ],
         "title": "LeaderboardContributor"
+      },
+      "ModerationRequest": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "title": "Action",
+            "description": "Moderation action: 'approve' or 'reject'",
+            "example": "approve"
+          },
+          "feedback": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Feedback",
+            "description": "Moderator feedback note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "title": "ModerationRequest"
       },
       "PartnerInfo": {
         "properties": {
@@ -2525,6 +3203,81 @@
         ],
         "title": "PostCreate"
       },
+      "ReportRequest": {
+        "properties": {
+          "target_type": {
+            "type": "string",
+            "title": "Target Type",
+            "description": "Target entity type: 'contribution', 'post', 'comment'",
+            "example": "contribution"
+          },
+          "target_id": {
+            "type": "integer",
+            "title": "Target Id",
+            "description": "Target record ID",
+            "example": 1
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "Reason: 'spam', 'inaccurate_gps', 'inappropriate', 'copyright'",
+            "example": "inaccurate_gps"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Optional details",
+            "example": "The pin is placed 10km away from actual site."
+          },
+          "reporter_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reporter Name",
+            "description": "Reporter name",
+            "default": "Explorer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "target_type",
+          "target_id",
+          "reason"
+        ],
+        "title": "ReportRequest"
+      },
+      "ReportResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Report record ID"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Status message",
+            "default": "Report submitted successfully for moderation review"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "title": "ReportResponse"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -2591,6 +3344,10 @@
     {
       "name": "Community Feed",
       "description": "Verified traveler posts, eco contributions, and local explorer stories."
+    },
+    {
+      "name": "Contribution Pipeline & Moderation",
+      "description": "Photo submission pipeline, EXIF metadata extraction, AI validation guard, and content moderation."
     }
   ]
 }
