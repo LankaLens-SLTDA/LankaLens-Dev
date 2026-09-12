@@ -1,18 +1,23 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.config import settings
 from app.routers import destinations, planner, ai_assistant, sustainability, community
 
 app = FastAPI(
-    title="LankaLens FastAPI Backend",
+    title=settings.PROJECT_NAME,
     description="Precision Cartography & Intelligent Tourism API for Sri Lanka",
     version="1.0.0",
 )
 
-# Configure CORS for Next.js Frontend
+# Configure CORS dynamically from settings
+origins = settings.CORS_ORIGINS if isinstance(settings.CORS_ORIGINS, list) else [settings.CORS_ORIGINS]
+if "*" not in origins and "http://localhost:3000" not in origins:
+    origins.append("http://localhost:3000")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -29,10 +34,12 @@ app.include_router(community.router)
 def health_check():
     return {
         "status": "online",
-        "service": "LankaLens FastAPI Engine",
+        "service": settings.PROJECT_NAME,
+        "environment": settings.ENVIRONMENT,
         "version": "1.0.0"
     }
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("app.main:app", host=settings.HOST, port=settings.PORT, reload=True)
+
