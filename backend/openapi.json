@@ -20,8 +20,8 @@
         "tags": [
           "Destinations"
         ],
-        "summary": "Retrieve travel destinations",
-        "description": "Fetch filtered or full catalog of Sri Lankan travel destinations, with optional category, region, and search term queries.",
+        "summary": "List & filter Sri Lankan destinations",
+        "description": "Retrieve destinations with search filter support by category, district, province, verification state, publication status, cost, rating, and search query.",
         "operationId": "get_destinations_api_destinations_get",
         "parameters": [
           {
@@ -37,13 +37,13 @@
                   "type": "null"
                 }
               ],
-              "description": "Filter destinations by category (e.g. temple, nature, beach, wildlife)",
+              "description": "Filter by category (temple, nature, beach, wildlife, heritage, culture, adventure)",
               "title": "Category"
             },
-            "description": "Filter destinations by category (e.g. temple, nature, beach, wildlife)"
+            "description": "Filter by category (temple, nature, beach, wildlife, heritage, culture, adventure)"
           },
           {
-            "name": "region",
+            "name": "district",
             "in": "query",
             "required": false,
             "schema": {
@@ -55,10 +55,84 @@
                   "type": "null"
                 }
               ],
-              "description": "Filter destinations by geographical region",
-              "title": "Region"
+              "description": "Filter by Sri Lankan district (e.g. Matale, Badulla, Galle)",
+              "title": "District"
             },
-            "description": "Filter destinations by geographical region"
+            "description": "Filter by Sri Lankan district (e.g. Matale, Badulla, Galle)"
+          },
+          {
+            "name": "province",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by Sri Lankan province (e.g. Central, Uva, Southern)",
+              "title": "Province"
+            },
+            "description": "Filter by Sri Lankan province (e.g. Central, Uva, Southern)"
+          },
+          {
+            "name": "verification_state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by verification state ('verified', 'community_submitted', 'pending_review')",
+              "title": "Verification State"
+            },
+            "description": "Filter by verification state ('verified', 'community_submitted', 'pending_review')"
+          },
+          {
+            "name": "publication_status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by publication status ('published', 'draft', 'archived')",
+              "default": "published",
+              "title": "Publication Status"
+            },
+            "description": "Filter by publication status ('published', 'draft', 'archived')"
+          },
+          {
+            "name": "verified_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Quick toggle to return only SLTDA verified destinations",
+              "default": false,
+              "title": "Verified Only"
+            },
+            "description": "Quick toggle to return only SLTDA verified destinations"
           },
           {
             "name": "q",
@@ -73,10 +147,258 @@
                   "type": "null"
                 }
               ],
-              "description": "Search query string matching title or description",
+              "description": "Search query string matching name, title, or description",
               "title": "Q"
             },
-            "description": "Search query string matching title or description"
+            "description": "Search query string matching name, title, or description"
+          },
+          {
+            "name": "min_cost",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Minimum baseline visit cost",
+              "title": "Min Cost"
+            },
+            "description": "Minimum baseline visit cost"
+          },
+          {
+            "name": "max_cost",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Maximum baseline visit cost",
+              "title": "Max Cost"
+            },
+            "description": "Maximum baseline visit cost"
+          },
+          {
+            "name": "min_rating",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Minimum rating / popularity score",
+              "title": "Min Rating"
+            },
+            "description": "Minimum rating / popularity score"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DestinationListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Destinations"
+        ],
+        "summary": "Create new tourism destination record",
+        "description": "Create a new destination record (supports verified official entries or community submissions).",
+        "operationId": "create_destination_api_destinations_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DestinationCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DestinationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/destinations/nearby": {
+      "get": {
+        "tags": [
+          "Destinations"
+        ],
+        "summary": "PostGIS Nearby Location Query",
+        "description": "Find destinations near given GPS coordinates within radius in kilometers, sorted by distance.",
+        "operationId": "get_nearby_destinations_api_destinations_nearby_get",
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "maximum": 90.0,
+              "minimum": -90.0,
+              "description": "Origin latitude coordinate",
+              "title": "Lat"
+            },
+            "description": "Origin latitude coordinate"
+          },
+          {
+            "name": "lng",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "maximum": 180.0,
+              "minimum": -180.0,
+              "description": "Origin longitude coordinate",
+              "title": "Lng"
+            },
+            "description": "Origin longitude coordinate"
+          },
+          {
+            "name": "radius_km",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 500,
+              "exclusiveMinimum": 0,
+              "description": "Search radius in kilometers",
+              "default": 50.0,
+              "title": "Radius Km"
+            },
+            "description": "Search radius in kilometers"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional category filter",
+              "title": "Category"
+            },
+            "description": "Optional category filter"
+          },
+          {
+            "name": "verified_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter only verified destinations",
+              "default": false,
+              "title": "Verified Only"
+            },
+            "description": "Filter only verified destinations"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DestinationListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/destinations/{id}": {
+      "get": {
+        "tags": [
+          "Destinations"
+        ],
+        "summary": "Get single destination details",
+        "description": "Retrieve full record details for a single destination by integer ID.",
+        "operationId": "get_destination_api_destinations__id__get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
           }
         ],
         "responses": {
@@ -87,6 +409,96 @@
                 "schema": {
                   "$ref": "#/components/schemas/DestinationResponse"
                 }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Destinations"
+        ],
+        "summary": "Update existing destination record",
+        "description": "Update destination parameters, category, crowd info, baseline cost, or verification status.",
+        "operationId": "update_destination_api_destinations__id__put",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DestinationUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DestinationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Destinations"
+        ],
+        "summary": "Delete or archive destination record",
+        "description": "Soft delete / archive destination record from the active catalog.",
+        "operationId": "delete_destination_api_destinations__id__delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           },
@@ -411,27 +823,78 @@
         ],
         "title": "ChatResponse"
       },
+      "CommunityStats": {
+        "properties": {
+          "upvotes": {
+            "type": "integer",
+            "title": "Upvotes",
+            "description": "Community upvotes count",
+            "default": 0,
+            "example": 1280
+          },
+          "save_count": {
+            "type": "integer",
+            "title": "Save Count",
+            "description": "Number of times saved to user itineraries",
+            "default": 0,
+            "example": 540
+          }
+        },
+        "type": "object",
+        "title": "CommunityStats"
+      },
       "Coords": {
         "properties": {
           "x": {
             "type": "string",
             "title": "X",
-            "description": "Map coordinate percentage on the X axis",
+            "description": "Map percentage coordinate X for UI rendering",
+            "default": "50%",
             "example": "28%"
           },
           "y": {
             "type": "string",
             "title": "Y",
-            "description": "Map coordinate percentage on the Y axis",
+            "description": "Map percentage coordinate Y for UI rendering",
+            "default": "50%",
             "example": "22%"
           }
         },
         "type": "object",
-        "required": [
-          "x",
-          "y"
-        ],
         "title": "Coords"
+      },
+      "CrowdInfo": {
+        "properties": {
+          "density": {
+            "type": "string",
+            "title": "Density",
+            "description": "Current or typical visitor density rating (Low, Moderate, High, Very High)",
+            "default": "Moderate",
+            "example": "Moderate"
+          },
+          "peak_hours": {
+            "type": "string",
+            "title": "Peak Hours",
+            "description": "Typical peak visitor hours",
+            "default": "10:00 - 14:00",
+            "example": "10:00 - 14:00"
+          },
+          "peak_months": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Peak Months",
+            "description": "Peak travel months",
+            "example": [
+              "Dec",
+              "Jan",
+              "Aug"
+            ]
+          }
+        },
+        "type": "object",
+        "title": "CrowdInfo"
       },
       "DayPlan": {
         "properties": {
@@ -493,88 +956,438 @@
       },
       "Destination": {
         "properties": {
-          "id": {
-            "type": "integer",
-            "title": "Id",
-            "description": "Unique destination identifier",
-            "example": 1
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Official destination name",
+            "example": "Sigiriya Ancient Rock Fortress"
           },
           "title": {
             "type": "string",
             "title": "Title",
-            "description": "Name of the tourist destination or landmark",
+            "description": "Display title for cards and UI header",
             "example": "Sigiriya Ancient Rock Fortress"
           },
           "category": {
             "type": "string",
             "title": "Category",
-            "description": "Category tag (e.g. temple, nature, beach, wildlife)",
+            "description": "Destination category (temple, nature, beach, wildlife, heritage, culture, adventure)",
             "example": "temple"
           },
-          "region": {
+          "district": {
             "type": "string",
-            "title": "Region",
-            "description": "Geographical region in Sri Lanka",
-            "example": "Cultural Triangle"
+            "title": "District",
+            "description": "Sri Lankan administrative district",
+            "example": "Matale"
+          },
+          "province": {
+            "type": "string",
+            "title": "Province",
+            "description": "Sri Lankan province (Central, Uva, Southern, Western, etc.)",
+            "example": "Central"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude",
+            "description": "Geographic latitude coordinate",
+            "example": 7.957
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude",
+            "description": "Geographic longitude coordinate",
+            "example": 80.76
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Detailed summary description",
+            "default": "",
+            "example": "5th-century royal citadel towering 200 meters over emerald jungle."
+          },
+          "activities": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Activities",
+            "description": "Available activities and experiences",
+            "example": [
+              "Rock Climbing",
+              "History Tour",
+              "Photography"
+            ]
+          },
+          "estimated_visit_duration_minutes": {
+            "type": "integer",
+            "title": "Estimated Visit Duration Minutes",
+            "description": "Estimated visit duration in minutes",
+            "default": 180,
+            "example": 240
+          },
+          "baseline_cost": {
+            "type": "number",
+            "title": "Baseline Cost",
+            "description": "Baseline ticket or entry cost in USD",
+            "default": 0.0,
+            "example": 36.0
+          },
+          "popularity": {
+            "type": "number",
+            "title": "Popularity",
+            "description": "Popularity score out of 5.0",
+            "default": 4.5,
+            "example": 4.9
           },
           "rating": {
             "type": "number",
             "title": "Rating",
             "description": "Average visitor rating out of 5.0",
+            "default": 4.5,
             "example": 4.9
           },
           "reviews": {
             "type": "integer",
             "title": "Reviews",
             "description": "Total review count",
+            "default": 0,
             "example": 320
           },
-          "desc": {
-            "type": "string",
-            "title": "Desc",
-            "description": "Detailed description of the destination",
-            "example": "5th-century royal citadel towering 200 meters over emerald jungle."
+          "trust_score": {
+            "type": "number",
+            "title": "Trust Score",
+            "description": "Trust & verification score (0.00 to 1.00)",
+            "default": 0.95,
+            "example": 0.98
           },
-          "image": {
+          "verification_state": {
             "type": "string",
-            "title": "Image",
-            "description": "Relative URL path to the destination image asset",
+            "title": "Verification State",
+            "description": "Verification state: 'verified', 'community_submitted', 'pending_review'",
+            "default": "verified",
+            "example": "verified"
+          },
+          "publication_status": {
+            "type": "string",
+            "title": "Publication Status",
+            "description": "Publication status: 'published', 'draft', 'archived'",
+            "default": "published",
+            "example": "published"
+          },
+          "is_verified": {
+            "type": "boolean",
+            "title": "Is Verified",
+            "description": "Quick boolean flag to separate verified vs community data",
+            "default": true,
+            "example": true
+          },
+          "crowd_info": {
+            "$ref": "#/components/schemas/CrowdInfo",
+            "description": "Crowd density and peak period details"
+          },
+          "community_stats": {
+            "$ref": "#/components/schemas/CommunityStats",
+            "description": "Community engagement statistics"
+          },
+          "images": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Images",
+            "description": "List of image URLs or asset paths",
+            "example": [
+              "/stitch_images/planner.png"
+            ]
+          },
+          "image_url": {
+            "type": "string",
+            "title": "Image Url",
+            "description": "Primary thumbnail image path",
+            "default": "/stitch_images/discover.png",
             "example": "/stitch_images/planner.png"
           },
-          "coords": {
-            "$ref": "#/components/schemas/Coords",
-            "description": "2D map coordinate placement"
+          "coord_x": {
+            "type": "string",
+            "title": "Coord X",
+            "description": "X axis percent for interactive map",
+            "default": "50%",
+            "example": "28%"
+          },
+          "coord_y": {
+            "type": "string",
+            "title": "Coord Y",
+            "description": "Y axis percent for interactive map",
+            "default": "50%",
+            "example": "22%"
           },
           "elevation": {
             "type": "string",
             "title": "Elevation",
-            "description": "Elevation above sea level",
+            "description": "Elevation text label",
+            "default": "N/A",
             "example": "349 m"
+          },
+          "distance_from_colombo": {
+            "type": "string",
+            "title": "Distance From Colombo",
+            "description": "Distance text from Colombo",
+            "default": "N/A",
+            "example": "165 km from Colombo"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Unique destination integer ID",
+            "example": 1
+          },
+          "desc": {
+            "type": "string",
+            "title": "Desc",
+            "description": "Backward compatible alias for description",
+            "default": "",
+            "example": "5th-century royal citadel."
+          },
+          "image": {
+            "type": "string",
+            "title": "Image",
+            "description": "Backward compatible alias for image_url",
+            "default": "/stitch_images/discover.png",
+            "example": "/stitch_images/planner.png"
+          },
+          "coords": {
+            "$ref": "#/components/schemas/Coords",
+            "description": "Backward compatible map coordinate object"
           },
           "distance": {
             "type": "string",
             "title": "Distance",
-            "description": "Travel distance from Colombo",
+            "description": "Backward compatible alias for distance_from_colombo",
+            "default": "N/A",
+            "example": "165 km from Colombo"
+          },
+          "distance_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance Km",
+            "description": "Calculated spatial distance in kilometers (present in nearby queries)",
+            "example": 12.4
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "title",
+          "category",
+          "district",
+          "province",
+          "latitude",
+          "longitude",
+          "id"
+        ],
+        "title": "Destination"
+      },
+      "DestinationCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Official destination name",
+            "example": "Sigiriya Ancient Rock Fortress"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Display title for cards and UI header",
+            "example": "Sigiriya Ancient Rock Fortress"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "Destination category (temple, nature, beach, wildlife, heritage, culture, adventure)",
+            "example": "temple"
+          },
+          "district": {
+            "type": "string",
+            "title": "District",
+            "description": "Sri Lankan administrative district",
+            "example": "Matale"
+          },
+          "province": {
+            "type": "string",
+            "title": "Province",
+            "description": "Sri Lankan province (Central, Uva, Southern, Western, etc.)",
+            "example": "Central"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude",
+            "description": "Geographic latitude coordinate",
+            "example": 7.957
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude",
+            "description": "Geographic longitude coordinate",
+            "example": 80.76
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Detailed summary description",
+            "default": "",
+            "example": "5th-century royal citadel towering 200 meters over emerald jungle."
+          },
+          "activities": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Activities",
+            "description": "Available activities and experiences",
+            "example": [
+              "Rock Climbing",
+              "History Tour",
+              "Photography"
+            ]
+          },
+          "estimated_visit_duration_minutes": {
+            "type": "integer",
+            "title": "Estimated Visit Duration Minutes",
+            "description": "Estimated visit duration in minutes",
+            "default": 180,
+            "example": 240
+          },
+          "baseline_cost": {
+            "type": "number",
+            "title": "Baseline Cost",
+            "description": "Baseline ticket or entry cost in USD",
+            "default": 0.0,
+            "example": 36.0
+          },
+          "popularity": {
+            "type": "number",
+            "title": "Popularity",
+            "description": "Popularity score out of 5.0",
+            "default": 4.5,
+            "example": 4.9
+          },
+          "rating": {
+            "type": "number",
+            "title": "Rating",
+            "description": "Average visitor rating out of 5.0",
+            "default": 4.5,
+            "example": 4.9
+          },
+          "reviews": {
+            "type": "integer",
+            "title": "Reviews",
+            "description": "Total review count",
+            "default": 0,
+            "example": 320
+          },
+          "trust_score": {
+            "type": "number",
+            "title": "Trust Score",
+            "description": "Trust & verification score (0.00 to 1.00)",
+            "default": 0.95,
+            "example": 0.98
+          },
+          "verification_state": {
+            "type": "string",
+            "title": "Verification State",
+            "description": "Verification state: 'verified', 'community_submitted', 'pending_review'",
+            "default": "verified",
+            "example": "verified"
+          },
+          "publication_status": {
+            "type": "string",
+            "title": "Publication Status",
+            "description": "Publication status: 'published', 'draft', 'archived'",
+            "default": "published",
+            "example": "published"
+          },
+          "is_verified": {
+            "type": "boolean",
+            "title": "Is Verified",
+            "description": "Quick boolean flag to separate verified vs community data",
+            "default": true,
+            "example": true
+          },
+          "crowd_info": {
+            "$ref": "#/components/schemas/CrowdInfo",
+            "description": "Crowd density and peak period details"
+          },
+          "community_stats": {
+            "$ref": "#/components/schemas/CommunityStats",
+            "description": "Community engagement statistics"
+          },
+          "images": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Images",
+            "description": "List of image URLs or asset paths",
+            "example": [
+              "/stitch_images/planner.png"
+            ]
+          },
+          "image_url": {
+            "type": "string",
+            "title": "Image Url",
+            "description": "Primary thumbnail image path",
+            "default": "/stitch_images/discover.png",
+            "example": "/stitch_images/planner.png"
+          },
+          "coord_x": {
+            "type": "string",
+            "title": "Coord X",
+            "description": "X axis percent for interactive map",
+            "default": "50%",
+            "example": "28%"
+          },
+          "coord_y": {
+            "type": "string",
+            "title": "Coord Y",
+            "description": "Y axis percent for interactive map",
+            "default": "50%",
+            "example": "22%"
+          },
+          "elevation": {
+            "type": "string",
+            "title": "Elevation",
+            "description": "Elevation text label",
+            "default": "N/A",
+            "example": "349 m"
+          },
+          "distance_from_colombo": {
+            "type": "string",
+            "title": "Distance From Colombo",
+            "description": "Distance text from Colombo",
+            "default": "N/A",
             "example": "165 km from Colombo"
           }
         },
         "type": "object",
         "required": [
-          "id",
+          "name",
           "title",
           "category",
-          "region",
-          "rating",
-          "reviews",
-          "desc",
-          "image",
-          "coords",
-          "elevation",
-          "distance"
+          "district",
+          "province",
+          "latitude",
+          "longitude"
         ],
-        "title": "Destination"
+        "title": "DestinationCreate"
       },
-      "DestinationResponse": {
+      "DestinationListResponse": {
         "properties": {
           "destinations": {
             "items": {
@@ -582,13 +1395,13 @@
             },
             "type": "array",
             "title": "Destinations",
-            "description": "List of matching destination items"
+            "description": "List of matching destination records"
           },
           "total": {
             "type": "integer",
             "title": "Total",
-            "description": "Total number of destinations returned",
-            "example": 4
+            "description": "Total count of matching destinations",
+            "example": 16
           }
         },
         "type": "object",
@@ -596,7 +1409,248 @@
           "destinations",
           "total"
         ],
+        "title": "DestinationListResponse"
+      },
+      "DestinationResponse": {
+        "properties": {
+          "destination": {
+            "$ref": "#/components/schemas/Destination",
+            "description": "Single destination object"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Status message",
+            "default": "Success",
+            "example": "Destination retrieved successfully"
+          }
+        },
+        "type": "object",
+        "required": [
+          "destination"
+        ],
         "title": "DestinationResponse"
+      },
+      "DestinationUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "district": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "District"
+          },
+          "province": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Province"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "activities": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activities"
+          },
+          "estimated_visit_duration_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimated Visit Duration Minutes"
+          },
+          "baseline_cost": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Cost"
+          },
+          "popularity": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Popularity"
+          },
+          "rating": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rating"
+          },
+          "trust_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trust Score"
+          },
+          "verification_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verification State"
+          },
+          "publication_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publication Status"
+          },
+          "is_verified": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Verified"
+          },
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Url"
+          },
+          "images": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Images"
+          }
+        },
+        "type": "object",
+        "title": "DestinationUpdate"
       },
       "HTTPValidationError": {
         "properties": {

@@ -1,79 +1,249 @@
 from pydantic import BaseModel, Field
 
 
+class CrowdInfo(BaseModel):
+    density: str = Field(
+        "Moderate",
+        description="Current or typical visitor density rating (Low, Moderate, High, Very High)",
+        json_schema_extra={"example": "Moderate"},
+    )
+    peak_hours: str = Field(
+        "10:00 - 14:00",
+        description="Typical peak visitor hours",
+        json_schema_extra={"example": "10:00 - 14:00"},
+    )
+    peak_months: list[str] = Field(
+        default_factory=lambda: ["Dec", "Jan", "Aug"],
+        description="Peak travel months",
+        json_schema_extra={"example": ["Dec", "Jan", "Aug"]},
+    )
+
+
+class CommunityStats(BaseModel):
+    upvotes: int = Field(
+        0, description="Community upvotes count", json_schema_extra={"example": 1280}
+    )
+    save_count: int = Field(
+        0,
+        description="Number of times saved to user itineraries",
+        json_schema_extra={"example": 540},
+    )
+
+
 class Coords(BaseModel):
     x: str = Field(
-        ...,
-        description="Map coordinate percentage on the X axis",
+        "50%",
+        description="Map percentage coordinate X for UI rendering",
         json_schema_extra={"example": "28%"},
     )
     y: str = Field(
-        ...,
-        description="Map coordinate percentage on the Y axis",
+        "50%",
+        description="Map percentage coordinate Y for UI rendering",
         json_schema_extra={"example": "22%"},
     )
 
 
-class Destination(BaseModel):
-    id: int = Field(
+class DestinationBase(BaseModel):
+    name: str = Field(
         ...,
-        description="Unique destination identifier",
-        json_schema_extra={"example": 1},
+        description="Official destination name",
+        json_schema_extra={"example": "Sigiriya Ancient Rock Fortress"},
     )
     title: str = Field(
         ...,
-        description="Name of the tourist destination or landmark",
+        description="Display title for cards and UI header",
         json_schema_extra={"example": "Sigiriya Ancient Rock Fortress"},
     )
     category: str = Field(
         ...,
-        description="Category tag (e.g. temple, nature, beach, wildlife)",
+        description="Destination category (temple, nature, beach, wildlife, heritage, culture, adventure)",
         json_schema_extra={"example": "temple"},
     )
-    region: str = Field(
+    district: str = Field(
         ...,
-        description="Geographical region in Sri Lanka",
-        json_schema_extra={"example": "Cultural Triangle"},
+        description="Sri Lankan administrative district",
+        json_schema_extra={"example": "Matale"},
     )
-    rating: float = Field(
+    province: str = Field(
         ...,
-        description="Average visitor rating out of 5.0",
-        json_schema_extra={"example": 4.9},
+        description="Sri Lankan province (Central, Uva, Southern, Western, etc.)",
+        json_schema_extra={"example": "Central"},
     )
-    reviews: int = Field(
-        ..., description="Total review count", json_schema_extra={"example": 320}
-    )
-    desc: str = Field(
+    latitude: float = Field(
         ...,
-        description="Detailed description of the destination",
+        description="Geographic latitude coordinate",
+        json_schema_extra={"example": 7.9570},
+    )
+    longitude: float = Field(
+        ...,
+        description="Geographic longitude coordinate",
+        json_schema_extra={"example": 80.7600},
+    )
+    description: str = Field(
+        "",
+        description="Detailed summary description",
         json_schema_extra={
             "example": "5th-century royal citadel towering 200 meters over emerald jungle."
         },
     )
-    image: str = Field(
-        ...,
-        description="Relative URL path to the destination image asset",
+    activities: list[str] = Field(
+        default_factory=list,
+        description="Available activities and experiences",
+        json_schema_extra={"example": ["Rock Climbing", "History Tour", "Photography"]},
+    )
+    estimated_visit_duration_minutes: int = Field(
+        180,
+        description="Estimated visit duration in minutes",
+        json_schema_extra={"example": 240},
+    )
+    baseline_cost: float = Field(
+        0.00,
+        description="Baseline ticket or entry cost in USD",
+        json_schema_extra={"example": 36.00},
+    )
+    popularity: float = Field(
+        4.50,
+        description="Popularity score out of 5.0",
+        json_schema_extra={"example": 4.90},
+    )
+    rating: float = Field(
+        4.50,
+        description="Average visitor rating out of 5.0",
+        json_schema_extra={"example": 4.90},
+    )
+    reviews: int = Field(
+        0, description="Total review count", json_schema_extra={"example": 320}
+    )
+    trust_score: float = Field(
+        0.95,
+        description="Trust & verification score (0.00 to 1.00)",
+        json_schema_extra={"example": 0.98},
+    )
+    verification_state: str = Field(
+        "verified",
+        description="Verification state: 'verified', 'community_submitted', 'pending_review'",
+        json_schema_extra={"example": "verified"},
+    )
+    publication_status: str = Field(
+        "published",
+        description="Publication status: 'published', 'draft', 'archived'",
+        json_schema_extra={"example": "published"},
+    )
+    is_verified: bool = Field(
+        True,
+        description="Quick boolean flag to separate verified vs community data",
+        json_schema_extra={"example": True},
+    )
+    crowd_info: CrowdInfo = Field(
+        default_factory=CrowdInfo, description="Crowd density and peak period details"
+    )
+    community_stats: CommunityStats = Field(
+        default_factory=CommunityStats, description="Community engagement statistics"
+    )
+    images: list[str] = Field(
+        default_factory=list,
+        description="List of image URLs or asset paths",
+        json_schema_extra={"example": ["/stitch_images/planner.png"]},
+    )
+    image_url: str = Field(
+        "/stitch_images/discover.png",
+        description="Primary thumbnail image path",
         json_schema_extra={"example": "/stitch_images/planner.png"},
     )
-    coords: Coords = Field(..., description="2D map coordinate placement")
+    coord_x: str = Field(
+        "50%",
+        description="X axis percent for interactive map",
+        json_schema_extra={"example": "28%"},
+    )
+    coord_y: str = Field(
+        "50%",
+        description="Y axis percent for interactive map",
+        json_schema_extra={"example": "22%"},
+    )
     elevation: str = Field(
-        ...,
-        description="Elevation above sea level",
+        "N/A",
+        description="Elevation text label",
         json_schema_extra={"example": "349 m"},
     )
-    distance: str = Field(
-        ...,
-        description="Travel distance from Colombo",
+    distance_from_colombo: str = Field(
+        "N/A",
+        description="Distance text from Colombo",
         json_schema_extra={"example": "165 km from Colombo"},
     )
 
 
-class DestinationResponse(BaseModel):
+class DestinationCreate(DestinationBase):
+    pass
+
+
+class DestinationUpdate(BaseModel):
+    name: str | None = None
+    title: str | None = None
+    category: str | None = None
+    district: str | None = None
+    province: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
+    description: str | None = None
+    activities: list[str] | None = None
+    estimated_visit_duration_minutes: int | None = None
+    baseline_cost: float | None = None
+    popularity: float | None = None
+    rating: float | None = None
+    trust_score: float | None = None
+    verification_state: str | None = None
+    publication_status: str | None = None
+    is_verified: bool | None = None
+    image_url: str | None = None
+    images: list[str] | None = None
+
+
+class Destination(DestinationBase):
+    id: int = Field(
+        ...,
+        description="Unique destination integer ID",
+        json_schema_extra={"example": 1},
+    )
+    desc: str = Field(
+        "",
+        description="Backward compatible alias for description",
+        json_schema_extra={"example": "5th-century royal citadel."},
+    )
+    image: str = Field(
+        "/stitch_images/discover.png",
+        description="Backward compatible alias for image_url",
+        json_schema_extra={"example": "/stitch_images/planner.png"},
+    )
+    coords: Coords = Field(
+        default_factory=Coords, description="Backward compatible map coordinate object"
+    )
+    distance: str = Field(
+        "N/A",
+        description="Backward compatible alias for distance_from_colombo",
+        json_schema_extra={"example": "165 km from Colombo"},
+    )
+    distance_km: float | None = Field(
+        None,
+        description="Calculated spatial distance in kilometers (present in nearby queries)",
+        json_schema_extra={"example": 12.4},
+    )
+
+
+class DestinationListResponse(BaseModel):
     destinations: list[Destination] = Field(
-        ..., description="List of matching destination items"
+        ..., description="List of matching destination records"
     )
     total: int = Field(
         ...,
-        description="Total number of destinations returned",
-        json_schema_extra={"example": 4},
+        description="Total count of matching destinations",
+        json_schema_extra={"example": 16},
+    )
+
+
+class DestinationResponse(BaseModel):
+    destination: Destination = Field(..., description="Single destination object")
+    message: str = Field(
+        "Success",
+        description="Status message",
+        json_schema_extra={"example": "Destination retrieved successfully"},
     )
