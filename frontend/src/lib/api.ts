@@ -66,6 +66,47 @@ export interface DestinationResponse {
   message: string;
 }
 
+export interface CommentItem {
+  id: number;
+  author: string;
+  avatar: string;
+  text: string;
+  time: string;
+}
+
+export interface CommunityPost {
+  id: number;
+  author: string;
+  role: string;
+  avatar: string;
+  time: string;
+  verified: boolean;
+  location: string;
+  destination_id?: number;
+  latitude?: number;
+  longitude?: number;
+  rating: number;
+  image: string;
+  caption: string;
+  tags: string[];
+  ecoPoints: number;
+  likes_count: number;
+  commentsCount: number;
+  comments_count: number;
+  saves_count: number;
+  comments: CommentItem[];
+  liked?: boolean;
+  saved?: boolean;
+}
+
+export interface LeaderboardContributor {
+  name: string;
+  role: string;
+  avatar: string;
+  eco_points: number;
+  verified_count: number;
+}
+
 export async function fetchFromBackend<T>(
   endpoint: string,
   options?: RequestInit
@@ -122,4 +163,56 @@ export async function getNearbyDestinations(
 
 export async function getDestinationById(id: number): Promise<DestinationResponse | null> {
   return fetchFromBackend<DestinationResponse>(`/destinations/${id}`);
+}
+
+export async function getCommunityPosts(params?: {
+  sort_by?: 'latest' | 'trending' | 'top_eco';
+  destination_id?: number;
+  verified_only?: boolean;
+  tag?: string;
+}): Promise<CommunityPost[] | null> {
+  const query = new URLSearchParams();
+  if (params?.sort_by) query.append('sort_by', params.sort_by);
+  if (params?.destination_id) query.append('destination_id', params.destination_id.toString());
+  if (params?.verified_only) query.append('verified_only', 'true');
+  if (params?.tag) query.append('tag', params.tag);
+
+  const queryString = query.toString() ? `?${query.toString()}` : '';
+  return fetchFromBackend<CommunityPost[]>(`/community/posts${queryString}`);
+}
+
+export async function interactWithCommunityPost(
+  postId: number,
+  payload: {
+    action: 'like' | 'unlike' | 'save' | 'unsave' | 'comment';
+    comment_text?: string;
+    author_name?: string;
+  }
+): Promise<CommunityPost | null> {
+  return fetchFromBackend<CommunityPost>(`/community/posts/${postId}/interact`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function createCommunityPost(payload: {
+  author?: string;
+  role?: string;
+  location: string;
+  destination_id?: number;
+  latitude?: number;
+  longitude?: number;
+  rating?: number;
+  caption: string;
+  tags?: string[];
+  image?: string;
+}): Promise<CommunityPost | null> {
+  return fetchFromBackend<CommunityPost>('/community/posts', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getCommunityLeaderboard(): Promise<LeaderboardContributor[] | null> {
+  return fetchFromBackend<LeaderboardContributor[]>('/community/leaderboard');
 }

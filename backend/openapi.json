@@ -652,9 +652,304 @@
         "tags": [
           "Community Feed"
         ],
-        "summary": "Get community feed posts",
-        "description": "Retrieve verified explorer posts, eco-guide updates, and hidden travel discoveries.",
+        "summary": "Get community discovery feed",
+        "description": "Retrieve community posts filtered by ranking (latest, trending, top_eco), destination ID, or verification status.",
         "operationId": "get_community_posts_api_community_posts_get",
+        "parameters": [
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Sort ranking: 'latest', 'trending', 'top_eco'",
+              "default": "latest",
+              "title": "Sort By"
+            },
+            "description": "Sort ranking: 'latest', 'trending', 'top_eco'"
+          },
+          {
+            "name": "destination_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter posts linked to specific destination ID",
+              "title": "Destination Id"
+            },
+            "description": "Filter posts linked to specific destination ID"
+          },
+          {
+            "name": "verified_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter only AI-verified posts",
+              "default": false,
+              "title": "Verified Only"
+            },
+            "description": "Filter only AI-verified posts"
+          },
+          {
+            "name": "tag",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by hashtag",
+              "title": "Tag"
+            },
+            "description": "Filter by hashtag"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  },
+                  "title": "Response Get Community Posts Api Community Posts Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Community Feed"
+        ],
+        "summary": "Create a new community dispatch",
+        "description": "Submit a geo-tagged community post, discovery photo, or trail note.",
+        "operationId": "create_community_post_api_community_posts_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/community/destinations/{destination_id}/posts": {
+      "get": {
+        "tags": [
+          "Community Feed"
+        ],
+        "summary": "Get community posts for a destination",
+        "description": "Retrieve all crowdsourced user contributions and dispatches associated with a destination.",
+        "operationId": "get_destination_posts_api_community_destinations__destination_id__posts_get",
+        "parameters": [
+          {
+            "name": "destination_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Destination Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  },
+                  "title": "Response Get Destination Posts Api Community Destinations  Destination Id  Posts Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/community/posts/{id}": {
+      "get": {
+        "tags": [
+          "Community Feed"
+        ],
+        "summary": "Get single community post details",
+        "description": "Retrieve post details, full text caption, and user comments list.",
+        "operationId": "get_community_post_api_community_posts__id__get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/community/posts/{id}/interact": {
+      "post": {
+        "tags": [
+          "Community Feed"
+        ],
+        "summary": "Interact with a community post",
+        "description": "Like/Unlike post, Save/Unsave to watchlist, or submit user comment.",
+        "operationId": "interact_with_post_api_community_posts__id__interact_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InteractionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/community/leaderboard": {
+      "get": {
+        "tags": [
+          "Community Feed"
+        ],
+        "summary": "Get top community contributors leaderboard",
+        "description": "Retrieve ranking of top local guides and community explorers by eco-points.",
+        "operationId": "get_leaderboard_api_community_leaderboard_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -662,10 +957,10 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/Post"
+                    "$ref": "#/components/schemas/LeaderboardContributor"
                   },
                   "type": "array",
-                  "title": "Response Get Community Posts Api Community Posts Get"
+                  "title": "Response Get Leaderboard Api Community Leaderboard Get"
                 }
               }
             }
@@ -822,6 +1117,48 @@
           "reply"
         ],
         "title": "ChatResponse"
+      },
+      "CommentItem": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Unique comment ID",
+            "example": 1
+          },
+          "author": {
+            "type": "string",
+            "title": "Author",
+            "description": "Commenter display name",
+            "example": "Kavinda Silva"
+          },
+          "avatar": {
+            "type": "string",
+            "title": "Avatar",
+            "description": "Commenter avatar URL",
+            "default": "/stitch_images/planner.png"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Comment text message",
+            "example": "Incredible morning light! What time did you arrive?"
+          },
+          "time": {
+            "type": "string",
+            "title": "Time",
+            "description": "Relative time description",
+            "default": "Just now",
+            "example": "10 minutes ago"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "author",
+          "text"
+        ],
+        "title": "CommentItem"
       },
       "CommunityStats": {
         "properties": {
@@ -1762,6 +2099,87 @@
         ],
         "title": "HazardReportResponse"
       },
+      "InteractionRequest": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "title": "Action",
+            "description": "Interaction action: 'like', 'unlike', 'save', 'unsave', 'comment'"
+          },
+          "comment_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment Text",
+            "description": "Text for comment action"
+          },
+          "author_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author Name",
+            "description": "Author name for comment",
+            "default": "Explorer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "title": "InteractionRequest"
+      },
+      "LeaderboardContributor": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Contributor name",
+            "example": "Chaminda Perera"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "description": "Role tag",
+            "example": "Local Guide"
+          },
+          "avatar": {
+            "type": "string",
+            "title": "Avatar",
+            "description": "Avatar image URL"
+          },
+          "eco_points": {
+            "type": "integer",
+            "title": "Eco Points",
+            "description": "Total accumulated eco points",
+            "example": 1240
+          },
+          "verified_count": {
+            "type": "integer",
+            "title": "Verified Count",
+            "description": "Total verified route contributions",
+            "example": 142
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "role",
+          "avatar",
+          "eco_points",
+          "verified_count"
+        ],
+        "title": "LeaderboardContributor"
+      },
       "PartnerInfo": {
         "properties": {
           "name": {
@@ -1847,49 +2265,99 @@
           "author": {
             "type": "string",
             "title": "Author",
-            "description": "Display name of the author",
+            "description": "Display name of post author",
             "example": "Chaminda Perera"
           },
           "role": {
             "type": "string",
             "title": "Role",
-            "description": "User role (e.g. Local Guide, Explorer)",
+            "description": "Contributor role (e.g. Local Guide, Explorer, Ranger)",
+            "default": "Explorer",
             "example": "Local Guide"
           },
           "avatar": {
             "type": "string",
             "title": "Avatar",
-            "description": "Avatar image URL path",
-            "example": "/stitch_images/discover.png"
+            "description": "Author avatar image URL path",
+            "default": "/stitch_images/discover.png"
           },
           "time": {
             "type": "string",
             "title": "Time",
-            "description": "Human-readable relative timestamp",
+            "description": "Relative human-readable time string",
+            "default": "2 hours ago",
             "example": "2 hours ago"
           },
           "verified": {
             "type": "boolean",
             "title": "Verified",
-            "description": "Verified contributor badge status",
+            "description": "AI-Verified route or official contributor status",
+            "default": true,
             "example": true
           },
           "location": {
             "type": "string",
             "title": "Location",
-            "description": "Geographic location of post",
+            "description": "Geo-tagged location name",
             "example": "Ella, Uva Province"
+          },
+          "destination_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Id",
+            "description": "Optional associated destination ID",
+            "example": 1
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude",
+            "description": "Latitude coordinate",
+            "example": 6.8768
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude",
+            "description": "Longitude coordinate",
+            "example": 81.0608
+          },
+          "rating": {
+            "type": "number",
+            "title": "Rating",
+            "description": "Destination rating out of 5.0",
+            "default": 5.0,
+            "example": 4.9
           },
           "image": {
             "type": "string",
             "title": "Image",
-            "description": "Post main photo URL path",
+            "description": "Main photo URL",
+            "default": "/stitch_images/discover.png",
             "example": "/stitch_images/discover.png"
           },
           "caption": {
             "type": "string",
             "title": "Caption",
-            "description": "Text caption or story",
+            "description": "Post story or dispatch text caption",
             "example": "Discovered this secret vantage point just past the second tea bungalow."
           },
           "tags": {
@@ -1907,32 +2375,155 @@
           "ecoPoints": {
             "type": "integer",
             "title": "Ecopoints",
-            "description": "Earned eco community points",
+            "description": "Earned eco community points (likes count)",
+            "default": 0,
+            "example": 248
+          },
+          "likes_count": {
+            "type": "integer",
+            "title": "Likes Count",
+            "description": "Total likes count",
+            "default": 0,
             "example": 248
           },
           "commentsCount": {
             "type": "integer",
             "title": "Commentscount",
-            "description": "Total comment count",
+            "description": "Total comments count",
+            "default": 0,
             "example": 32
+          },
+          "comments_count": {
+            "type": "integer",
+            "title": "Comments Count",
+            "description": "Snake_case alias for comments count",
+            "default": 0,
+            "example": 32
+          },
+          "saves_count": {
+            "type": "integer",
+            "title": "Saves Count",
+            "description": "Total watchlist saves count",
+            "default": 0,
+            "example": 85
+          },
+          "comments": {
+            "items": {
+              "$ref": "#/components/schemas/CommentItem"
+            },
+            "type": "array",
+            "title": "Comments",
+            "description": "List of user comments"
+          },
+          "liked": {
+            "type": "boolean",
+            "title": "Liked",
+            "description": "Flag indicating if active user has liked this post",
+            "default": false
+          },
+          "saved": {
+            "type": "boolean",
+            "title": "Saved",
+            "description": "Flag indicating if active user has saved this post to watchlist",
+            "default": false
           }
         },
         "type": "object",
         "required": [
           "id",
           "author",
-          "role",
-          "avatar",
-          "time",
-          "verified",
           "location",
-          "image",
-          "caption",
-          "tags",
-          "ecoPoints",
-          "commentsCount"
+          "caption"
         ],
         "title": "Post"
+      },
+      "PostCreate": {
+        "properties": {
+          "author": {
+            "type": "string",
+            "title": "Author",
+            "description": "Author display name",
+            "default": "Travel Explorer"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "description": "Contributor role",
+            "default": "Explorer"
+          },
+          "location": {
+            "type": "string",
+            "title": "Location",
+            "description": "Location name or title"
+          },
+          "destination_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Id",
+            "description": "Optional linked destination ID"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude",
+            "description": "Latitude coordinate"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude",
+            "description": "Longitude coordinate"
+          },
+          "rating": {
+            "type": "number",
+            "title": "Rating",
+            "description": "Star rating (1.0 to 5.0)",
+            "default": 5.0
+          },
+          "caption": {
+            "type": "string",
+            "title": "Caption",
+            "description": "Dispatch caption or discovery notes"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags",
+            "description": "Hashtag array"
+          },
+          "image": {
+            "type": "string",
+            "title": "Image",
+            "description": "Image asset URL",
+            "default": "/stitch_images/discover.png"
+          }
+        },
+        "type": "object",
+        "required": [
+          "location",
+          "caption"
+        ],
+        "title": "PostCreate"
       },
       "ValidationError": {
         "properties": {
