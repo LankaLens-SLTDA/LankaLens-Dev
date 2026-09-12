@@ -158,18 +158,30 @@ CREATE TABLE IF NOT EXISTS public.hazard_reports (
 
 -- 4. COMMUNITY POSTS TABLE
 CREATE TABLE IF NOT EXISTS public.community_posts (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     author_name VARCHAR(100) NOT NULL,
     author_role VARCHAR(50) DEFAULT 'Explorer',
     author_avatar TEXT,
     location_name VARCHAR(255) NOT NULL,
+    destination_id BIGINT REFERENCES public.destinations(id) ON DELETE SET NULL,
+    latitude NUMERIC(10, 7),
+    longitude NUMERIC(10, 7),
+    rating NUMERIC(3, 2) DEFAULT 5.0,
     image_url TEXT,
     caption TEXT NOT NULL,
     tags TEXT[] DEFAULT '{}',
     eco_points INTEGER DEFAULT 0,
+    likes_count INTEGER DEFAULT 0,
+    comments_count INTEGER DEFAULT 0,
+    saves_count INTEGER DEFAULT 0,
+    comments JSONB DEFAULT '[]'::jsonb,
     is_ai_verified BOOLEAN DEFAULT false,
+    publication_status VARCHAR(50) DEFAULT 'published',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+CREATE INDEX IF NOT EXISTS idx_community_posts_destination ON public.community_posts (destination_id);
+CREATE INDEX IF NOT EXISTS idx_community_posts_created ON public.community_posts (created_at DESC);
 
 -- ========================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
