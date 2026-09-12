@@ -37,6 +37,8 @@ CREATE TABLE IF NOT EXISTS public.destinations (
     verification_state VARCHAR(50) DEFAULT 'verified',    -- 'verified', 'community_submitted', 'pending_review'
     publication_status VARCHAR(50) DEFAULT 'published',   -- 'published', 'draft', 'archived'
     is_verified BOOLEAN DEFAULT true,                     -- Fast flag to distinguish verified vs community data
+    partner_info JSONB DEFAULT '{"name": "Local Tourism Collective", "type": "Community Partner", "verified": true}'::jsonb,
+    nearby_attractions TEXT[] DEFAULT '{}',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );

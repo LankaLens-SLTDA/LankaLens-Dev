@@ -19,6 +19,34 @@ class CrowdInfo(BaseModel):
     )
 
 
+class PartnerInfo(BaseModel):
+    name: str = Field(
+        "Local SLTDA Partner Cooperative",
+        description="Local partner name or cooperative entity",
+        json_schema_extra={"example": "Ella Eco Tuk-Tuk Drivers Collective"},
+    )
+    type: str = Field(
+        "Transport & Guide Partner",
+        description="Partner type (Transport Co-op, Eco-Guide, Homestay, Certified Gear)",
+        json_schema_extra={"example": "Transport Co-op"},
+    )
+    contact: str = Field(
+        "+94 77 123 4567",
+        description="Direct contact number or dispatch line",
+        json_schema_extra={"example": "+94 77 123 4567"},
+    )
+    rating: float = Field(
+        4.9,
+        description="Partner community rating",
+        json_schema_extra={"example": 4.9},
+    )
+    verified: bool = Field(
+        True,
+        description="Verified partner status badge",
+        json_schema_extra={"example": True},
+    )
+
+
 class CommunityStats(BaseModel):
     upvotes: int = Field(
         0, description="Community upvotes count", json_schema_extra={"example": 1280}
@@ -137,8 +165,18 @@ class DestinationBase(BaseModel):
     crowd_info: CrowdInfo = Field(
         default_factory=CrowdInfo, description="Crowd density and peak period details"
     )
+    partner_info: PartnerInfo = Field(
+        default_factory=PartnerInfo, description="Local ecosystem partner details"
+    )
     community_stats: CommunityStats = Field(
         default_factory=CommunityStats, description="Community engagement statistics"
+    )
+    nearby_attractions: list[str] = Field(
+        default_factory=list,
+        description="Names or titles of neighboring points of interest",
+        json_schema_extra={
+            "example": ["Pidurangala Rock Peak", "Dambulla Cave Temple"]
+        },
     )
     images: list[str] = Field(
         default_factory=list,
@@ -196,6 +234,7 @@ class DestinationUpdate(BaseModel):
     is_verified: bool | None = None
     image_url: str | None = None
     images: list[str] | None = None
+    nearby_attractions: list[str] | None = None
 
 
 class Destination(DestinationBase):
@@ -236,7 +275,7 @@ class DestinationListResponse(BaseModel):
     total: int = Field(
         ...,
         description="Total count of matching destinations",
-        json_schema_extra={"example": 16},
+        json_schema_extra={"example": 25},
     )
 
 

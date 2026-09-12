@@ -1085,9 +1085,25 @@
             "$ref": "#/components/schemas/CrowdInfo",
             "description": "Crowd density and peak period details"
           },
+          "partner_info": {
+            "$ref": "#/components/schemas/PartnerInfo",
+            "description": "Local ecosystem partner details"
+          },
           "community_stats": {
             "$ref": "#/components/schemas/CommunityStats",
             "description": "Community engagement statistics"
+          },
+          "nearby_attractions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Nearby Attractions",
+            "description": "Names or titles of neighboring points of interest",
+            "example": [
+              "Pidurangala Rock Peak",
+              "Dambulla Cave Temple"
+            ]
           },
           "images": {
             "items": {
@@ -1324,9 +1340,25 @@
             "$ref": "#/components/schemas/CrowdInfo",
             "description": "Crowd density and peak period details"
           },
+          "partner_info": {
+            "$ref": "#/components/schemas/PartnerInfo",
+            "description": "Local ecosystem partner details"
+          },
           "community_stats": {
             "$ref": "#/components/schemas/CommunityStats",
             "description": "Community engagement statistics"
+          },
+          "nearby_attractions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Nearby Attractions",
+            "description": "Names or titles of neighboring points of interest",
+            "example": [
+              "Pidurangala Rock Peak",
+              "Dambulla Cave Temple"
+            ]
           },
           "images": {
             "items": {
@@ -1401,7 +1433,7 @@
             "type": "integer",
             "title": "Total",
             "description": "Total count of matching destinations",
-            "example": 16
+            "example": 25
           }
         },
         "type": "object",
@@ -1647,6 +1679,20 @@
               }
             ],
             "title": "Images"
+          },
+          "nearby_attractions": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nearby Attractions"
           }
         },
         "type": "object",
@@ -1715,6 +1761,47 @@
           "rewardPoints"
         ],
         "title": "HazardReportResponse"
+      },
+      "PartnerInfo": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Local partner name or cooperative entity",
+            "default": "Local SLTDA Partner Cooperative",
+            "example": "Ella Eco Tuk-Tuk Drivers Collective"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "Partner type (Transport Co-op, Eco-Guide, Homestay, Certified Gear)",
+            "default": "Transport & Guide Partner",
+            "example": "Transport Co-op"
+          },
+          "contact": {
+            "type": "string",
+            "title": "Contact",
+            "description": "Direct contact number or dispatch line",
+            "default": "+94 77 123 4567",
+            "example": "+94 77 123 4567"
+          },
+          "rating": {
+            "type": "number",
+            "title": "Rating",
+            "description": "Partner community rating",
+            "default": 4.9,
+            "example": 4.9
+          },
+          "verified": {
+            "type": "boolean",
+            "title": "Verified",
+            "description": "Verified partner status badge",
+            "default": true,
+            "example": true
+          }
+        },
+        "type": "object",
+        "title": "PartnerInfo"
       },
       "PlannerOverview": {
         "properties": {

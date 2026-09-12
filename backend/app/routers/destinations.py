@@ -70,7 +70,18 @@ def format_destination_record(raw: dict) -> dict:
         "crowd_info": raw.get(
             "crowd_info", {"density": "Moderate", "peak_hours": "10:00 - 14:00"}
         ),
+        "partner_info": raw.get(
+            "partner_info",
+            {
+                "name": "Local Tourism Collective",
+                "type": "Community Partner",
+                "contact": "+94 77 123 4567",
+                "rating": 4.8,
+                "verified": True,
+            },
+        ),
         "community_stats": raw.get("community_stats", {"upvotes": 0, "save_count": 0}),
+        "nearby_attractions": raw.get("nearby_attractions", []),
         "images": raw.get("images", [image_url]),
         "image_url": image_url,
         "image": image_url,
