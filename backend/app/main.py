@@ -8,6 +8,7 @@ from app.routers import (
     contribution,
     destinations,
     planner,
+    recommendations,
     reputation,
     sustainability,
 )
@@ -90,6 +91,7 @@ app.include_router(sustainability.router)
 app.include_router(community.router)
 app.include_router(contribution.router)
 app.include_router(reputation.router)
+app.include_router(recommendations.router)
 
 
 @app.get(

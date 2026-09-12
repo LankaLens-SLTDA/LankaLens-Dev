@@ -581,3 +581,60 @@ export async function getDestinationDetails(
 ): Promise<DestinationDetailsResponse | null> {
   return fetchFromBackend<DestinationDetailsResponse>(`/destinations/${id}/details`);
 }
+
+export interface UserRecommendationRequest {
+  interests?: string[];
+  travel_style?: string;
+  max_budget_per_day?: number;
+  group_size?: number;
+  trip_duration_days?: number;
+  lat?: number;
+  lng?: number;
+  crowd_tolerance?: 'low' | 'medium' | 'high' | string;
+  preferred_activities?: string[];
+  limit?: number;
+}
+
+export interface ScoreBreakdown {
+  interest_score: number;
+  budget_score: number;
+  crowd_score: number;
+  trust_score: number;
+  distance_score: number;
+  rating_score: number;
+  total_score: number;
+}
+
+export interface RecommendationExplanation {
+  match_percentage: number;
+  score_breakdown: ScoreBreakdown;
+  reasons: string[];
+}
+
+export interface RecommendedDestination {
+  destination: Destination;
+  match_percentage: number;
+  explanation: RecommendationExplanation;
+}
+
+export interface RecommendationResponse {
+  recommendations: RecommendedDestination[];
+  total: number;
+  query_params: UserRecommendationRequest;
+  engine_metadata: {
+    model_name: string;
+    version: string;
+    supports_ml_pipeline: boolean;
+    ranking_weights: Record<string, number>;
+  };
+  query_time_ms: number;
+}
+
+export async function getPersonalizedRecommendations(
+  payload: UserRecommendationRequest
+): Promise<RecommendationResponse | null> {
+  return fetchFromBackend<RecommendationResponse>('/recommendations/personalized', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
