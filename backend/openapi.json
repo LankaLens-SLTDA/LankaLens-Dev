@@ -1164,6 +1164,374 @@
         }
       }
     },
+    "/api/planner/trips": {
+      "get": {
+        "tags": [
+          "Planner"
+        ],
+        "summary": "List all trips in user account",
+        "description": "Retrieves all multi-day trips persisted in the user account store.",
+        "operationId": "list_trips_api_planner_trips_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TripRecord"
+                  },
+                  "type": "array",
+                  "title": "Response List Trips Api Planner Trips Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Planner"
+        ],
+        "summary": "Create new multi-day trip & itinerary",
+        "description": "Creates a new trip with assigned daily itinerary stops, Haversine travel time estimation, and budget rollup.",
+        "operationId": "create_trip_api_planner_trips_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripCreatePayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/planner/trips/{id}": {
+      "get": {
+        "tags": [
+          "Planner"
+        ],
+        "summary": "Get single trip record details",
+        "description": "Retrieves full multi-day itinerary schedule, stop items, travel metrics, and budget status by integer ID.",
+        "operationId": "get_trip_api_planner_trips__id__get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Planner"
+        ],
+        "summary": "Update trip parameters or itinerary schedule",
+        "description": "Updates trip title, start date, budget, duration, or assigned daily destination stops.",
+        "operationId": "update_trip_api_planner_trips__id__put",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripUpdatePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/planner/trips/{id}/add-destination": {
+      "post": {
+        "tags": [
+          "Planner"
+        ],
+        "summary": "Add destination stop to trip itinerary",
+        "description": "Assigns a destination stop to a target day in the trip schedule and recalculates travel time & cost.",
+        "operationId": "add_destination_to_trip_api_planner_trips__id__add_destination_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddDestinationToTripPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/planner/trips/{id}/destinations/{dest_id}": {
+      "delete": {
+        "tags": [
+          "Planner"
+        ],
+        "summary": "Remove destination stop from trip itinerary",
+        "description": "Removes a destination stop from a trip schedule and updates daily travel metrics.",
+        "operationId": "remove_destination_from_trip_api_planner_trips__id__destinations__dest_id__delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "dest_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Dest Id"
+            }
+          },
+          {
+            "name": "day_number",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional target day number",
+              "title": "Day Number"
+            },
+            "description": "Optional target day number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/planner/trips/suggest": {
+      "post": {
+        "tags": [
+          "Planner"
+        ],
+        "summary": "Generate AI-suggested multi-day itinerary",
+        "description": "Generates an optimized multi-day itinerary matching duration, group size, starting city, and budget.",
+        "operationId": "suggest_trip_itinerary_api_planner_trips_suggest_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripCreatePayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/planner/trips/{id}/export": {
+      "get": {
+        "tags": [
+          "Planner"
+        ],
+        "summary": "Export shareable trip payload & URL token",
+        "description": "Generates a unique share token and shareable URL for exporting trip details.",
+        "operationId": "export_trip_api_planner_trips__id__export_get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripExportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/ai-assistant/query": {
       "post": {
         "tags": [
@@ -2226,6 +2594,49 @@
   },
   "components": {
     "schemas": {
+      "AddDestinationToTripPayload": {
+        "properties": {
+          "destination_id": {
+            "type": "integer",
+            "title": "Destination Id",
+            "description": "Destination ID to add",
+            "example": 3
+          },
+          "target_day": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Target Day",
+            "description": "Target day number to assign stop to",
+            "default": 1,
+            "example": 1
+          },
+          "scheduled_time": {
+            "type": "string",
+            "title": "Scheduled Time",
+            "description": "Custom scheduled time",
+            "default": "10:00 AM",
+            "example": "10:00 AM"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes",
+            "description": "Optional custom notes",
+            "example": "Hire local guide"
+          }
+        },
+        "type": "object",
+        "required": [
+          "destination_id"
+        ],
+        "title": "AddDestinationToTripPayload"
+      },
       "AiTrustAudit": {
         "properties": {
           "overall_trust_score": {
@@ -5331,6 +5742,467 @@
         },
         "type": "object",
         "title": "SearchQueryResponse"
+      },
+      "TripCreatePayload": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Trip title",
+            "default": "My Sri Lanka Ceylon Odyssey",
+            "example": "7-Day Cultural Triangle & Coast"
+          },
+          "start_date": {
+            "type": "string",
+            "title": "Start Date",
+            "description": "Start date YYYY-MM-DD",
+            "default": "2026-10-01",
+            "example": "2026-10-01"
+          },
+          "duration_days": {
+            "type": "integer",
+            "maximum": 30.0,
+            "minimum": 1.0,
+            "title": "Duration Days",
+            "description": "Trip duration in days",
+            "default": 5,
+            "example": 5
+          },
+          "group_size": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Group Size",
+            "description": "Number of travelers in group",
+            "default": 2,
+            "example": 2
+          },
+          "total_budget": {
+            "type": "number",
+            "minimum": 1.0,
+            "title": "Total Budget",
+            "description": "Target total budget in USD",
+            "default": 1200.0,
+            "example": 1200.0
+          },
+          "starting_location": {
+            "type": "string",
+            "title": "Starting Location",
+            "description": "Starting city / origin location",
+            "default": "Colombo",
+            "example": "Colombo"
+          },
+          "destination_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Destination Ids",
+            "description": "Optional pre-selected destination IDs to assign",
+            "example": [
+              1,
+              2,
+              4,
+              5
+            ]
+          },
+          "interests": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Interests",
+            "description": "Travel interest tags",
+            "example": [
+              "heritage",
+              "nature"
+            ]
+          }
+        },
+        "type": "object",
+        "title": "TripCreatePayload"
+      },
+      "TripDayPlan": {
+        "properties": {
+          "day_number": {
+            "type": "integer",
+            "title": "Day Number",
+            "description": "1-indexed day number",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Day title focus",
+            "example": "Day 01: Cultural Heritage"
+          },
+          "date": {
+            "type": "string",
+            "title": "Date",
+            "description": "Date string YYYY-MM-DD",
+            "default": "2026-10-01",
+            "example": "2026-10-01"
+          },
+          "stops": {
+            "items": {
+              "$ref": "#/components/schemas/TripStopItem"
+            },
+            "type": "array",
+            "title": "Stops",
+            "description": "List of scheduled destination stops for the day"
+          },
+          "estimated_travel_time": {
+            "type": "string",
+            "title": "Estimated Travel Time",
+            "description": "Total drive/travel time between stops",
+            "default": "1.5 hrs",
+            "example": "1.5 hrs"
+          },
+          "estimated_travel_distance_km": {
+            "type": "number",
+            "title": "Estimated Travel Distance Km",
+            "description": "Total drive distance in kilometers",
+            "default": 0.0,
+            "example": 45.2
+          },
+          "day_cost": {
+            "type": "number",
+            "title": "Day Cost",
+            "description": "Estimated total cost for the day USD",
+            "default": 0.0,
+            "example": 120.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "day_number",
+          "title"
+        ],
+        "title": "TripDayPlan"
+      },
+      "TripExportResponse": {
+        "properties": {
+          "share_token": {
+            "type": "string",
+            "title": "Share Token",
+            "description": "Unique share token"
+          },
+          "share_url": {
+            "type": "string",
+            "title": "Share Url",
+            "description": "Shareable URL for viewing itinerary"
+          },
+          "trip": {
+            "$ref": "#/components/schemas/TripRecord",
+            "description": "Complete exported trip record"
+          }
+        },
+        "type": "object",
+        "required": [
+          "share_token",
+          "share_url",
+          "trip"
+        ],
+        "title": "TripExportResponse"
+      },
+      "TripRecord": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Unique trip ID",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Trip title"
+          },
+          "start_date": {
+            "type": "string",
+            "title": "Start Date",
+            "description": "Start date YYYY-MM-DD"
+          },
+          "duration_days": {
+            "type": "integer",
+            "title": "Duration Days",
+            "description": "Duration in days"
+          },
+          "group_size": {
+            "type": "integer",
+            "title": "Group Size",
+            "description": "Group size"
+          },
+          "total_budget": {
+            "type": "number",
+            "title": "Total Budget",
+            "description": "Target budget USD"
+          },
+          "starting_location": {
+            "type": "string",
+            "title": "Starting Location",
+            "description": "Starting origin city"
+          },
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/TripDayPlan"
+            },
+            "type": "array",
+            "title": "Days",
+            "description": "Multi-day itinerary schedule"
+          },
+          "total_calculated_cost": {
+            "type": "number",
+            "title": "Total Calculated Cost",
+            "description": "Sum of daily costs + estimated transport/stay"
+          },
+          "per_person_cost": {
+            "type": "number",
+            "title": "Per Person Cost",
+            "description": "Calculated cost per person USD"
+          },
+          "total_travel_distance_km": {
+            "type": "number",
+            "title": "Total Travel Distance Km",
+            "description": "Total travel distance across trip in km"
+          },
+          "budget_fit_status": {
+            "type": "string",
+            "title": "Budget Fit Status",
+            "description": "Budget fit indicator ('Under Budget', 'Exact Fit', 'Over Budget')"
+          },
+          "share_token": {
+            "type": "string",
+            "title": "Share Token",
+            "description": "Unique token for exporting / sharing trip"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At",
+            "description": "ISO creation timestamp"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At",
+            "description": "ISO updated timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "start_date",
+          "duration_days",
+          "group_size",
+          "total_budget",
+          "starting_location",
+          "days",
+          "total_calculated_cost",
+          "per_person_cost",
+          "total_travel_distance_km",
+          "budget_fit_status",
+          "share_token",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "TripRecord"
+      },
+      "TripStopItem": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Unique stop ID",
+            "example": 101
+          },
+          "destination_id": {
+            "type": "integer",
+            "title": "Destination Id",
+            "description": "Target destination ID",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Destination name",
+            "example": "Sigiriya Rock Fortress"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Destination title",
+            "example": "Sigiriya Ancient Rock Fortress"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "Category tag",
+            "example": "heritage"
+          },
+          "district": {
+            "type": "string",
+            "title": "District",
+            "description": "District location",
+            "example": "Matale"
+          },
+          "scheduled_time": {
+            "type": "string",
+            "title": "Scheduled Time",
+            "description": "Scheduled start time for stop",
+            "default": "09:00 AM",
+            "example": "09:00 AM"
+          },
+          "estimated_duration": {
+            "type": "string",
+            "title": "Estimated Duration",
+            "description": "Estimated visit duration",
+            "default": "2.5 hrs",
+            "example": "2.5 hrs"
+          },
+          "visit_cost": {
+            "type": "number",
+            "title": "Visit Cost",
+            "description": "Visit entry ticket cost USD",
+            "default": 0.0,
+            "example": 36.0
+          },
+          "image": {
+            "type": "string",
+            "title": "Image",
+            "description": "Image asset URL",
+            "default": "/stitch_images/discover.png",
+            "example": "/stitch_images/discover.png"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude",
+            "description": "GPS Latitude",
+            "default": 7.957,
+            "example": 7.957
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude",
+            "description": "GPS Longitude",
+            "default": 80.76,
+            "example": 80.76
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes",
+            "description": "Optional custom notes",
+            "example": "Visit at sunrise to avoid crowds"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "destination_id",
+          "name",
+          "title",
+          "category",
+          "district"
+        ],
+        "title": "TripStopItem"
+      },
+      "TripUpdatePayload": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title",
+            "description": "Updated trip title"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date",
+            "description": "Updated start date YYYY-MM-DD"
+          },
+          "duration_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Days",
+            "description": "Updated duration in days"
+          },
+          "group_size": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group Size",
+            "description": "Updated group size"
+          },
+          "total_budget": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Budget",
+            "description": "Updated total budget USD"
+          },
+          "starting_location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Starting Location",
+            "description": "Updated starting location"
+          },
+          "days": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/TripDayPlan"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Days",
+            "description": "Updated daily itinerary plans"
+          }
+        },
+        "type": "object",
+        "title": "TripUpdatePayload"
       },
       "UserRecommendationRequest": {
         "properties": {

@@ -182,3 +182,225 @@ class BudgetRecommendationResponse(BaseModel):
     budget_utilization_pct: float = Field(
         ..., description="Percentage of max_budget consumed"
     )
+
+
+# =========================================================
+# EPIC 15 — TRIP PLANNER & ITINERARY SCHEMAS
+# =========================================================
+
+
+class TripStopItem(BaseModel):
+    id: int = Field(
+        ..., description="Unique stop ID", json_schema_extra={"example": 101}
+    )
+    destination_id: int = Field(
+        ..., description="Target destination ID", json_schema_extra={"example": 1}
+    )
+    name: str = Field(
+        ...,
+        description="Destination name",
+        json_schema_extra={"example": "Sigiriya Rock Fortress"},
+    )
+    title: str = Field(
+        ...,
+        description="Destination title",
+        json_schema_extra={"example": "Sigiriya Ancient Rock Fortress"},
+    )
+    category: str = Field(
+        ..., description="Category tag", json_schema_extra={"example": "heritage"}
+    )
+    district: str = Field(
+        ..., description="District location", json_schema_extra={"example": "Matale"}
+    )
+    scheduled_time: str = Field(
+        "09:00 AM",
+        description="Scheduled start time for stop",
+        json_schema_extra={"example": "09:00 AM"},
+    )
+    estimated_duration: str = Field(
+        "2.5 hrs",
+        description="Estimated visit duration",
+        json_schema_extra={"example": "2.5 hrs"},
+    )
+    visit_cost: float = Field(
+        0.0,
+        description="Visit entry ticket cost USD",
+        json_schema_extra={"example": 36.0},
+    )
+    image: str = Field(
+        "/stitch_images/discover.png",
+        description="Image asset URL",
+        json_schema_extra={"example": "/stitch_images/discover.png"},
+    )
+    latitude: float = Field(
+        7.957, description="GPS Latitude", json_schema_extra={"example": 7.957}
+    )
+    longitude: float = Field(
+        80.760, description="GPS Longitude", json_schema_extra={"example": 80.760}
+    )
+    notes: str | None = Field(
+        None,
+        description="Optional custom notes",
+        json_schema_extra={"example": "Visit at sunrise to avoid crowds"},
+    )
+
+
+class TripDayPlan(BaseModel):
+    day_number: int = Field(
+        ..., description="1-indexed day number", json_schema_extra={"example": 1}
+    )
+    title: str = Field(
+        ...,
+        description="Day title focus",
+        json_schema_extra={"example": "Day 01: Cultural Heritage"},
+    )
+    date: str = Field(
+        "2026-10-01",
+        description="Date string YYYY-MM-DD",
+        json_schema_extra={"example": "2026-10-01"},
+    )
+    stops: list[TripStopItem] = Field(
+        default_factory=list,
+        description="List of scheduled destination stops for the day",
+    )
+    estimated_travel_time: str = Field(
+        "1.5 hrs",
+        description="Total drive/travel time between stops",
+        json_schema_extra={"example": "1.5 hrs"},
+    )
+    estimated_travel_distance_km: float = Field(
+        0.0,
+        description="Total drive distance in kilometers",
+        json_schema_extra={"example": 45.2},
+    )
+    day_cost: float = Field(
+        0.0,
+        description="Estimated total cost for the day USD",
+        json_schema_extra={"example": 120.0},
+    )
+
+
+class TripCreatePayload(BaseModel):
+    title: str = Field(
+        "My Sri Lanka Ceylon Odyssey",
+        description="Trip title",
+        json_schema_extra={"example": "7-Day Cultural Triangle & Coast"},
+    )
+    start_date: str = Field(
+        "2026-10-01",
+        description="Start date YYYY-MM-DD",
+        json_schema_extra={"example": "2026-10-01"},
+    )
+    duration_days: int = Field(
+        5,
+        ge=1,
+        le=30,
+        description="Trip duration in days",
+        json_schema_extra={"example": 5},
+    )
+    group_size: int = Field(
+        2,
+        ge=1,
+        description="Number of travelers in group",
+        json_schema_extra={"example": 2},
+    )
+    total_budget: float = Field(
+        1200.0,
+        ge=1.0,
+        description="Target total budget in USD",
+        json_schema_extra={"example": 1200.0},
+    )
+    starting_location: str = Field(
+        "Colombo",
+        description="Starting city / origin location",
+        json_schema_extra={"example": "Colombo"},
+    )
+    destination_ids: list[int] = Field(
+        default_factory=list,
+        description="Optional pre-selected destination IDs to assign",
+        json_schema_extra={"example": [1, 2, 4, 5]},
+    )
+    interests: list[str] = Field(
+        default_factory=list,
+        description="Travel interest tags",
+        json_schema_extra={"example": ["heritage", "nature"]},
+    )
+
+
+class TripUpdatePayload(BaseModel):
+    title: str | None = Field(None, description="Updated trip title")
+    start_date: str | None = Field(None, description="Updated start date YYYY-MM-DD")
+    duration_days: int | None = Field(None, description="Updated duration in days")
+    group_size: int | None = Field(None, description="Updated group size")
+    total_budget: float | None = Field(None, description="Updated total budget USD")
+    starting_location: str | None = Field(None, description="Updated starting location")
+    days: list[TripDayPlan] | None = Field(
+        None, description="Updated daily itinerary plans"
+    )
+
+
+class TripRecord(BaseModel):
+    id: int = Field(..., description="Unique trip ID", json_schema_extra={"example": 1})
+    title: str = Field(..., description="Trip title")
+    start_date: str = Field(..., description="Start date YYYY-MM-DD")
+    duration_days: int = Field(..., description="Duration in days")
+    group_size: int = Field(..., description="Group size")
+    total_budget: float = Field(..., description="Target budget USD")
+    starting_location: str = Field(..., description="Starting origin city")
+    days: list[TripDayPlan] = Field(..., description="Multi-day itinerary schedule")
+    total_calculated_cost: float = Field(
+        ..., description="Sum of daily costs + estimated transport/stay"
+    )
+    per_person_cost: float = Field(..., description="Calculated cost per person USD")
+    total_travel_distance_km: float = Field(
+        ..., description="Total travel distance across trip in km"
+    )
+    budget_fit_status: str = Field(
+        ...,
+        description="Budget fit indicator ('Under Budget', 'Exact Fit', 'Over Budget')",
+    )
+    share_token: str = Field(
+        ..., description="Unique token for exporting / sharing trip"
+    )
+    created_at: str = Field(..., description="ISO creation timestamp")
+    updated_at: str = Field(..., description="ISO updated timestamp")
+
+
+class AddDestinationToTripPayload(BaseModel):
+    destination_id: int = Field(
+        ..., description="Destination ID to add", json_schema_extra={"example": 3}
+    )
+    target_day: int = Field(
+        1,
+        ge=1,
+        description="Target day number to assign stop to",
+        json_schema_extra={"example": 1},
+    )
+    scheduled_time: str = Field(
+        "10:00 AM",
+        description="Custom scheduled time",
+        json_schema_extra={"example": "10:00 AM"},
+    )
+    notes: str | None = Field(
+        None,
+        description="Optional custom notes",
+        json_schema_extra={"example": "Hire local guide"},
+    )
+
+
+class ReorderStopsPayload(BaseModel):
+    day_number: int = Field(
+        ...,
+        ge=1,
+        description="Day number being reordered",
+        json_schema_extra={"example": 1},
+    )
+    destination_ids: list[int] = Field(
+        ..., description="Ordered list of destination IDs for the day"
+    )
+
+
+class TripExportResponse(BaseModel):
+    share_token: str = Field(..., description="Unique share token")
+    share_url: str = Field(..., description="Shareable URL for viewing itinerary")
+    trip: TripRecord = Field(..., description="Complete exported trip record")
