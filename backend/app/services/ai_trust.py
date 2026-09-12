@@ -1,6 +1,6 @@
 import math
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from app.schemas.contribution import AiTrustAudit, ContributionCreate, ExifMetadata
@@ -215,7 +215,7 @@ class AiTrustEngine:
         # -------------------------------------------------------------
         # Layer 4: Velocity & Duplicate Detection
         # -------------------------------------------------------------
-        now_ts = datetime.now(timezone.utc).timestamp()
+        now_ts = datetime.now(UTC).timestamp()
         author = payload.author_name.strip()
 
         # 4a. Velocity Check (max 3 posts in 2 minutes per author)

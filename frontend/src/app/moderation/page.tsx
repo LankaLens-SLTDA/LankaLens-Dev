@@ -1,10 +1,9 @@
 'use client';
 
 import Navbar from '@/components/layout/Navbar';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import {
-  ContributionRecord,
   ModerationQueueResponse,
   getModerationQueue,
   moderateContribution,
@@ -24,6 +23,117 @@ import {
   Info,
 } from 'lucide-react';
 
+const MOCK_FALLBACK_QUEUE: ModerationQueueResponse = {
+  total_pending: 3,
+  flagged_count: 2,
+  average_trust_score: 0.64,
+  queue: [
+    {
+      id: 2,
+      author_name: 'Traveler Bob',
+      title: 'Sigiriya Rock Climb View',
+      category: 'Cultural',
+      destination_id: 1,
+      description: 'Enjoyed climbing this monolith during my trip to Sri Lanka.',
+      image_url: '/stitch_images/discover.png',
+      alt_text: 'View of Sigiriya rock citadel.',
+      tags: ['#Sigiriya', '#Heritage'],
+      rating: 4.5,
+      latitude: 6.9271,
+      longitude: 79.8612,
+      exif_metadata: {
+        camera: 'Apple iPhone 14 Pro',
+        lens: '24mm f/1.78',
+        timestamp: '2026-09-12 09:15:00',
+        latitude: 6.9271,
+        longitude: 79.8612,
+        width: 4032,
+        height: 3024,
+        has_gps: true,
+      },
+      ai_validation_result: {
+        passed: false,
+        confidence_score: 0.64,
+        boundary_check: 'FAILED (Location 132km away from Sigiriya)',
+        quality_check: 'PASSED',
+        text_safety_check: 'PASSED',
+        wcag_alt_check: 'PASSED',
+        notes: 'Flagged for geographic distance inconsistency.',
+      },
+      ai_trust_audit: {
+        overall_trust_score: 0.64,
+        geo_consistency_score: 0.4,
+        distance_to_destination_km: 132.5,
+        image_authenticity_score: 0.95,
+        is_synthetic_image: false,
+        text_safety_score: 1.0,
+        spam_risk_score: 0.0,
+        duplicate_risk_score: 0.0,
+        ai_fallback_triggered: false,
+        flags: ['GEOGRAPHIC_MISMATCH'],
+        summary_notes:
+          'Uploaded coordinates located in Colombo, 132.5km away from linked Sigiriya destination.',
+      },
+      ai_confidence_score: 0.64,
+      status: 'pending_review',
+      moderation_status: 'pending_review',
+      reputation_points_awarded: 0,
+      created_at: '10 minutes ago',
+    },
+    {
+      id: 3,
+      author_name: 'Digital Artist',
+      title: 'Futuristic View of Ella Gap',
+      category: 'Nature',
+      destination_id: 2,
+      description: 'Hyperrealistic dawn rendering over tea estate hills.',
+      image_url: '/stitch_images/midjourney_ai_generated_render.png',
+      alt_text: 'Misty tea estate render.',
+      tags: ['#Ella', '#AI', '#aigen'],
+      rating: 4.0,
+      latitude: 6.8667,
+      longitude: 81.0465,
+      exif_metadata: {
+        camera: 'Synthetic Generator',
+        lens: 'Digital Lens',
+        timestamp: '2026-09-12 08:00:00',
+        latitude: 6.8667,
+        longitude: 81.0465,
+        width: 3840,
+        height: 2160,
+        has_gps: false,
+      },
+      ai_validation_result: {
+        passed: false,
+        confidence_score: 0.52,
+        boundary_check: 'PASSED',
+        quality_check: 'FAILED (Synthetic patterns detected)',
+        text_safety_check: 'PASSED',
+        wcag_alt_check: 'PASSED',
+        notes: 'Synthetic image markers found.',
+      },
+      ai_trust_audit: {
+        overall_trust_score: 0.52,
+        geo_consistency_score: 0.75,
+        distance_to_destination_km: 1.2,
+        image_authenticity_score: 0.5,
+        is_synthetic_image: true,
+        text_safety_score: 1.0,
+        spam_risk_score: 0.0,
+        duplicate_risk_score: 0.0,
+        ai_fallback_triggered: false,
+        flags: ['SYNTHETIC_IMAGE_PROBABLE'],
+        summary_notes: 'Image url & tags indicate synthetic AI render.',
+      },
+      ai_confidence_score: 0.52,
+      status: 'pending_review',
+      moderation_status: 'pending_review',
+      reputation_points_awarded: 0,
+      created_at: '25 minutes ago',
+    },
+  ],
+};
+
 const RISK_FILTERS = [
   { label: 'All Pending', value: '' },
   { label: '📍 Geo Mismatch', value: 'GEOGRAPHIC_MISMATCH' },
@@ -41,129 +151,31 @@ export default function ModerationPage() {
   const [processingId, setProcessingId] = useState<number | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
 
-  const fetchQueue = async (filterVal?: string) => {
+  const fetchQueue = useCallback(async (filterVal?: string) => {
     setLoading(true);
     const data = await getModerationQueue(filterVal !== undefined ? filterVal : selectedFilter);
     if (data) {
       setQueueData(data);
     } else {
-      // Client fallback mock queue if backend server is offline
-      setQueueData({
-        total_pending: 3,
-        flagged_count: 2,
-        average_trust_score: 0.64,
-        queue: [
-          {
-            id: 2,
-            author_name: 'Traveler Bob',
-            title: 'Sigiriya Rock Climb View',
-            category: 'Cultural',
-            destination_id: 1,
-            description: 'Enjoyed climbing this monolith during my trip to Sri Lanka.',
-            image_url: '/stitch_images/discover.png',
-            alt_text: 'View of Sigiriya rock citadel.',
-            tags: ['#Sigiriya', '#Heritage'],
-            rating: 4.5,
-            latitude: 6.9271,
-            longitude: 79.8612,
-            exif_metadata: {
-              camera: 'Apple iPhone 14 Pro',
-              lens: '24mm f/1.78',
-              timestamp: '2026-09-12 09:15:00',
-              latitude: 6.9271,
-              longitude: 79.8612,
-              width: 4032,
-              height: 3024,
-              has_gps: true,
-            },
-            ai_validation_result: {
-              passed: false,
-              confidence_score: 0.64,
-              boundary_check: 'FAILED (Location 132km away from Sigiriya)',
-              quality_check: 'PASSED',
-              text_safety_check: 'PASSED',
-              wcag_alt_check: 'PASSED',
-              notes: 'Flagged for geographic distance inconsistency.',
-            },
-            ai_trust_audit: {
-              overall_trust_score: 0.64,
-              geo_consistency_score: 0.4,
-              distance_to_destination_km: 132.5,
-              image_authenticity_score: 0.95,
-              is_synthetic_image: false,
-              text_safety_score: 1.0,
-              spam_risk_score: 0.0,
-              duplicate_risk_score: 0.0,
-              ai_fallback_triggered: false,
-              flags: ['GEOGRAPHIC_MISMATCH'],
-              summary_notes:
-                'Uploaded coordinates located in Colombo, 132.5km away from linked Sigiriya destination.',
-            },
-            ai_confidence_score: 0.64,
-            status: 'pending_review',
-            moderation_status: 'pending_review',
-            reputation_points_awarded: 0,
-            created_at: '10 minutes ago',
-          },
-          {
-            id: 3,
-            author_name: 'Digital Artist',
-            title: 'Futuristic View of Ella Gap',
-            category: 'Nature',
-            destination_id: 2,
-            description: 'Hyperrealistic dawn rendering over tea estate hills.',
-            image_url: '/stitch_images/midjourney_ai_generated_render.png',
-            alt_text: 'Misty tea estate render.',
-            tags: ['#Ella', '#AI', '#aigen'],
-            rating: 4.0,
-            latitude: 6.8667,
-            longitude: 81.0465,
-            exif_metadata: {
-              camera: 'Synthetic Generator',
-              lens: 'Digital Lens',
-              timestamp: '2026-09-12 08:00:00',
-              latitude: 6.8667,
-              longitude: 81.0465,
-              width: 3840,
-              height: 2160,
-              has_gps: false,
-            },
-            ai_validation_result: {
-              passed: false,
-              confidence_score: 0.52,
-              boundary_check: 'PASSED',
-              quality_check: 'FAILED (Synthetic patterns detected)',
-              text_safety_check: 'PASSED',
-              wcag_alt_check: 'PASSED',
-              notes: 'Synthetic image markers found.',
-            },
-            ai_trust_audit: {
-              overall_trust_score: 0.52,
-              geo_consistency_score: 0.75,
-              distance_to_destination_km: 1.2,
-              image_authenticity_score: 0.5,
-              is_synthetic_image: true,
-              text_safety_score: 1.0,
-              spam_risk_score: 0.0,
-              duplicate_risk_score: 0.0,
-              ai_fallback_triggered: false,
-              flags: ['SYNTHETIC_IMAGE_PROBABLE'],
-              summary_notes: 'Image url & tags indicate synthetic AI render.',
-            },
-            ai_confidence_score: 0.52,
-            status: 'pending_review',
-            moderation_status: 'pending_review',
-            reputation_points_awarded: 0,
-            created_at: '25 minutes ago',
-          },
-        ],
-      });
+      setQueueData(MOCK_FALLBACK_QUEUE);
     }
     setLoading(false);
-  };
+  }, [selectedFilter]);
 
   useEffect(() => {
-    fetchQueue(selectedFilter);
+    let isMounted = true;
+    getModerationQueue(selectedFilter).then((data) => {
+      if (!isMounted) return;
+      if (data) {
+        setQueueData(data);
+      } else {
+        setQueueData(MOCK_FALLBACK_QUEUE);
+      }
+      setLoading(false);
+    });
+    return () => {
+      isMounted = false;
+    };
   }, [selectedFilter]);
 
   const handleModerateAction = async (id: number, action: 'approve' | 'reject') => {

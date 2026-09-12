@@ -3,7 +3,6 @@ from fastapi import APIRouter, HTTPException, Query, status
 from app.routers.community import IN_MEMORY_POSTS, format_post_record
 from app.routers.destinations import IN_MEMORY_DESTINATIONS
 from app.schemas.contribution import (
-    AiTrustAudit,
     AiValidationResult,
     Contribution,
     ContributionCreate,

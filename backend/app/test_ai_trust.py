@@ -15,7 +15,6 @@ from app.routers.contribution import (
     IN_MEMORY_CONTRIBUTIONS,
     IN_MEMORY_REPORTS,
     get_moderation_queue,
-    get_user_submissions,
     moderate_contribution,
     submit_contribution,
 )
