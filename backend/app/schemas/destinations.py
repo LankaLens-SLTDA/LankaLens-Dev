@@ -1,3 +1,5 @@
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -351,5 +353,70 @@ class MapDiscoveryResponse(BaseModel):
     viewport_bounds: dict[str, float] = Field(
         default_factory=dict,
         description="Viewport boundary coordinates (min_lat, min_lng, max_lat, max_lng)",
+    )
+    query_time_ms: float = Field(0.0, description="Execution duration in milliseconds")
+
+
+class MarketplaceService(BaseModel):
+    id: int = Field(..., description="Unique service entity ID")
+    name: str = Field(..., description="Business or service provider name")
+    category: str = Field(
+        ..., description="Service category: 'hotel', 'vehicle', 'guide'"
+    )
+    rating: float = Field(4.9, description="Average service rating")
+    price_range: str = Field(
+        "$$", description="Price tier indicator ($ / $$ / $$$ / $$$$)"
+    )
+    contact: str = Field("+94 77 123 4567", description="Contact phone or line")
+    image: str = Field("/stitch_images/planner.png", description="Service asset image")
+    verified: bool = Field(True, description="SLTDA or community verified status")
+    location_note: str = Field(
+        "Near destination", description="Proximity location note"
+    )
+
+
+class BudgetBreakdown(BaseModel):
+    entry_fee: float = Field(0.0, description="Ticket or entry cost in USD")
+    avg_meal_cost: float = Field(12.0, description="Estimated average local meal cost")
+    local_transport_cost: float = Field(
+        15.0, description="Estimated local transport cost"
+    )
+    guide_fee_optional: float = Field(
+        25.0, description="Optional local certified guide fee"
+    )
+    total_estimated_day_budget: float = Field(
+        52.0, description="Estimated total single-day budget"
+    )
+
+
+class DestinationDetailsResponse(BaseModel):
+    destination: Destination = Field(
+        ..., description="Primary destination profile record"
+    )
+    community_posts: list[dict[str, Any]] = Field(
+        default_factory=list,
+        description="Approved community posts tagged for destination",
+    )
+    trust_metrics: dict[str, Any] = Field(
+        default_factory=dict,
+        description="AI Trust score breakdown & verification audit",
+    )
+    hotels: list[MarketplaceService] = Field(
+        default_factory=list, description="Nearby recommended hotels & homestays"
+    )
+    vehicles: list[MarketplaceService] = Field(
+        default_factory=list, description="Nearby transport vehicle cooperatives"
+    )
+    guides: list[MarketplaceService] = Field(
+        default_factory=list, description="Nearby SLTDA certified local guides"
+    )
+    nearby_alternatives: list[Destination] = Field(
+        default_factory=list, description="Recommended alternative destinations"
+    )
+    crowd_status: CrowdInfo = Field(
+        default_factory=CrowdInfo, description="Crowd density and peak periods"
+    )
+    budget_breakdown: BudgetBreakdown = Field(
+        default_factory=BudgetBreakdown, description="Itemized budget breakdown"
     )
     query_time_ms: float = Field(0.0, description="Execution duration in milliseconds")
