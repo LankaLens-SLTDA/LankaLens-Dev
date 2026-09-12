@@ -701,3 +701,121 @@ export async function getBudgetRecommendations(
     body: JSON.stringify(payload),
   });
 }
+
+export interface TripStopItem {
+  id: number;
+  destination_id: number;
+  name: string;
+  title: string;
+  category: string;
+  district: string;
+  scheduled_time: string;
+  estimated_duration: string;
+  visit_cost: number;
+  image: string;
+  latitude: number;
+  longitude: number;
+  notes?: string;
+}
+
+export interface TripDayPlan {
+  day_number: number;
+  title: string;
+  date: string;
+  stops: TripStopItem[];
+  estimated_travel_time: string;
+  estimated_travel_distance_km: number;
+  day_cost: number;
+}
+
+export interface TripCreatePayload {
+  title?: string;
+  start_date?: string;
+  duration_days?: number;
+  group_size?: number;
+  total_budget?: number;
+  starting_location?: string;
+  destination_ids?: number[];
+  interests?: string[];
+}
+
+export interface TripRecord {
+  id: number;
+  title: string;
+  start_date: string;
+  duration_days: number;
+  group_size: number;
+  total_budget: number;
+  starting_location: string;
+  days: TripDayPlan[];
+  total_calculated_cost: number;
+  per_person_cost: number;
+  total_travel_distance_km: number;
+  budget_fit_status: string;
+  share_token: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TripExportResponse {
+  share_token: string;
+  share_url: string;
+  trip: TripRecord;
+}
+
+export async function createTrip(payload: TripCreatePayload): Promise<TripRecord | null> {
+  return fetchFromBackend<TripRecord>('/planner/trips', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getUserTrips(): Promise<TripRecord[] | null> {
+  return fetchFromBackend<TripRecord[]>('/planner/trips');
+}
+
+export async function getTripById(id: number): Promise<TripRecord | null> {
+  return fetchFromBackend<TripRecord>(`/planner/trips/${id}`);
+}
+
+export async function updateTrip(
+  id: number,
+  payload: Partial<TripCreatePayload> & { days?: TripDayPlan[] }
+): Promise<TripRecord | null> {
+  return fetchFromBackend<TripRecord>(`/planner/trips/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function addDestinationToTrip(
+  id: number,
+  payload: { destination_id: number; target_day?: number; scheduled_time?: string; notes?: string }
+): Promise<TripRecord | null> {
+  return fetchFromBackend<TripRecord>(`/planner/trips/${id}/add-destination`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function removeDestinationFromTrip(
+  id: number,
+  destId: number,
+  dayNumber?: number
+): Promise<TripRecord | null> {
+  const query = dayNumber ? `?day_number=${dayNumber}` : '';
+  return fetchFromBackend<TripRecord>(`/planner/trips/${id}/destinations/${destId}${query}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function suggestTripItinerary(payload: TripCreatePayload): Promise<TripRecord | null> {
+  return fetchFromBackend<TripRecord>('/planner/trips/suggest', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function exportTrip(id: number): Promise<TripExportResponse | null> {
+  return fetchFromBackend<TripExportResponse>(`/planner/trips/${id}/export`);
+}

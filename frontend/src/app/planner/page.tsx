@@ -8,19 +8,39 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 
 import {
   calculateTripBudget,
   getBudgetRecommendations,
+  getUserTrips,
+  createTrip,
+  removeDestinationFromTrip,
+  addDestinationToTrip,
+  exportTrip,
   BudgetCalculationResponse,
   Destination,
+  TripRecord,
+  TripExportResponse,
 } from '@/lib/api';
 
 export default function PlannerPage() {
   const [activeDay, setActiveDay] = useState<number>(1);
-  const [days, setDays] = useState([
-    { id: 1, title: 'Colombo Arrival & Coastal Heritage', stopsCount: 3, duration: '4.5 hrs' },
-    { id: 2, title: 'Sigiriya Rock Fortress & Dambulla', stopsCount: 4, duration: '6.0 hrs' },
-    { id: 3, title: 'Kandy Temple of Tooth & Tea Gardens', stopsCount: 3, duration: '5.0 hrs' },
-    { id: 4, title: 'Nuwara Eliya High Peaks Train', stopsCount: 2, duration: '3.5 hrs' },
-    { id: 5, title: 'Ella Nine Arch Bridge & Ravana Falls', stopsCount: 4, duration: '6.5 hrs' },
-  ]);
+  const [userTrips, setUserTrips] = useState<TripRecord[]>([]);
+  const [selectedTrip, setSelectedTrip] = useState<TripRecord | null>(null);
+
+  // New Trip Modal / Controls State
+  const [showNewTripModal, setShowNewTripModal] = useState<boolean>(false);
+  const [showShareModal, setShowShareModal] = useState<boolean>(false);
+  const [exportData, setExportData] = useState<TripExportResponse | null>(null);
+
+  const [newTripTitle, setNewTripTitle] = useState<string>('Ceylon Cultural & Wildlife Odyssey');
+  const [newStartDate, setNewStartDate] = useState<string>('2026-10-01');
+  const [newDurationDays, setNewDurationDays] = useState<number>(5);
+  const [newGroupSize, setNewGroupSize] = useState<number>(2);
+  const [newTotalBudget, setNewTotalBudget] = useState<number>(1200);
+  const [newStartLocation, setNewStartLocation] = useState<string>('Colombo');
+
+  // Add Stop Modal State
+  const [showAddStopModal, setShowAddStopModal] = useState<boolean>(false);
+  const [addStopDestId, setAddStopDestId] = useState<number>(1);
+  const [addStopTime, setAddStopTime] = useState<string>('10:00 AM');
+  const [addStopNotes, setAddStopNotes] = useState<string>('Visit early morning');
 
   // Interactive Budget Wizard State
   const [travellersCount, setTravellersCount] = useState<number>(2);
@@ -34,6 +54,23 @@ export default function PlannerPage() {
   const [recommendedDestinations, setRecommendedDestinations] = useState<Destination[]>([]);
   const [loadingBudget, setLoadingBudget] = useState<boolean>(false);
 
+  // Load User Trips
+  useEffect(() => {
+    let isSubscribed = true;
+    async function loadTrips() {
+      const trips = await getUserTrips();
+      if (isSubscribed && trips && trips.length > 0) {
+        setUserTrips(trips);
+        setSelectedTrip(trips[0]);
+      }
+    }
+    loadTrips();
+    return () => {
+      isSubscribed = false;
+    };
+  }, []);
+
+  // Fetch Budget Estimate
   useEffect(() => {
     let isSubscribed = true;
 
@@ -61,7 +98,6 @@ export default function PlannerPage() {
           setRecommendedDestinations(recRes.recommended_destinations);
         }
       } else {
-        // Fallback calculation if backend is unreachable
         const rooms = Math.ceil(travellersCount / 2);
         const acc = rooms * 85 * durationDays;
         const trans = 65 * durationDays;
@@ -139,6 +175,61 @@ export default function PlannerPage() {
     activityLevel,
   ]);
 
+  // Handle Trip Creation
+  const handleCreateTrip = async () => {
+    const created = await createTrip({
+      title: newTripTitle,
+      start_date: newStartDate,
+      duration_days: newDurationDays,
+      group_size: newGroupSize,
+      total_budget: newTotalBudget,
+      starting_location: newStartLocation,
+      destination_ids: [1, 2, 3, 4],
+    });
+
+    if (created) {
+      setUserTrips((prev) => [created, ...prev]);
+      setSelectedTrip(created);
+      setShowNewTripModal(false);
+    }
+  };
+
+  // Handle Removing Destination Stop
+  const handleRemoveStop = async (destId: number) => {
+    if (!selectedTrip) return;
+    const updated = await removeDestinationFromTrip(selectedTrip.id, destId, activeDay);
+    if (updated) {
+      setSelectedTrip(updated);
+      setUserTrips((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
+    }
+  };
+
+  // Handle Adding Destination Stop
+  const handleAddStop = async () => {
+    if (!selectedTrip) return;
+    const updated = await addDestinationToTrip(selectedTrip.id, {
+      destination_id: addStopDestId,
+      target_day: activeDay,
+      scheduled_time: addStopTime,
+      notes: addStopNotes,
+    });
+    if (updated) {
+      setSelectedTrip(updated);
+      setUserTrips((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
+      setShowAddStopModal(false);
+    }
+  };
+
+  // Handle Export / Share Trip
+  const handleShareTrip = async () => {
+    if (!selectedTrip) return;
+    const exp = await exportTrip(selectedTrip.id);
+    if (exp) {
+      setExportData(exp);
+      setShowShareModal(true);
+    }
+  };
+
   const chartData = budgetResponse?.breakdown.map((b) => ({
     name: b.category.split(' ')[0],
     cost: b.amount,
@@ -151,6 +242,9 @@ export default function PlannerPage() {
     { name: 'Misc', cost: 84, color: '#6C757D' },
   ];
 
+  const currentDayObj =
+    selectedTrip?.days.find((d) => d.day_number === activeDay) || selectedTrip?.days[0];
+
   return (
     <div className="min-h-screen bg-surface flex flex-col">
       <Navbar />
@@ -158,21 +252,33 @@ export default function PlannerPage() {
       <main className="w-full pl-20 flex-1">
         <div className="max-w-[1280px] mx-auto w-full px-6 lg:px-12 py-12">
           {/* Header */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-label-sm uppercase tracking-widest text-primary font-semibold">
-                  EPIC 14 — Smart Budget Planner
+                  EPIC 15 — Trip Planner & Itinerary
                 </span>
                 <span className="text-line-200">/</span>
-                <span className="text-label-sm text-on-surface-variant">Ceylon Odyssey</span>
+                <span className="text-label-sm text-on-surface-variant">
+                  Multi-Day Route Builder
+                </span>
               </div>
               <h1 className="font-display-lg text-on-surface">
-                Curate Your Journey & Estimate Costs
+                {selectedTrip ? selectedTrip.title : 'Curate Your Journey'}
               </h1>
             </div>
             <div className="flex items-center gap-3">
-              <button className="px-4 py-2 bg-canvas-50 text-on-surface hover:bg-surface-container rounded-lg text-body-sm font-medium transition-colors flex items-center gap-2 border border-line-200">
+              <button
+                onClick={() => setShowNewTripModal(true)}
+                className="px-4 py-2 bg-secondary text-on-secondary hover:bg-secondary-container rounded-lg text-body-sm font-semibold transition-colors flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[18px]">add_circle</span>
+                <span>Create New Trip</span>
+              </button>
+              <button
+                onClick={handleShareTrip}
+                className="px-4 py-2 bg-canvas-50 text-on-surface hover:bg-surface-container rounded-lg text-body-sm font-medium transition-colors flex items-center gap-2 border border-line-200"
+              >
                 <span className="material-symbols-outlined text-[18px]">share</span>
                 <span>Share Trip</span>
               </button>
@@ -185,6 +291,56 @@ export default function PlannerPage() {
               </Link>
             </div>
           </div>
+
+          {/* Active Trip Selection Dropdown */}
+          {userTrips.length > 0 && (
+            <div className="flex items-center gap-4 bg-canvas-50 p-4 rounded-xl border border-line-200 mb-8">
+              <span className="text-label-sm font-semibold text-on-surface-variant uppercase tracking-wider">
+                Select Active Trip:
+              </span>
+              <select
+                value={selectedTrip?.id || userTrips[0].id}
+                onChange={(e) => {
+                  const found = userTrips.find((t) => t.id === Number(e.target.value));
+                  if (found) {
+                    setSelectedTrip(found);
+                    setActiveDay(1);
+                  }
+                }}
+                className="bg-surface text-on-surface border border-line-200 rounded-lg p-2 text-body-sm font-semibold outline-none focus:ring-2 focus:ring-primary"
+              >
+                {userTrips.map((trip) => (
+                  <option key={trip.id} value={trip.id}>
+                    {trip.title} ({trip.duration_days} Days • ${trip.total_budget} Budget)
+                  </option>
+                ))}
+              </select>
+
+              {selectedTrip && (
+                <div className="flex items-center gap-4 ml-auto text-body-sm">
+                  <span className="text-on-surface-variant font-medium">
+                    Total Drive:{' '}
+                    <strong className="text-on-surface">
+                      {selectedTrip.total_travel_distance_km} km
+                    </strong>
+                  </span>
+                  <span className="text-on-surface-variant font-medium">
+                    Per Person:{' '}
+                    <strong className="text-on-surface">${selectedTrip.per_person_cost}</strong>
+                  </span>
+                  <span
+                    className={`text-label-sm px-2.5 py-0.5 rounded font-bold border ${
+                      selectedTrip.budget_fit_status === 'Under Budget'
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        : 'bg-amber-50 text-amber-700 border-amber-200'
+                    }`}
+                  >
+                    {selectedTrip.budget_fit_status}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Interactive Smart Budget Estimator Control Bar */}
           <div className="bg-canvas-50 p-6 rounded-2xl border border-line-200 shadow-sm mb-8">
@@ -201,7 +357,6 @@ export default function PlannerPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-              {/* Travelers */}
               <div>
                 <label className="text-label-sm font-semibold text-on-surface-variant block mb-1.5">
                   Travelers
@@ -218,7 +373,6 @@ export default function PlannerPage() {
                 </select>
               </div>
 
-              {/* Duration */}
               <div>
                 <label className="text-label-sm font-semibold text-on-surface-variant block mb-1.5">
                   Duration (Days)
@@ -232,11 +386,9 @@ export default function PlannerPage() {
                   <option value={5}>5 Days Classic Route</option>
                   <option value={7}>7 Days Heritage Circuit</option>
                   <option value={10}>10 Days Ceylon Odyssey</option>
-                  <option value={14}>14 Days Complete Island</option>
                 </select>
               </div>
 
-              {/* Accommodation */}
               <div>
                 <label className="text-label-sm font-semibold text-on-surface-variant block mb-1.5">
                   Accommodation
@@ -253,7 +405,6 @@ export default function PlannerPage() {
                 </select>
               </div>
 
-              {/* Transport Mode */}
               <div>
                 <label className="text-label-sm font-semibold text-on-surface-variant block mb-1.5">
                   Transport Mode
@@ -271,7 +422,6 @@ export default function PlannerPage() {
                 </select>
               </div>
 
-              {/* Food Preference */}
               <div>
                 <label className="text-label-sm font-semibold text-on-surface-variant block mb-1.5">
                   Dining Style
@@ -288,7 +438,6 @@ export default function PlannerPage() {
                 </select>
               </div>
 
-              {/* Activity Tier */}
               <div>
                 <label className="text-label-sm font-semibold text-on-surface-variant block mb-1.5">
                   Activity Tier
@@ -308,155 +457,132 @@ export default function PlannerPage() {
 
           {/* Planner Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* Timeline Sidebar (Col Span 3) */}
+            {/* Daily Timeline Sidebar */}
             <div className="lg:col-span-3 flex flex-col gap-2">
               <div className="text-label-sm text-on-surface-variant uppercase tracking-wider mb-2 px-1 font-semibold">
-                Daily Timeline
+                Daily Itinerary Timeline
               </div>
-              {days.map((day) => (
+
+              {selectedTrip?.days.map((day) => (
                 <button
-                  key={day.id}
-                  onClick={() => setActiveDay(day.id)}
+                  key={day.day_number}
+                  onClick={() => setActiveDay(day.day_number)}
                   className={`w-full text-left p-4 rounded-xl transition-all flex items-center justify-between group border ${
-                    activeDay === day.id
+                    activeDay === day.day_number
                       ? 'bg-primary-container text-on-primary border-primary font-semibold shadow-sm'
                       : 'bg-canvas-50 hover:bg-surface-container text-on-surface border-line-200'
                   }`}
                 >
                   <div>
                     <div
-                      className={`text-label-sm uppercase ${activeDay === day.id ? 'opacity-80' : 'text-outline'}`}
+                      className={`text-label-sm uppercase ${activeDay === day.day_number ? 'opacity-80' : 'text-outline'}`}
                     >
-                      Day 0{day.id}
+                      Day 0{day.day_number} • {day.date}
                     </div>
-                    <div className="font-heading-sm mt-0.5">{day.title}</div>
+                    <div className="font-heading-sm mt-0.5 line-clamp-1">{day.title}</div>
+                    <div className="text-label-sm text-outline mt-0.5">
+                      {day.stops.length} stops • {day.estimated_travel_time} drive
+                    </div>
                   </div>
                   <span className="material-symbols-outlined">chevron_right</span>
                 </button>
               ))}
-              <button
-                onClick={() =>
-                  setDays((prev) => [
-                    ...prev,
-                    {
-                      id: prev.length + 1,
-                      title: `Day ${prev.length + 1} Scenic Route`,
-                      stopsCount: 2,
-                      duration: '4.0 hrs',
-                    },
-                  ])
-                }
-                className="w-full py-3 px-4 border border-dashed border-outline-variant hover:border-primary text-primary rounded-xl text-body-sm font-semibold flex items-center justify-center gap-2 mt-2 transition-colors cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[18px]">add</span>
-                <span>Add Day 0{days.length + 1}</span>
-              </button>
             </div>
 
-            {/* Schedule Items Column (Col Span 5) */}
+            {/* Schedule Items Column */}
             <div className="lg:col-span-5 flex flex-col gap-4">
               <div className="flex items-center justify-between px-1">
                 <div>
                   <h2 className="font-heading-md text-on-surface">
-                    Day {activeDay}: {days.find((d) => d.id === activeDay)?.title}
+                    {currentDayObj?.title || `Day ${activeDay} Schedule`}
                   </h2>
                   <p className="text-body-sm text-on-surface-variant mt-0.5">
-                    3 activities scheduled • {days.find((d) => d.id === activeDay)?.duration} total
-                    travel
+                    {currentDayObj?.stops.length || 0} activities scheduled •{' '}
+                    {currentDayObj?.estimated_travel_time || '0 min'} drive (
+                    {currentDayObj?.estimated_travel_distance_km || 0} km)
                   </p>
                 </div>
-                <button className="text-body-sm text-primary font-semibold hover:underline flex items-center gap-1">
+                <button
+                  onClick={() => setShowAddStopModal(true)}
+                  className="text-body-sm text-primary font-semibold hover:underline flex items-center gap-1"
+                >
                   <span className="material-symbols-outlined text-[16px]">add</span>
-                  <span>Add activity</span>
+                  <span>Add Stop</span>
                 </button>
               </div>
 
               <div className="flex flex-col gap-3">
-                {/* Activity Item 1 */}
-                <div className="p-4 bg-canvas-50 rounded-xl relative group transition-all hover:shadow-sm border border-line-200">
-                  <div className="flex items-start gap-4">
-                    <div className="cursor-grab text-outline hover:text-on-surface pt-1">
-                      <span className="material-symbols-outlined">drag_indicator</span>
-                    </div>
-                    <div className="w-16 h-16 rounded-lg relative overflow-hidden bg-surface-container shrink-0">
-                      <Image
-                        src="/stitch_images/discover.png"
-                        alt="Activity thumbnail"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className="text-label-sm text-primary font-bold">
-                          09:00 AM • 2 hrs
-                        </span>
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="p-1 text-outline hover:text-on-surface rounded">
-                            <span className="material-symbols-outlined text-[18px]">edit</span>
-                          </button>
-                          <button className="p-1 text-outline hover:text-coral-500 rounded">
-                            <span className="material-symbols-outlined text-[18px]">delete</span>
-                          </button>
+                {currentDayObj?.stops.map((stop, sIdx) => (
+                  <div key={stop.id || sIdx} className="flex flex-col gap-2">
+                    <div className="p-4 bg-canvas-50 rounded-xl relative group transition-all hover:shadow-sm border border-line-200">
+                      <div className="flex items-start gap-4">
+                        <div className="cursor-grab text-outline hover:text-on-surface pt-1">
+                          <span className="material-symbols-outlined">drag_indicator</span>
+                        </div>
+                        <div className="w-16 h-16 rounded-lg relative overflow-hidden bg-surface-container shrink-0">
+                          <Image
+                            src={stop.image || '/stitch_images/discover.png'}
+                            alt={stop.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <span className="text-label-sm text-primary font-bold">
+                              {stop.scheduled_time} • {stop.estimated_duration}
+                            </span>
+                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button
+                                onClick={() => handleRemoveStop(stop.destination_id)}
+                                className="p-1 text-outline hover:text-coral-500 rounded"
+                                title="Remove stop"
+                              >
+                                <span className="material-symbols-outlined text-[18px]">
+                                  delete
+                                </span>
+                              </button>
+                            </div>
+                          </div>
+                          <h3 className="font-heading-sm text-on-surface truncate mt-0.5">
+                            {stop.name}
+                          </h3>
+                          <p className="text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">
+                            {stop.notes || `${stop.district} • Entry Fee: $${stop.visit_cost}`}
+                          </p>
                         </div>
                       </div>
-                      <h3 className="font-heading-sm text-on-surface truncate mt-0.5">
-                        Heritage Walk & Monument Inspection
-                      </h3>
-                      <p className="text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">
-                        Stroll through colonial corridors & archaeological landmarks.
-                      </p>
                     </div>
-                  </div>
-                </div>
 
-                <div className="flex items-center gap-3 px-8 py-1 text-body-sm text-outline">
-                  <div className="h-4 w-px bg-line-200 ml-2" />
-                  <span className="material-symbols-outlined text-[16px]">directions_car</span>
-                  <span>Auto-suggest: 35 min drive via Central Highway (18.4 km)</span>
-                </div>
-
-                {/* Activity Item 2 */}
-                <div className="p-4 bg-canvas-50 rounded-xl relative group transition-all hover:shadow-sm border border-line-200">
-                  <div className="flex items-start gap-4">
-                    <div className="cursor-grab text-outline hover:text-on-surface pt-1">
-                      <span className="material-symbols-outlined">drag_indicator</span>
-                    </div>
-                    <div className="w-16 h-16 rounded-lg relative overflow-hidden bg-surface-container shrink-0">
-                      <Image
-                        src="/stitch_images/planner.png"
-                        alt="Activity thumbnail"
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className="text-label-sm text-primary font-bold">
-                          01:30 PM • 3 hrs
+                    {sIdx < currentDayObj.stops.length - 1 && (
+                      <div className="flex items-center gap-3 px-8 py-1 text-body-sm text-outline">
+                        <div className="h-4 w-px bg-line-200 ml-2" />
+                        <span className="material-symbols-outlined text-[16px]">
+                          directions_car
                         </span>
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="p-1 text-outline hover:text-on-surface rounded">
-                            <span className="material-symbols-outlined text-[18px]">edit</span>
-                          </button>
-                          <button className="p-1 text-outline hover:text-coral-500 rounded">
-                            <span className="material-symbols-outlined text-[18px]">delete</span>
-                          </button>
-                        </div>
+                        <span>Auto Drive Route: ~25 min scenic drive (14.2 km)</span>
                       </div>
-                      <h3 className="font-heading-sm text-on-surface truncate mt-0.5">
-                        Spice Tasting & Local Market Trail
-                      </h3>
-                      <p className="text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">
-                        Immersive aromatic walk through historical trading alleys.
-                      </p>
-                    </div>
+                    )}
                   </div>
-                </div>
+                ))}
+
+                {(!currentDayObj?.stops || currentDayObj.stops.length === 0) && (
+                  <div className="p-8 text-center bg-canvas-50 rounded-xl border border-dashed border-line-200">
+                    <p className="text-body-sm text-on-surface-variant mb-2">
+                      No destination stops scheduled for Day {activeDay} yet.
+                    </p>
+                    <button
+                      onClick={() => setShowAddStopModal(true)}
+                      className="px-4 py-2 bg-primary text-on-primary rounded-lg text-body-sm font-semibold"
+                    >
+                      + Add First Stop
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Budget & Analytics Sidebar (Col Span 4) */}
+            {/* Budget & Analytics Sidebar */}
             <div className="lg:col-span-4 flex flex-col gap-6">
               {/* Itemized Budget Card */}
               <div className="bg-canvas-50 p-6 rounded-2xl border border-line-200 shadow-sm">
@@ -494,7 +620,6 @@ export default function PlannerPage() {
                   </div>
                 )}
 
-                {/* 5-Category Itemized Breakdown List */}
                 <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-line-200">
                   {budgetResponse?.breakdown.map((b, i) => (
                     <div key={i} className="flex flex-col gap-0.5 text-body-sm">
@@ -534,9 +659,8 @@ export default function PlannerPage() {
                   </div>
                   <div className="flex flex-col gap-3">
                     {recommendedDestinations.slice(0, 3).map((dest) => (
-                      <Link
+                      <div
                         key={dest.id}
-                        href={`/destinations/${dest.id}`}
                         className="flex items-center justify-between p-2.5 bg-surface hover:bg-surface-container rounded-xl transition-all border border-line-200 group"
                       >
                         <div className="flex items-center gap-3">
@@ -549,7 +673,7 @@ export default function PlannerPage() {
                             />
                           </div>
                           <div>
-                            <div className="font-heading-sm text-on-surface text-body-sm group-hover:text-primary transition-colors">
+                            <div className="font-heading-sm text-on-surface text-body-sm">
                               {dest.name}
                             </div>
                             <div className="text-label-sm text-on-surface-variant">
@@ -557,34 +681,236 @@ export default function PlannerPage() {
                             </div>
                           </div>
                         </div>
-                        <span className="text-label-sm font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                          ${dest.baseline_cost} Entry
-                        </span>
-                      </Link>
+                        <button
+                          onClick={() => {
+                            setAddStopDestId(dest.id);
+                            setShowAddStopModal(true);
+                          }}
+                          className="text-label-sm font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded border border-emerald-200 hover:bg-emerald-100"
+                        >
+                          + Add
+                        </button>
+                      </div>
                     ))}
                   </div>
                 </div>
               )}
-
-              {/* Sri Lanka Travel Savings Tips */}
-              <div className="bg-primary text-on-primary p-6 rounded-2xl shadow-md flex flex-col gap-3">
-                <div className="flex items-center gap-2 text-sky-300 font-label-sm font-semibold">
-                  <span className="material-symbols-outlined text-[18px]">savings</span>
-                  <span>Sri Lanka Travel Savings Tips</span>
-                </div>
-                <ul className="text-body-sm text-on-primary-container space-y-2 list-disc pl-4 leading-relaxed">
-                  {budgetResponse?.savings_tips.map((tip, idx) => <li key={idx}>{tip}</li>) || (
-                    <>
-                      <li>Book Sri Lanka Railways Observation Car 30 days in advance.</li>
-                      <li>Hire SLTDA-certified local guides directly at site entrances.</li>
-                    </>
-                  )}
-                </ul>
-              </div>
             </div>
           </div>
         </div>
       </main>
+
+      {/* New Trip Creation Modal */}
+      {showNewTripModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-canvas-50 p-6 rounded-2xl max-w-md w-full border border-line-200 shadow-xl">
+            <h3 className="font-heading-md text-on-surface mb-4">Create New Multi-Day Trip</h3>
+
+            <div className="flex flex-col gap-3 mb-6">
+              <div>
+                <label className="text-label-sm font-semibold text-on-surface-variant block mb-1">
+                  Trip Title
+                </label>
+                <input
+                  type="text"
+                  value={newTripTitle}
+                  onChange={(e) => setNewTripTitle(e.target.value)}
+                  className="w-full bg-surface border border-line-200 rounded-lg p-2 text-body-sm outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-label-sm font-semibold text-on-surface-variant block mb-1">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    value={newStartDate}
+                    onChange={(e) => setNewStartDate(e.target.value)}
+                    className="w-full bg-surface border border-line-200 rounded-lg p-2 text-body-sm outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-label-sm font-semibold text-on-surface-variant block mb-1">
+                    Duration (Days)
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={30}
+                    value={newDurationDays}
+                    onChange={(e) => setNewDurationDays(Number(e.target.value))}
+                    className="w-full bg-surface border border-line-200 rounded-lg p-2 text-body-sm outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-label-sm font-semibold text-on-surface-variant block mb-1">
+                    Group Size
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={newGroupSize}
+                    onChange={(e) => setNewGroupSize(Number(e.target.value))}
+                    className="w-full bg-surface border border-line-200 rounded-lg p-2 text-body-sm outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-label-sm font-semibold text-on-surface-variant block mb-1">
+                    Total Budget ($)
+                  </label>
+                  <input
+                    type="number"
+                    value={newTotalBudget}
+                    onChange={(e) => setNewTotalBudget(Number(e.target.value))}
+                    className="w-full bg-surface border border-line-200 rounded-lg p-2 text-body-sm outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-label-sm font-semibold text-on-surface-variant block mb-1">
+                  Starting Origin City
+                </label>
+                <input
+                  type="text"
+                  value={newStartLocation}
+                  onChange={(e) => setNewStartLocation(e.target.value)}
+                  className="w-full bg-surface border border-line-200 rounded-lg p-2 text-body-sm outline-none"
+                  placeholder="e.g. Colombo, Kandy, Negombo"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => setShowNewTripModal(false)}
+                className="px-4 py-2 bg-surface text-on-surface hover:bg-surface-container rounded-lg text-body-sm font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateTrip}
+                className="px-4 py-2 bg-primary text-on-primary rounded-lg text-body-sm font-semibold"
+              >
+                Create Trip
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Stop Modal */}
+      {showAddStopModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-canvas-50 p-6 rounded-2xl max-w-md w-full border border-line-200 shadow-xl">
+            <h3 className="font-heading-md text-on-surface mb-4">Add Stop to Day {activeDay}</h3>
+
+            <div className="flex flex-col gap-3 mb-6">
+              <div>
+                <label className="text-label-sm font-semibold text-on-surface-variant block mb-1">
+                  Select Destination
+                </label>
+                <select
+                  value={addStopDestId}
+                  onChange={(e) => setAddStopDestId(Number(e.target.value))}
+                  className="w-full bg-surface border border-line-200 rounded-lg p-2 text-body-sm outline-none"
+                >
+                  <option value={1}>Sigiriya Ancient Rock Fortress</option>
+                  <option value={2}>Ella Nine Arch Bridge & Demodara</option>
+                  <option value={3}>Galle Dutch Fort Ramparts</option>
+                  <option value={4}>Dambulla Royal Cave Temple</option>
+                  <option value={5}>Yala National Park Safari</option>
+                  <option value={6}>Kandy Temple of Tooth</option>
+                  <option value={7}>Horton Plains World&apos;s End</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-label-sm font-semibold text-on-surface-variant block mb-1">
+                  Scheduled Time
+                </label>
+                <input
+                  type="text"
+                  value={addStopTime}
+                  onChange={(e) => setAddStopTime(e.target.value)}
+                  className="w-full bg-surface border border-line-200 rounded-lg p-2 text-body-sm outline-none"
+                  placeholder="09:00 AM"
+                />
+              </div>
+
+              <div>
+                <label className="text-label-sm font-semibold text-on-surface-variant block mb-1">
+                  Custom Notes
+                </label>
+                <input
+                  type="text"
+                  value={addStopNotes}
+                  onChange={(e) => setAddStopNotes(e.target.value)}
+                  className="w-full bg-surface border border-line-200 rounded-lg p-2 text-body-sm outline-none"
+                  placeholder="e.g. Hire certified guide at entrance"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => setShowAddStopModal(false)}
+                className="px-4 py-2 bg-surface text-on-surface rounded-lg text-body-sm font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddStop}
+                className="px-4 py-2 bg-primary text-on-primary rounded-lg text-body-sm font-semibold"
+              >
+                Add Stop
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Share / Export Modal */}
+      {showShareModal && exportData && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-canvas-50 p-6 rounded-2xl max-w-md w-full border border-line-200 shadow-xl">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="material-symbols-outlined text-primary">share</span>
+              <h3 className="font-heading-md text-on-surface">Share & Export Trip</h3>
+            </div>
+            <p className="text-body-sm text-on-surface-variant mb-4">
+              Your trip payload has been exported. Copy your unique shareable token or link below:
+            </p>
+
+            <div className="bg-surface p-3 rounded-xl border border-line-200 font-mono text-xs text-on-surface break-all mb-4">
+              {exportData.share_url}
+            </div>
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(exportData.share_url);
+                  alert('Share URL copied to clipboard!');
+                }}
+                className="px-4 py-2 bg-secondary text-on-secondary rounded-lg text-body-sm font-semibold"
+              >
+                Copy Link
+              </button>
+              <button
+                onClick={() => setShowShareModal(false)}
+                className="px-4 py-2 bg-primary text-on-primary rounded-lg text-body-sm font-semibold"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
