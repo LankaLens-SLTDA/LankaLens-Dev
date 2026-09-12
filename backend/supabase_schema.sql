@@ -199,3 +199,47 @@ CREATE POLICY "Public posts are viewable by everyone" ON public.community_posts 
 
 CREATE POLICY "Authenticated users can create hazard reports" ON public.hazard_reports FOR INSERT WITH CHECK (auth.role() = 'authenticated' OR true);
 CREATE POLICY "Authenticated users can create posts" ON public.community_posts FOR INSERT WITH CHECK (auth.role() = 'authenticated' OR true);
+
+-- 5. CONTRIBUTIONS PIPELINE TABLE
+CREATE TABLE IF NOT EXISTS public.contributions (
+    id BIGSERIAL PRIMARY KEY,
+    author_name VARCHAR(100) NOT NULL DEFAULT 'Cartographer Explorer',
+    title VARCHAR(255) NOT NULL,
+    category VARCHAR(100) NOT NULL DEFAULT 'Cultural',
+    destination_id BIGINT REFERENCES public.destinations(id) ON DELETE SET NULL,
+    description TEXT NOT NULL,
+    image_url TEXT,
+    alt_text TEXT NOT NULL,
+    tags TEXT[] DEFAULT '{}',
+    rating NUMERIC(3, 2) DEFAULT 5.0,
+    latitude NUMERIC(10, 7),
+    longitude NUMERIC(10, 7),
+    exif_metadata JSONB DEFAULT '{}'::jsonb,
+    ai_validation_result JSONB DEFAULT '{}'::jsonb,
+    ai_confidence_score NUMERIC(3, 2) DEFAULT 0.90,
+    status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'ai_validating', 'approved', 'rejected', 'flagged'
+    moderation_status VARCHAR(50) DEFAULT 'pending_review', -- 'pending_review', 'approved', 'rejected'
+    reputation_points_awarded INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 6. COMMUNITY REPORTS & FLAGGING TABLE
+CREATE TABLE IF NOT EXISTS public.reports (
+    id BIGSERIAL PRIMARY KEY,
+    target_type VARCHAR(50) NOT NULL, -- 'contribution', 'post', 'comment'
+    target_id BIGINT NOT NULL,
+    reporter_name VARCHAR(100) DEFAULT 'Anonymous Explorer',
+    reason VARCHAR(100) NOT NULL, -- 'spam', 'inaccurate_gps', 'inappropriate', 'copyright'
+    description TEXT,
+    status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'resolved', 'dismissed'
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.contributions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.reports ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public contributions are viewable by everyone" ON public.contributions FOR SELECT USING (status = 'approved');
+CREATE POLICY "Users can create contributions" ON public.contributions FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users can create reports" ON public.reports FOR INSERT WITH CHECK (true);
+

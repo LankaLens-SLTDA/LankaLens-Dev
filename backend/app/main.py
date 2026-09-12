@@ -2,7 +2,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import ai_assistant, community, destinations, planner, sustainability
+from app.routers import (
+    ai_assistant,
+    community,
+    contribution,
+    destinations,
+    planner,
+    sustainability,
+)
 
 tags_metadata = [
     {
@@ -29,6 +36,10 @@ tags_metadata = [
         "name": "Community Feed",
         "description": "Verified traveler posts, eco contributions, and local explorer stories.",
     },
+    {
+        "name": "Contribution Pipeline & Moderation",
+        "description": "Photo submission pipeline, EXIF metadata extraction, AI validation guard, and content moderation.",
+    },
 ]
 
 app = FastAPI(
@@ -36,7 +47,7 @@ app = FastAPI(
     description=(
         "**LankaLens API Platform**: Precision Cartography & Intelligent Sustainable Tourism API for Sri Lanka.\n\n"
         "Provides REST endpoints for exploring destinations, building dynamic multi-day itineraries, "
-        "interacting with AI assistants, tracking real-time site crowd density, and reporting eco hazards."
+        "interacting with AI assistants, tracking real-time site crowd density, and submitting verified contributions."
     ),
     version="1.0.0",
     openapi_tags=tags_metadata,
@@ -74,6 +85,7 @@ app.include_router(planner.router)
 app.include_router(ai_assistant.router)
 app.include_router(sustainability.router)
 app.include_router(community.router)
+app.include_router(contribution.router)
 
 
 @app.get(
