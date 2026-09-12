@@ -7,8 +7,10 @@ from app.schemas.destinations import (
     DestinationListResponse,
     DestinationResponse,
     DestinationUpdate,
+    SearchQueryResponse,
 )
 from app.seed_destinations import SEED_DATASETS
+from app.services.search_service import SearchService
 from app.supabase_client import supabase
 
 router = APIRouter(prefix="/api/destinations", tags=["Destinations"])
@@ -212,6 +214,92 @@ def get_destinations(
         results = [d for d in results if d["rating"] >= min_rating]
 
     return {"destinations": results, "total": len(results)}
+
+
+@router.get(
+    "/search",
+    response_model=SearchQueryResponse,
+    summary="Fast destination search & geographic discovery",
+    description=(
+        "Advanced multi-attribute destination search with activity filters, "
+        "crowd level density, max budget, PostGIS geographic radius proximity search, "
+        "weighted relevance ranking, query caching, and pagination."
+    ),
+)
+def search_destinations_api(
+    q: str | None = Query(
+        None,
+        description="Free text search query (matches title, name, activities, description)",
+    ),
+    activity: str | None = Query(
+        None,
+        description="Activity tag filter (e.g. 'Hiking', 'Photography', 'Train Spotting')",
+    ),
+    category: str | None = Query(
+        None,
+        description="Category filter (e.g. heritage, nature, beach, adventure, wildlife)",
+    ),
+    district: str | None = Query(
+        None, description="District filter (e.g. Matale, Badulla, Galle)"
+    ),
+    province: str | None = Query(
+        None, description="Province filter (e.g. Central, Uva, Southern)"
+    ),
+    crowd_level: str | None = Query(
+        None, description="Crowd density filter ('Low', 'Moderate', 'High')"
+    ),
+    max_cost: float | None = Query(None, description="Maximum baseline visit cost USD"),
+    min_cost: float | None = Query(None, description="Minimum baseline visit cost USD"),
+    min_rating: float | None = Query(None, description="Minimum rating score"),
+    lat: float | None = Query(
+        None, description="GPS Latitude coordinate for spatial proximity search"
+    ),
+    lng: float | None = Query(
+        None, description="GPS Longitude coordinate for spatial proximity search"
+    ),
+    radius_km: float | None = Query(
+        None, description="Maximum proximity radius in kilometers"
+    ),
+    limit: int = Query(20, description="Items limit per page"),
+    offset: int = Query(0, description="Items offset for pagination"),
+):
+    """Execute multi-attribute destination search and discovery."""
+    q = q if isinstance(q, str) else None
+    activity = activity if isinstance(activity, str) else None
+    category = category if isinstance(category, str) else None
+    district = district if isinstance(district, str) else None
+    province = province if isinstance(province, str) else None
+    crowd_level = crowd_level if isinstance(crowd_level, str) else None
+    max_cost = max_cost if isinstance(max_cost, (int, float)) else None
+    min_cost = min_cost if isinstance(min_cost, (int, float)) else None
+    min_rating = min_rating if isinstance(min_rating, (int, float)) else None
+    lat = lat if isinstance(lat, (int, float)) else None
+    lng = lng if isinstance(lng, (int, float)) else None
+    radius_km = radius_km if isinstance(radius_km, (int, float)) else None
+
+    limit = limit if isinstance(limit, int) else 20
+    offset = offset if isinstance(offset, int) else 0
+
+    raw_dataset = [format_destination_record(d) for d in IN_MEMORY_DESTINATIONS]
+
+    res = SearchService.search_destinations(
+        q=q,
+        activity=activity,
+        category=category,
+        district=district,
+        province=province,
+        crowd_level=crowd_level,
+        max_cost=max_cost,
+        min_cost=min_cost,
+        min_rating=min_rating,
+        lat=lat,
+        lng=lng,
+        radius_km=radius_km,
+        limit=limit,
+        offset=offset,
+        dataset=raw_dataset,
+    )
+    return res
 
 
 @router.get(
