@@ -638,3 +638,66 @@ export async function getPersonalizedRecommendations(
     body: JSON.stringify(payload),
   });
 }
+
+export interface CostCategoryBreakdown {
+  category: string;
+  amount: number;
+  percentage: number;
+  color: string;
+  description: string;
+}
+
+export interface BudgetCalculationRequest {
+  travellers_count?: number;
+  duration_days?: number;
+  accommodation_style?: string;
+  transport_mode?: string;
+  food_preference?: string;
+  activity_level?: string;
+  destination_ids?: number[];
+  currency?: string;
+}
+
+export interface BudgetCalculationResponse {
+  total_budget: number;
+  per_person_budget: number;
+  per_day_budget: number;
+  currency: string;
+  breakdown: CostCategoryBreakdown[];
+  travel_style_tier: string;
+  calculation_model: string;
+  savings_tips: string[];
+  query_time_ms: number;
+}
+
+export interface BudgetRecommendationRequest {
+  max_budget: number;
+  travellers_count?: number;
+  duration_days?: number;
+  interests?: string[];
+}
+
+export interface BudgetRecommendationResponse {
+  recommended_destinations: Destination[];
+  estimated_trip_cost: number;
+  budget_fit_status: string;
+  budget_utilization_pct: number;
+}
+
+export async function calculateTripBudget(
+  payload: BudgetCalculationRequest
+): Promise<BudgetCalculationResponse | null> {
+  return fetchFromBackend<BudgetCalculationResponse>('/planner/calculate-budget', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getBudgetRecommendations(
+  payload: BudgetRecommendationRequest
+): Promise<BudgetRecommendationResponse | null> {
+  return fetchFromBackend<BudgetRecommendationResponse>('/planner/budget-recommendations', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}

@@ -222,7 +222,7 @@ def get_user_submissions(
     status_filter: str | None = Query(
         None,
         description="Filter by status ('approved', 'pending_review', 'rejected', 'flagged')",
-    )
+    ),
 ):
     """Retrieve contribution history."""
     status_filter = status_filter if isinstance(status_filter, str) else None
@@ -248,7 +248,7 @@ def get_moderation_queue(
     flag_filter: str | None = Query(
         None,
         description="Optional risk flag filter (e.g. 'GEOGRAPHIC_MISMATCH', 'SYNTHETIC_IMAGE_PROBABLE', 'SUSPICIOUS_SPAM')",
-    )
+    ),
 ):
     """Retrieve moderation queue with summary stats."""
     flag_filter = flag_filter if isinstance(flag_filter, str) else None

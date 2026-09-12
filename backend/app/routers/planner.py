@@ -1,8 +1,20 @@
 from fastapi import APIRouter
 
-from app.schemas.planner import PlannerOverview
+from app.schemas.planner import (
+    BudgetCalculationRequest,
+    BudgetCalculationResponse,
+    BudgetRecommendationRequest,
+    BudgetRecommendationResponse,
+    PlannerOverview,
+)
+from app.services.budget_service import (
+    DeterministicBudgetEstimator,
+    MLBudgetPricingAdapter,
+)
 
 router = APIRouter(prefix="/api/planner", tags=["Planner"])
+
+budget_estimator = MLBudgetPricingAdapter(DeterministicBudgetEstimator())
 
 
 @router.get(
@@ -13,6 +25,23 @@ router = APIRouter(prefix="/api/planner", tags=["Planner"])
 )
 def get_planner_data():
     """Retrieve planner itinerary overview and budget breakdown."""
+    # Compute baseline budget using estimator service for standard 5-day trip
+    req = BudgetCalculationRequest(
+        travellers_count=2,
+        duration_days=5,
+        accommodation_style="mid_range",
+        transport_mode="private_car",
+        food_preference="mid_tier_restaurants",
+        activity_level="moderate_cultural",
+    )
+    calc_res = budget_estimator.calculate_trip_budget(req)
+
+    # Convert breakdown into UI BudgetItem format
+    ui_breakdown = [
+        {"name": item.category, "cost": item.amount, "color": item.color}
+        for item in calc_res.breakdown
+    ]
+
     return {
         "days": [
             {
@@ -46,11 +75,33 @@ def get_planner_data():
                 "duration": "6.5 hrs",
             },
         ],
-        "totalBudget": 1160.0,
-        "budgetBreakdown": [
-            {"name": "Stay", "cost": 450.0, "color": "#0F5C56"},
-            {"name": "Transport", "cost": 220.0, "color": "#8FD3D6"},
-            {"name": "Activities", "cost": 310.0, "color": "#E08A2C"},
-            {"name": "Dining", "cost": 180.0, "color": "#5E2E19"},
-        ],
+        "totalBudget": calc_res.total_budget,
+        "budgetBreakdown": ui_breakdown,
     }
+
+
+@router.post(
+    "/calculate-budget",
+    response_model=BudgetCalculationResponse,
+    summary="Calculate Itemized Trip Cost Estimate",
+    description=(
+        "Calculates itemized 5-category trip cost breakdown (Accommodation, Transport, Food, "
+        "Activities, Miscellaneous) based on travelers, duration, accommodation tier, "
+        "transportation mode, dining preference, and activity level."
+    ),
+)
+def calculate_trip_budget(payload: BudgetCalculationRequest):
+    """Execute trip cost calculation."""
+    return budget_estimator.calculate_trip_budget(payload)
+
+
+@router.post(
+    "/budget-recommendations",
+    response_model=BudgetRecommendationResponse,
+    summary="Get Budget-Fitted Destination Recommendations",
+    description="Surfaces destinations matching user max spend limit and calculates estimated trip utilization.",
+)
+def get_budget_recommendations(payload: BudgetRecommendationRequest):
+    """Retrieve destinations fitting within user budget constraints."""
+    estimator = DeterministicBudgetEstimator()
+    return estimator.get_budget_recommendations(payload)

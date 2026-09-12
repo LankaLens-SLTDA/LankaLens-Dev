@@ -1080,6 +1080,90 @@
         }
       }
     },
+    "/api/planner/calculate-budget": {
+      "post": {
+        "tags": [
+          "Planner"
+        ],
+        "summary": "Calculate Itemized Trip Cost Estimate",
+        "description": "Calculates itemized 5-category trip cost breakdown (Accommodation, Transport, Food, Activities, Miscellaneous) based on travelers, duration, accommodation tier, transportation mode, dining preference, and activity level.",
+        "operationId": "calculate_trip_budget_api_planner_calculate_budget_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BudgetCalculationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BudgetCalculationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/planner/budget-recommendations": {
+      "post": {
+        "tags": [
+          "Planner"
+        ],
+        "summary": "Get Budget-Fitted Destination Recommendations",
+        "description": "Surfaces destinations matching user max spend limit and calculates estimated trip utilization.",
+        "operationId": "get_budget_recommendations_api_planner_budget_recommendations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BudgetRecommendationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BudgetRecommendationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/ai-assistant/query": {
       "post": {
         "tags": [
@@ -2355,6 +2439,155 @@
         "type": "object",
         "title": "BudgetBreakdown"
       },
+      "BudgetCalculationRequest": {
+        "properties": {
+          "travellers_count": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Travellers Count",
+            "description": "Number of travelers in the trip",
+            "default": 1,
+            "example": 2
+          },
+          "duration_days": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Duration Days",
+            "description": "Trip duration in days",
+            "default": 5,
+            "example": 7
+          },
+          "accommodation_style": {
+            "type": "string",
+            "title": "Accommodation Style",
+            "description": "Accommodation tier ('budget', 'mid_range', 'luxury', 'homestay')",
+            "default": "mid_range",
+            "example": "mid_range"
+          },
+          "transport_mode": {
+            "type": "string",
+            "title": "Transport Mode",
+            "description": "Primary transportation ('tuk_tuk', 'private_car', 'public_train', 'express_bus', 'flight')",
+            "default": "private_car",
+            "example": "private_car"
+          },
+          "food_preference": {
+            "type": "string",
+            "title": "Food Preference",
+            "description": "Dining preference ('local_eateries', 'mid_tier_restaurants', 'fine_dining', 'self_catering')",
+            "default": "mid_tier_restaurants",
+            "example": "mid_tier_restaurants"
+          },
+          "activity_level": {
+            "type": "string",
+            "title": "Activity Level",
+            "description": "Activity tier ('budget_free', 'moderate_cultural', 'all_inclusive_safari')",
+            "default": "moderate_cultural",
+            "example": "moderate_cultural"
+          },
+          "destination_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Ids",
+            "description": "Optional list of target destination IDs to factor exact ticket costs into activities",
+            "example": [
+              1,
+              2,
+              4
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "description": "Currency symbol/code",
+            "default": "USD",
+            "example": "USD"
+          }
+        },
+        "type": "object",
+        "title": "BudgetCalculationRequest"
+      },
+      "BudgetCalculationResponse": {
+        "properties": {
+          "total_budget": {
+            "type": "number",
+            "title": "Total Budget",
+            "description": "Total estimated trip budget in USD",
+            "example": 875.0
+          },
+          "per_person_budget": {
+            "type": "number",
+            "title": "Per Person Budget",
+            "description": "Estimated cost per person",
+            "example": 437.5
+          },
+          "per_day_budget": {
+            "type": "number",
+            "title": "Per Day Budget",
+            "description": "Estimated cost per day",
+            "example": 175.0
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "description": "Target currency code",
+            "default": "USD",
+            "example": "USD"
+          },
+          "breakdown": {
+            "items": {
+              "$ref": "#/components/schemas/CostCategoryBreakdown"
+            },
+            "type": "array",
+            "title": "Breakdown",
+            "description": "Itemized 5-category budget allocation"
+          },
+          "travel_style_tier": {
+            "type": "string",
+            "title": "Travel Style Tier",
+            "description": "Computed travel tier ('Budget Comfort', 'Mid-Range Heritage', 'Luxury Ceylon')"
+          },
+          "calculation_model": {
+            "type": "string",
+            "title": "Calculation Model",
+            "description": "Algorithm used ('Deterministic Multi-Factor Engine (Baseline Rates)')"
+          },
+          "savings_tips": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Savings Tips",
+            "description": "Contextual money-saving recommendations for Sri Lanka travel"
+          },
+          "query_time_ms": {
+            "type": "number",
+            "title": "Query Time Ms",
+            "description": "Execution calculation latency in ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_budget",
+          "per_person_budget",
+          "per_day_budget",
+          "breakdown",
+          "travel_style_tier",
+          "calculation_model",
+          "savings_tips",
+          "query_time_ms"
+        ],
+        "title": "BudgetCalculationResponse"
+      },
       "BudgetItem": {
         "properties": {
           "name": {
@@ -2383,6 +2616,82 @@
           "color"
         ],
         "title": "BudgetItem"
+      },
+      "BudgetRecommendationRequest": {
+        "properties": {
+          "max_budget": {
+            "type": "number",
+            "minimum": 1.0,
+            "title": "Max Budget",
+            "description": "Maximum total trip budget in USD",
+            "example": 1000.0
+          },
+          "travellers_count": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Travellers Count",
+            "description": "Number of travelers",
+            "default": 1,
+            "example": 2
+          },
+          "duration_days": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Duration Days",
+            "description": "Trip duration in days",
+            "default": 5,
+            "example": 5
+          },
+          "interests": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Interests",
+            "description": "Target travel interest tags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "max_budget"
+        ],
+        "title": "BudgetRecommendationRequest"
+      },
+      "BudgetRecommendationResponse": {
+        "properties": {
+          "recommended_destinations": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Recommended Destinations",
+            "description": "Destinations matching budget allocation"
+          },
+          "estimated_trip_cost": {
+            "type": "number",
+            "title": "Estimated Trip Cost",
+            "description": "Estimated budget cost for selected destinations"
+          },
+          "budget_fit_status": {
+            "type": "string",
+            "title": "Budget Fit Status",
+            "description": "Budget fit status ('Under Budget', 'Exact Fit', 'Over Budget')"
+          },
+          "budget_utilization_pct": {
+            "type": "number",
+            "title": "Budget Utilization Pct",
+            "description": "Percentage of max_budget consumed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "recommended_destinations",
+          "estimated_trip_cost",
+          "budget_fit_status",
+          "budget_utilization_pct"
+        ],
+        "title": "BudgetRecommendationResponse"
       },
       "CardData": {
         "properties": {
@@ -2814,6 +3123,49 @@
         },
         "type": "object",
         "title": "Coords"
+      },
+      "CostCategoryBreakdown": {
+        "properties": {
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "Expense category name",
+            "example": "Accommodation"
+          },
+          "amount": {
+            "type": "number",
+            "title": "Amount",
+            "description": "Estimated cost amount in USD",
+            "example": 350.0
+          },
+          "percentage": {
+            "type": "number",
+            "title": "Percentage",
+            "description": "Percentage share of total trip budget",
+            "example": 40.0
+          },
+          "color": {
+            "type": "string",
+            "title": "Color",
+            "description": "Hex code for UI rendering",
+            "example": "#0F5C56"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Details and breakdown explanation",
+            "example": "Mid-range eco lodges ($70/night)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category",
+          "amount",
+          "percentage",
+          "color",
+          "description"
+        ],
+        "title": "CostCategoryBreakdown"
       },
       "CrowdInfo": {
         "properties": {

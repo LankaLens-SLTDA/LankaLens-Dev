@@ -174,9 +174,9 @@ def run_all_ai_trust_tests():
     for i in range(4):
         rapid_payload = ContributionCreate(
             author_name="Rapid Poster",
-            title=f"Rapid Post #{i+1}",
+            title=f"Rapid Post #{i + 1}",
             category="Nature",
-            description=f"Rapid automated submission post iteration number {i+1}.",
+            description=f"Rapid automated submission post iteration number {i + 1}.",
             alt_text="Generic landscape view.",
             latitude=6.8667,
             longitude=81.0465,
