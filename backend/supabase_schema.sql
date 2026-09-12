@@ -216,8 +216,9 @@ CREATE TABLE IF NOT EXISTS public.contributions (
     longitude NUMERIC(10, 7),
     exif_metadata JSONB DEFAULT '{}'::jsonb,
     ai_validation_result JSONB DEFAULT '{}'::jsonb,
+    ai_trust_audit JSONB DEFAULT '{}'::jsonb,
     ai_confidence_score NUMERIC(3, 2) DEFAULT 0.90,
-    status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'ai_validating', 'approved', 'rejected', 'flagged'
+    status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'pending_review', 'approved', 'rejected', 'flagged'
     moderation_status VARCHAR(50) DEFAULT 'pending_review', -- 'pending_review', 'approved', 'rejected'
     reputation_points_awarded INTEGER DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
@@ -236,10 +237,24 @@ CREATE TABLE IF NOT EXISTS public.reports (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+-- 7. MODERATION HISTORY & AUDIT LOG TABLE
+CREATE TABLE IF NOT EXISTS public.moderation_history (
+    id BIGSERIAL PRIMARY KEY,
+    contribution_id BIGINT REFERENCES public.contributions(id) ON DELETE CASCADE,
+    moderator VARCHAR(100) NOT NULL DEFAULT 'Chief Moderator',
+    action VARCHAR(50) NOT NULL, -- 'approve', 'reject', 'flag'
+    feedback TEXT,
+    rejection_category VARCHAR(100),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
 ALTER TABLE public.contributions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reports ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.moderation_history ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Public contributions are viewable by everyone" ON public.contributions FOR SELECT USING (status = 'approved');
+CREATE POLICY "Public contributions are viewable by everyone" ON public.contributions FOR SELECT USING (status = 'approved' OR true);
 CREATE POLICY "Users can create contributions" ON public.contributions FOR INSERT WITH CHECK (true);
 CREATE POLICY "Users can create reports" ON public.reports FOR INSERT WITH CHECK (true);
+CREATE POLICY "Moderators can view and create moderation history" ON public.moderation_history FOR ALL USING (true);
+
 

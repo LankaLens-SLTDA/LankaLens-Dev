@@ -1062,7 +1062,7 @@
           "Contribution Pipeline & Moderation"
         ],
         "summary": "Submit tourism contribution to validation pipeline",
-        "description": "Submit photo contribution through EXIF extraction, AI Integrity Guard validation, moderation, and feed publishing.",
+        "description": "Submit photo contribution through EXIF extraction, multi-layered AI Trust Engine verification, moderation queue, and feed publishing.",
         "operationId": "submit_contribution_api_contribution_submit_post",
         "requestBody": {
           "content": {
@@ -1154,6 +1154,58 @@
         }
       }
     },
+    "/api/contribution/moderation-queue": {
+      "get": {
+        "tags": [
+          "Contribution Pipeline & Moderation"
+        ],
+        "summary": "Get submissions pending human moderation review",
+        "description": "Retrieve queue of flagged or suspicious contributions needing human moderation with AI trust scores.",
+        "operationId": "get_moderation_queue_api_contribution_moderation_queue_get",
+        "parameters": [
+          {
+            "name": "flag_filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional risk flag filter (e.g. 'GEOGRAPHIC_MISMATCH', 'SYNTHETIC_IMAGE_PROBABLE', 'SUSPICIOUS_SPAM')",
+              "title": "Flag Filter"
+            },
+            "description": "Optional risk flag filter (e.g. 'GEOGRAPHIC_MISMATCH', 'SYNTHETIC_IMAGE_PROBABLE', 'SUSPICIOUS_SPAM')"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModerationQueueResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/contribution/report": {
       "post": {
         "tags": [
@@ -1202,7 +1254,7 @@
           "Contribution Pipeline & Moderation"
         ],
         "summary": "Moderate contribution submission",
-        "description": "Admin / Moderator endpoint to approve or reject pending contributions.",
+        "description": "Admin / Moderator endpoint to approve or reject pending contributions with auditable decision logs.",
         "operationId": "moderate_contribution_api_contribution__id__moderate_post",
         "parameters": [
           {
@@ -1272,6 +1324,86 @@
   },
   "components": {
     "schemas": {
+      "AiTrustAudit": {
+        "properties": {
+          "overall_trust_score": {
+            "type": "number",
+            "title": "Overall Trust Score",
+            "description": "Composite trust score from 0.00 to 1.00",
+            "default": 0.94
+          },
+          "geo_consistency_score": {
+            "type": "number",
+            "title": "Geo Consistency Score",
+            "description": "Geographic score based on PostGIS bounds & distance",
+            "default": 1.0
+          },
+          "distance_to_destination_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance To Destination Km",
+            "description": "Calculated spherical distance to linked destination in km"
+          },
+          "image_authenticity_score": {
+            "type": "number",
+            "title": "Image Authenticity Score",
+            "description": "Image authenticity & real-world natural photo score",
+            "default": 0.95
+          },
+          "is_synthetic_image": {
+            "type": "boolean",
+            "title": "Is Synthetic Image",
+            "description": "Flag if image exhibits synthetic/AI-generated markers",
+            "default": false
+          },
+          "text_safety_score": {
+            "type": "number",
+            "title": "Text Safety Score",
+            "description": "NLP content safety and profanity score",
+            "default": 1.0
+          },
+          "spam_risk_score": {
+            "type": "number",
+            "title": "Spam Risk Score",
+            "description": "Commercial link and spam risk score",
+            "default": 0.0
+          },
+          "duplicate_risk_score": {
+            "type": "number",
+            "title": "Duplicate Risk Score",
+            "description": "Duplicate text and image content similarity score",
+            "default": 0.0
+          },
+          "ai_fallback_triggered": {
+            "type": "boolean",
+            "title": "Ai Fallback Triggered",
+            "description": "Flag indicating if AI engine fallback was invoked",
+            "default": false
+          },
+          "flags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Flags",
+            "description": "Active anomaly detection flags"
+          },
+          "summary_notes": {
+            "type": "string",
+            "title": "Summary Notes",
+            "description": "Audit summary",
+            "default": "Verified cartographic discovery"
+          }
+        },
+        "type": "object",
+        "title": "AiTrustAudit"
+      },
       "AiValidationResult": {
         "properties": {
           "passed": {
@@ -1609,6 +1741,10 @@
             "$ref": "#/components/schemas/AiValidationResult",
             "description": "AI Guard validation result"
           },
+          "ai_trust_audit": {
+            "$ref": "#/components/schemas/AiTrustAudit",
+            "description": "Detailed AI Trust & Moderation Audit"
+          },
           "ai_confidence_score": {
             "type": "number",
             "title": "Ai Confidence Score",
@@ -1618,7 +1754,7 @@
           "status": {
             "type": "string",
             "title": "Status",
-            "description": "Status: 'pending', 'ai_validating', 'approved', 'rejected', 'flagged'",
+            "description": "Status: 'pending', 'pending_review', 'approved', 'rejected', 'flagged'",
             "default": "approved"
           },
           "moderation_status": {
@@ -2831,6 +2967,38 @@
         ],
         "title": "LeaderboardContributor"
       },
+      "ModerationQueueResponse": {
+        "properties": {
+          "queue": {
+            "items": {
+              "$ref": "#/components/schemas/Contribution"
+            },
+            "type": "array",
+            "title": "Queue",
+            "description": "Submissions pending moderation"
+          },
+          "total_pending": {
+            "type": "integer",
+            "title": "Total Pending",
+            "description": "Total items pending review",
+            "default": 0
+          },
+          "flagged_count": {
+            "type": "integer",
+            "title": "Flagged Count",
+            "description": "Count of flagged items",
+            "default": 0
+          },
+          "average_trust_score": {
+            "type": "number",
+            "title": "Average Trust Score",
+            "description": "Average trust score in current queue",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "title": "ModerationQueueResponse"
+      },
       "ModerationRequest": {
         "properties": {
           "action": {
@@ -2838,6 +3006,19 @@
             "title": "Action",
             "description": "Moderation action: 'approve' or 'reject'",
             "example": "approve"
+          },
+          "moderator_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Moderator Name",
+            "description": "Moderator identity",
+            "default": "Chief Moderator"
           },
           "feedback": {
             "anyOf": [
@@ -2850,6 +3031,18 @@
             ],
             "title": "Feedback",
             "description": "Moderator feedback note"
+          },
+          "rejection_category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejection Category",
+            "description": "Category of rejection if action is 'reject'"
           }
         },
         "type": "object",
