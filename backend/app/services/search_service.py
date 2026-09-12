@@ -1,3 +1,4 @@
+import copy
 import hashlib
 import json
 import math
@@ -9,26 +10,45 @@ from typing import Any
 def haversine_distance_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     """Calculates great-circle distance between two GPS coordinates in kilometers."""
     r = 6371.0  # Earth's radius in kilometers
-    dlat = math.radians(lat2 - lat1)
-    dlon = math.radians(lon2 - lon1)
+    dlat_val = math.radians(lat2 - lat1)
+    dlon_val = math.radians(lon2 - lon1)
     a = (
-        math.sin(dlat / 2) ** 2
+        math.sin(dlat_val / 2) ** 2
         + math.cos(math.radians(lat1))
         * math.cos(math.radians(lat2))
-        * math.sin(dlon / 2) ** 2
+        * math.sin(dlon_val / 2) ** 2
     )
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return round(r * c, 2)
 
 
 def compute_token_overlap(query_text: str, target_text: str) -> float:
-    """Computes token overlap ratio between query string and target string."""
-    q_tokens = set(re.findall(r"\w+", query_text.lower()))
-    t_tokens = set(re.findall(r"\w+", target_text.lower()))
+    """Computes token overlap ratio and substring matching between query string and target string."""
+    if not query_text or not target_text:
+        return 0.0
+    q_str = str(query_text).strip().lower()
+    t_str = str(target_text).strip().lower()
+
+    if not q_str or not t_str:
+        return 0.0
+
+    # Direct substring match boost
+    if q_str in t_str:
+        return max(0.85, len(q_str) / max(1, len(t_str)))
+
+    q_tokens = set(re.findall(r"\w+", q_str))
+    t_tokens = set(re.findall(r"\w+", t_str))
     if not q_tokens or not t_tokens:
         return 0.0
-    overlap = q_tokens.intersection(t_tokens)
-    return len(overlap) / len(q_tokens)
+
+    matched_count = 0.0
+    for q_tok in q_tokens:
+        if q_tok in t_tokens:
+            matched_count += 1.0
+        elif any(q_tok in t_tok or t_tok in q_tok for t_tok in t_tokens if len(q_tok) >= 3):
+            matched_count += 0.8
+
+    return matched_count / len(q_tokens)
 
 
 class CacheManager:
@@ -41,14 +61,14 @@ class CacheManager:
         if key in cls._cache:
             timestamp, data = cls._cache[key]
             if time.time() - timestamp < ttl_seconds:
-                return data
+                return copy.deepcopy(data)
             else:
                 del cls._cache[key]
         return None
 
     @classmethod
     def set(cls, key: str, value: Any) -> None:
-        cls._cache[key] = (time.time(), value)
+        cls._cache[key] = (time.time(), copy.deepcopy(value))
 
     @classmethod
     def clear(cls) -> None:
@@ -135,12 +155,39 @@ class SearchService:
             item_dist = str(item.get("district") or "").lower()
             item_prov = str(item.get("province") or "").lower()
             item_desc = str(item.get("description") or item.get("desc") or "").lower()
-            item_cost = float(item.get("baseline_cost", 0.0))
-            item_rating = float(item.get("rating", 4.5))
-            item_pop = float(item.get("popularity", 4.5))
-            activities = [str(a).lower() for a in item.get("activities", [])]
-            crowd_info = item.get("crowd_info", {})
-            density = str(crowd_info.get("density", "Moderate")).lower()
+
+            try:
+                item_cost = (
+                    float(item["baseline_cost"])
+                    if item.get("baseline_cost") is not None
+                    else 0.0
+                )
+            except (ValueError, TypeError):
+                item_cost = 0.0
+
+            try:
+                item_rating = (
+                    float(item["rating"]) if item.get("rating") is not None else 4.5
+                )
+            except (ValueError, TypeError):
+                item_rating = 4.5
+
+            try:
+                item_pop = (
+                    float(item["popularity"]) if item.get("popularity") is not None else 4.5
+                )
+            except (ValueError, TypeError):
+                item_pop = 4.5
+
+            activities = [
+                str(a).lower() for a in (item.get("activities") or []) if a is not None
+            ]
+
+            crowd_info = item.get("crowd_info") or {}
+            if isinstance(crowd_info, dict):
+                density = str(crowd_info.get("density", "Moderate")).lower()
+            else:
+                density = str(crowd_info).lower()
 
             # -------------------------------------------------------------
             # Filter Checks
@@ -180,11 +227,14 @@ class SearchService:
                 and item_lat is not None
                 and item_lng is not None
             ):
-                dist_km = haversine_distance_km(
-                    lat, lng, float(item_lat), float(item_lng)
-                )
-                if radius_km is not None and dist_km > radius_km:
-                    continue
+                try:
+                    dist_km = haversine_distance_km(
+                        float(lat), float(lng), float(item_lat), float(item_lng)
+                    )
+                    if radius_km is not None and dist_km > radius_km:
+                        continue
+                except (ValueError, TypeError):
+                    pass
 
             # -------------------------------------------------------------
             # Weighted Relevance Ranking Score Calculation
@@ -243,9 +293,9 @@ class SearchService:
         # Sort filtered items by relevance score descending
         filtered_items.sort(
             key=lambda x: (
-                x.get("relevance_score", 0.0),
-                x.get("rating", 0.0),
-                x.get("popularity", 0.0),
+                float(x.get("relevance_score") or 0.0),
+                float(x.get("rating") or 0.0),
+                float(x.get("popularity") or 0.0),
             ),
             reverse=True,
         )

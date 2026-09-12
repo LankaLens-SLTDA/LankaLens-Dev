@@ -1,10 +1,16 @@
 'use client';
 
 import Navbar from '@/components/layout/Navbar';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
+import {
+  calculateTripBudget,
+  getBudgetRecommendations,
+  BudgetCalculationResponse,
+  Destination,
+} from '@/lib/api';
 
 export default function PlannerPage() {
   const [activeDay, setActiveDay] = useState<number>(1);
@@ -16,12 +22,96 @@ export default function PlannerPage() {
     { id: 5, title: 'Ella Nine Arch Bridge & Ravana Falls', stopsCount: 4, duration: '6.5 hrs' },
   ]);
 
-  // Recharts Budget breakdown data
-  const budgetData = [
-    { name: 'Stay', cost: 450, color: '#0F5C56' },
-    { name: 'Transport', cost: 220, color: '#8FD3D6' },
-    { name: 'Activities', cost: 310, color: '#E08A2C' },
-    { name: 'Dining', cost: 180, color: '#5E2E19' },
+  // Interactive Budget Wizard State
+  const [travellersCount, setTravellersCount] = useState<number>(2);
+  const [durationDays, setDurationDays] = useState<number>(5);
+  const [accommodationStyle, setAccommodationStyle] = useState<string>('mid_range');
+  const [transportMode, setTransportMode] = useState<string>('private_car');
+  const [foodPreference, setFoodPreference] = useState<string>('mid_tier_restaurants');
+  const [activityLevel, setActivityLevel] = useState<string>('moderate_cultural');
+
+  const [budgetResponse, setBudgetResponse] = useState<BudgetCalculationResponse | null>(null);
+  const [recommendedDestinations, setRecommendedDestinations] = useState<Destination[]>([]);
+  const [loadingBudget, setLoadingBudget] = useState<boolean>(false);
+
+  useEffect(() => {
+    let isSubscribed = true;
+
+    async function loadBudget() {
+      setLoadingBudget(true);
+      const res = await calculateTripBudget({
+        travellers_count: travellersCount,
+        duration_days: durationDays,
+        accommodation_style: accommodationStyle,
+        transport_mode: transportMode,
+        food_preference: foodPreference,
+        activity_level: activityLevel,
+      });
+
+      if (!isSubscribed) return;
+
+      if (res) {
+        setBudgetResponse(res);
+        const recRes = await getBudgetRecommendations({
+          max_budget: res.total_budget,
+          travellers_count: travellersCount,
+          duration_days: durationDays,
+        });
+        if (isSubscribed && recRes?.recommended_destinations) {
+          setRecommendedDestinations(recRes.recommended_destinations);
+        }
+      } else {
+        // Fallback calculation if backend is unreachable
+        const rooms = Math.ceil(travellersCount / 2);
+        const acc = rooms * 85 * durationDays;
+        const trans = 65 * durationDays;
+        const food = 35 * durationDays * travellersCount;
+        const act = 25 * durationDays * travellersCount;
+        const subtotal = acc + trans + food + act;
+        const misc = subtotal * 0.08;
+        const total = subtotal + misc;
+
+        setBudgetResponse({
+          total_budget: Math.round(total),
+          per_person_budget: Math.round(total / travellersCount),
+          per_day_budget: Math.round(total / durationDays),
+          currency: 'USD',
+          breakdown: [
+            { category: 'Accommodation', amount: acc, percentage: 37.5, color: '#0F5C56', description: 'Mid-range stay' },
+            { category: 'Transport', amount: trans, percentage: 28.7, color: '#8FD3D6', description: 'Private Car' },
+            { category: 'Food & Dining', amount: food, percentage: 15.4, color: '#5E2E19', description: 'Mid-tier dining' },
+            { category: 'Activities & Experiences', amount: act, percentage: 11.0, color: '#E08A2C', description: 'Cultural sites' },
+            { category: 'Miscellaneous & Emergency', amount: Math.round(misc), percentage: 7.4, color: '#6C757D', description: 'Emergency buffer' },
+          ],
+          travel_style_tier: 'Mid-Range Explorer',
+          calculation_model: 'Fallback Estimator',
+          savings_tips: [
+            'Book Sri Lanka Railways Observation Car 30 days in advance.',
+            'Hire SLTDA-certified local guides directly at site entrances.',
+          ],
+          query_time_ms: 0.5,
+        });
+      }
+      setLoadingBudget(false);
+    }
+
+    loadBudget();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [travellersCount, durationDays, accommodationStyle, transportMode, foodPreference, activityLevel]);
+
+  const chartData = budgetResponse?.breakdown.map((b) => ({
+    name: b.category.split(' ')[0],
+    cost: b.amount,
+    color: b.color,
+  })) || [
+    { name: 'Stay', cost: 425, color: '#0F5C56' },
+    { name: 'Transport', cost: 325, color: '#8FD3D6' },
+    { name: 'Dining', cost: 175, color: '#5E2E19' },
+    { name: 'Activities', cost: 125, color: '#E08A2C' },
+    { name: 'Misc', cost: 84, color: '#6C757D' },
   ];
 
   return (
@@ -35,12 +125,12 @@ export default function PlannerPage() {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-label-sm uppercase tracking-widest text-primary font-semibold">
-                  Itinerary Builder
+                  EPIC 14 — Smart Budget Planner
                 </span>
                 <span className="text-line-200">/</span>
-                <span className="text-label-sm text-on-surface-variant">10-Day Ceylon Odyssey</span>
+                <span className="text-label-sm text-on-surface-variant">Ceylon Odyssey</span>
               </div>
-              <h1 className="font-display-lg text-on-surface">Curate Your Journey</h1>
+              <h1 className="font-display-lg text-on-surface">Curate Your Journey & Estimate Costs</h1>
             </div>
             <div className="flex items-center gap-3">
               <button className="px-4 py-2 bg-canvas-50 text-on-surface hover:bg-surface-container rounded-lg text-body-sm font-medium transition-colors flex items-center gap-2 border border-line-200">
@@ -54,6 +144,126 @@ export default function PlannerPage() {
                 <span className="material-symbols-outlined text-[18px]">auto_fix_high</span>
                 <span>AI Optimize Route</span>
               </Link>
+            </div>
+          </div>
+
+          {/* Interactive Smart Budget Estimator Control Bar */}
+          <div className="bg-canvas-50 p-6 rounded-2xl border border-line-200 shadow-sm mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary text-[22px]">payments</span>
+                <h2 className="font-heading-md text-on-surface">Smart Budget Estimator Controls</h2>
+              </div>
+              {budgetResponse && (
+                <span className="text-label-sm bg-primary-container text-on-primary px-3 py-1 rounded-full font-bold">
+                  {budgetResponse.travel_style_tier}
+                </span>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+              {/* Travelers */}
+              <div>
+                <label className="text-label-sm font-semibold text-on-surface-variant block mb-1.5">
+                  Travelers
+                </label>
+                <select
+                  value={travellersCount}
+                  onChange={(e) => setTravellersCount(Number(e.target.value))}
+                  className="w-full bg-surface text-on-surface border border-line-200 rounded-lg p-2.5 text-body-sm font-medium focus:ring-2 focus:ring-primary outline-none"
+                >
+                  <option value={1}>1 Solo Traveler</option>
+                  <option value={2}>2 Couple / Pair</option>
+                  <option value={4}>4 Small Group</option>
+                  <option value={6}>6 Family Co-op</option>
+                </select>
+              </div>
+
+              {/* Duration */}
+              <div>
+                <label className="text-label-sm font-semibold text-on-surface-variant block mb-1.5">
+                  Duration (Days)
+                </label>
+                <select
+                  value={durationDays}
+                  onChange={(e) => setDurationDays(Number(e.target.value))}
+                  className="w-full bg-surface text-on-surface border border-line-200 rounded-lg p-2.5 text-body-sm font-medium focus:ring-2 focus:ring-primary outline-none"
+                >
+                  <option value={3}>3 Days Quick Weekend</option>
+                  <option value={5}>5 Days Classic Route</option>
+                  <option value={7}>7 Days Heritage Circuit</option>
+                  <option value={10}>10 Days Ceylon Odyssey</option>
+                  <option value={14}>14 Days Complete Island</option>
+                </select>
+              </div>
+
+              {/* Accommodation */}
+              <div>
+                <label className="text-label-sm font-semibold text-on-surface-variant block mb-1.5">
+                  Accommodation
+                </label>
+                <select
+                  value={accommodationStyle}
+                  onChange={(e) => setAccommodationStyle(e.target.value)}
+                  className="w-full bg-surface text-on-surface border border-line-200 rounded-lg p-2.5 text-body-sm font-medium focus:ring-2 focus:ring-primary outline-none"
+                >
+                  <option value="homestay">Organic Homestay ($25/n)</option>
+                  <option value="budget">Budget Guesthouse ($40/n)</option>
+                  <option value="mid_range">Mid-Range Eco Lodge ($85/n)</option>
+                  <option value="luxury">Luxury Heritage Hotel ($220/n)</option>
+                </select>
+              </div>
+
+              {/* Transport Mode */}
+              <div>
+                <label className="text-label-sm font-semibold text-on-surface-variant block mb-1.5">
+                  Transport Mode
+                </label>
+                <select
+                  value={transportMode}
+                  onChange={(e) => setTransportMode(e.target.value)}
+                  className="w-full bg-surface text-on-surface border border-line-200 rounded-lg p-2.5 text-body-sm font-medium focus:ring-2 focus:ring-primary outline-none"
+                >
+                  <option value="public_train">Scenic Public Train ($8/d)</option>
+                  <option value="express_bus">Express Intercity Bus ($12/d)</option>
+                  <option value="tuk_tuk">Local Eco-Tuk Co-op ($25/d)</option>
+                  <option value="private_car">Private Chauffeur Car ($65/d)</option>
+                  <option value="flight">Domestic Air Taxi ($140/d)</option>
+                </select>
+              </div>
+
+              {/* Food Preference */}
+              <div>
+                <label className="text-label-sm font-semibold text-on-surface-variant block mb-1.5">
+                  Dining Style
+                </label>
+                <select
+                  value={foodPreference}
+                  onChange={(e) => setFoodPreference(e.target.value)}
+                  className="w-full bg-surface text-on-surface border border-line-200 rounded-lg p-2.5 text-body-sm font-medium focus:ring-2 focus:ring-primary outline-none"
+                >
+                  <option value="self_catering">Self Catering ($10/d)</option>
+                  <option value="local_eateries">Local Rice & Curry ($18/d)</option>
+                  <option value="mid_tier_restaurants">Mid-Tier Restaurants ($35/d)</option>
+                  <option value="fine_dining">Fine Dining & Seafood ($80/d)</option>
+                </select>
+              </div>
+
+              {/* Activity Tier */}
+              <div>
+                <label className="text-label-sm font-semibold text-on-surface-variant block mb-1.5">
+                  Activity Tier
+                </label>
+                <select
+                  value={activityLevel}
+                  onChange={(e) => setActivityLevel(e.target.value)}
+                  className="w-full bg-surface text-on-surface border border-line-200 rounded-lg p-2.5 text-body-sm font-medium focus:ring-2 focus:ring-primary outline-none"
+                >
+                  <option value="budget_free">Budget Free Trails ($8/d)</option>
+                  <option value="moderate_cultural">Moderate Cultural ($25/d)</option>
+                  <option value="all_inclusive_safari">All-Inclusive Safari ($75/d)</option>
+                </select>
+              </div>
             </div>
           </div>
 
@@ -209,59 +419,125 @@ export default function PlannerPage() {
 
             {/* Budget & Analytics Sidebar (Col Span 4) */}
             <div className="lg:col-span-4 flex flex-col gap-6">
+              {/* Itemized Budget Card */}
               <div className="bg-canvas-50 p-6 rounded-2xl border border-line-200 shadow-sm">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-heading-md text-on-surface">Estimated Budget</h3>
-                  <span className="text-label-sm bg-surface-container px-2.5 py-1 rounded-full font-bold text-primary">
-                    $1,160 Total
+                  <div>
+                    <h3 className="font-heading-md text-on-surface">Calculated Budget</h3>
+                    <p className="text-label-sm text-on-surface-variant mt-0.5">
+                      ${budgetResponse?.per_person_budget || 0} / person • ${budgetResponse?.per_day_budget || 0} / day
+                    </p>
+                  </div>
+                  <span className="text-label-sm bg-surface-container px-3 py-1 rounded-full font-bold text-primary">
+                    ${budgetResponse?.total_budget.toLocaleString() || '0'} Total
                   </span>
                 </div>
 
-                <div className="h-48 w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={budgetData}>
-                      <XAxis dataKey="name" stroke="#6f7977" fontSize={12} />
-                      <YAxis stroke="#6f7977" fontSize={12} />
-                      <Tooltip />
-                      <Bar dataKey="cost" radius={[6, 6, 0, 0]}>
-                        {budgetData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+                {loadingBudget ? (
+                  <div className="h-48 flex items-center justify-center text-body-sm text-on-surface-variant">
+                    Calculating budget allocations...
+                  </div>
+                ) : (
+                  <div className="h-48 w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={chartData}>
+                        <XAxis dataKey="name" stroke="#6f7977" fontSize={11} />
+                        <YAxis stroke="#6f7977" fontSize={11} />
+                        <Tooltip />
+                        <Bar dataKey="cost" radius={[6, 6, 0, 0]}>
+                          {chartData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
 
-                <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-line-200">
-                  {budgetData.map((b, i) => (
-                    <div key={i} className="flex items-center justify-between text-body-sm">
-                      <span className="flex items-center gap-1.5 text-on-surface-variant">
-                        <span
-                          className="w-2.5 h-2.5 rounded-full"
-                          style={{ backgroundColor: b.color }}
-                        />
-                        {b.name}
-                      </span>
-                      <strong className="text-on-surface font-semibold">${b.cost}</strong>
+                {/* 5-Category Itemized Breakdown List */}
+                <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-line-200">
+                  {budgetResponse?.breakdown.map((b, i) => (
+                    <div key={i} className="flex flex-col gap-0.5 text-body-sm">
+                      <div className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5 text-on-surface-variant font-medium">
+                          <span
+                            className="w-2.5 h-2.5 rounded-full shrink-0"
+                            style={{ backgroundColor: b.color }}
+                          />
+                          {b.category}
+                        </span>
+                        <strong className="text-on-surface font-semibold">
+                          ${b.amount} ({b.percentage}%)
+                        </strong>
+                      </div>
+                      <p className="text-label-sm text-outline pl-4 line-clamp-1">{b.description}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* AI Itinerary Recommendations */}
+              {/* Recommended Budget-Fitted Destinations */}
+              {recommendedDestinations.length > 0 && (
+                <div className="bg-canvas-50 p-6 rounded-2xl border border-line-200 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-heading-sm text-on-surface flex items-center gap-2">
+                      <span className="material-symbols-outlined text-primary text-[20px]">explore</span>
+                      <span>Budget-Fitted Places</span>
+                    </h4>
+                    <span className="text-label-sm text-primary font-semibold">
+                      Matches Spend Limit
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    {recommendedDestinations.slice(0, 3).map((dest) => (
+                      <Link
+                        key={dest.id}
+                        href={`/destinations/${dest.id}`}
+                        className="flex items-center justify-between p-2.5 bg-surface hover:bg-surface-container rounded-xl transition-all border border-line-200 group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg relative overflow-hidden bg-surface-container shrink-0">
+                            <Image
+                              src={dest.image_url || '/stitch_images/discover.png'}
+                              alt={dest.name}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div>
+                            <div className="font-heading-sm text-on-surface text-body-sm group-hover:text-primary transition-colors">
+                              {dest.name}
+                            </div>
+                            <div className="text-label-sm text-on-surface-variant">
+                              {dest.district} • Rating {dest.rating}★
+                            </div>
+                          </div>
+                        </div>
+                        <span className="text-label-sm font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          ${dest.baseline_cost} Entry
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Sri Lanka Travel Savings Tips */}
               <div className="bg-primary text-on-primary p-6 rounded-2xl shadow-md flex flex-col gap-3">
                 <div className="flex items-center gap-2 text-sky-300 font-label-sm font-semibold">
-                  <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
-                  <span>AI Smart Travel Suggestion</span>
+                  <span className="material-symbols-outlined text-[18px]">savings</span>
+                  <span>Sri Lanka Travel Savings Tips</span>
                 </div>
-                <h4 className="font-heading-sm">Highland Train Ticket Warning</h4>
-                <p className="text-body-sm text-on-primary-container leading-relaxed">
-                  First-class observation carriage seats for Kandy → Ella sell out 30 days in
-                  advance. Would you like us to add auto-booking alerts?
-                </p>
-                <button className="bg-secondary hover:bg-secondary-container text-on-secondary py-2 px-4 rounded-lg font-label-sm font-semibold mt-2 transition-colors cursor-pointer text-center">
-                  Enable Train Booking Reminders
-                </button>
+                <ul className="text-body-sm text-on-primary-container space-y-2 list-disc pl-4 leading-relaxed">
+                  {budgetResponse?.savings_tips.map((tip, idx) => (
+                    <li key={idx}>{tip}</li>
+                  )) || (
+                    <>
+                      <li>Book Sri Lanka Railways Observation Car 30 days in advance.</li>
+                      <li>Hire SLTDA-certified local guides directly at site entrances.</li>
+                    </>
+                  )}
+                </ul>
               </div>
             </div>
           </div>
