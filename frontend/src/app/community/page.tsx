@@ -33,7 +33,8 @@ export default function CommunityPage() {
       verified: true,
       location: 'Ella, Uva Province',
       image: '/stitch_images/discover.png',
-      caption: 'Discovered this secret vantage point just past the second tea bungalow. The mist cleared right at 6:15 AM, revealing the full expanse of Little Adam\'s Peak. Make sure to bring sturdy boots!',
+      caption:
+        "Discovered this secret vantage point just past the second tea bungalow. The mist cleared right at 6:15 AM, revealing the full expanse of Little Adam's Peak. Make sure to bring sturdy boots!",
       tags: ['#EllaRock', '#HiddenVistas', '#CeylonTeaTrails'],
       ecoPoints: 248,
       commentsCount: 32,
@@ -47,7 +48,8 @@ export default function CommunityPage() {
       verified: false,
       location: 'Polonnaruwa Ancient City',
       image: '/stitch_images/map.png',
-      caption: 'Renting a bicycle to explore the ancient irrigation tanks and stone stupas was the best decision. Pro tip: start early at 7 AM before the afternoon heat.',
+      caption:
+        'Renting a bicycle to explore the ancient irrigation tanks and stone stupas was the best decision. Pro tip: start early at 7 AM before the afternoon heat.',
       tags: ['#CulturalTriangle', '#HeritageSites', '#BikeTour'],
       ecoPoints: 184,
       commentsCount: 19,
@@ -87,11 +89,14 @@ export default function CommunityPage() {
             <div>
               <div className="flex items-center gap-2 text-primary mb-2 font-semibold">
                 <span className="material-symbols-outlined text-[20px]">explore</span>
-                <span className="text-label-sm uppercase tracking-wider text-on-surface-variant">Community Discovery Stream</span>
+                <span className="text-label-sm uppercase tracking-wider text-on-surface-variant">
+                  Community Discovery Stream
+                </span>
               </div>
               <h1 className="font-display-lg text-primary">The Ceylon Chronicle</h1>
               <p className="text-body-md text-on-surface-variant max-w-xl mt-2">
-                Real-time dispatches, verified travel notes, and hidden vistas shared by top local guides and global explorers across the island.
+                Real-time dispatches, verified travel notes, and hidden vistas shared by top local
+                guides and global explorers across the island.
               </p>
             </div>
 
@@ -99,7 +104,9 @@ export default function CommunityPage() {
               <button
                 onClick={() => setFilter('all')}
                 className={`px-4 py-2 rounded-lg text-body-sm font-semibold transition-all ${
-                  filter === 'all' ? 'bg-primary text-on-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'
+                  filter === 'all'
+                    ? 'bg-primary text-on-primary shadow-sm'
+                    : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
                 All Dispatches
@@ -107,7 +114,9 @@ export default function CommunityPage() {
               <button
                 onClick={() => setFilter('verified')}
                 className={`px-4 py-2 rounded-lg text-body-sm font-semibold transition-all flex items-center gap-1.5 ${
-                  filter === 'verified' ? 'bg-primary text-on-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'
+                  filter === 'verified'
+                    ? 'bg-primary text-on-primary shadow-sm'
+                    : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
                 <span className="material-symbols-outlined text-[16px]">verified</span>
@@ -116,7 +125,9 @@ export default function CommunityPage() {
               <button
                 onClick={() => setFilter('trending')}
                 className={`px-4 py-2 rounded-lg text-body-sm font-semibold transition-all flex items-center gap-1.5 ${
-                  filter === 'trending' ? 'bg-primary text-on-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'
+                  filter === 'trending'
+                    ? 'bg-primary text-on-primary shadow-sm'
+                    : 'text-on-surface-variant hover:text-on-surface'
                 }`}
               >
                 <span className="material-symbols-outlined text-[16px]">trending_up</span>
@@ -154,7 +165,9 @@ export default function CommunityPage() {
                           <>
                             <span>•</span>
                             <span className="flex items-center gap-1 text-success-600 font-semibold">
-                              <span className="material-symbols-outlined text-[14px]">verified</span>
+                              <span className="material-symbols-outlined text-[14px]">
+                                verified
+                              </span>
                               <span>AI-Verified Route</span>
                             </span>
                           </>
@@ -168,7 +181,9 @@ export default function CommunityPage() {
                 <div className="relative w-full h-[400px]">
                   <Image src={post.image} alt={post.caption} fill className="object-cover" />
                   <div className="absolute top-4 left-4 bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-body-sm font-semibold text-on-surface shadow-sm border border-line-200">
-                    <span className="material-symbols-outlined text-primary text-[16px]">location_on</span>
+                    <span className="material-symbols-outlined text-primary text-[16px]">
+                      location_on
+                    </span>
                     <span>{post.location}</span>
                   </div>
                 </div>
@@ -178,7 +193,10 @@ export default function CommunityPage() {
                   <p className="text-body-lg text-on-surface">{post.caption}</p>
                   <div className="flex flex-wrap gap-2">
                     {post.tags.map((tag, idx) => (
-                      <span key={idx} className="px-3 py-1 bg-surface-container rounded-lg text-body-sm text-on-surface-variant font-medium">
+                      <span
+                        key={idx}
+                        className="px-3 py-1 bg-surface-container rounded-lg text-body-sm text-on-surface-variant font-medium"
+                      >
                         {tag}
                       </span>
                     ))}
@@ -190,7 +208,9 @@ export default function CommunityPage() {
                       <button
                         onClick={() => toggleEcoPoint(post.id)}
                         className={`flex items-center gap-2 transition-colors group ${
-                          post.liked ? 'text-coral-500 font-bold' : 'text-on-surface-variant hover:text-coral-500'
+                          post.liked
+                            ? 'text-coral-500 font-bold'
+                            : 'text-on-surface-variant hover:text-coral-500'
                         }`}
                       >
                         <span className="material-symbols-outlined text-[22px]">eco</span>
@@ -198,7 +218,9 @@ export default function CommunityPage() {
                       </button>
 
                       <div className="flex items-center gap-2 text-on-surface-variant">
-                        <span className="material-symbols-outlined text-[22px]">chat_bubble_outline</span>
+                        <span className="material-symbols-outlined text-[22px]">
+                          chat_bubble_outline
+                        </span>
                         <span className="font-semibold text-body-md">{post.commentsCount}</span>
                       </div>
                     </div>

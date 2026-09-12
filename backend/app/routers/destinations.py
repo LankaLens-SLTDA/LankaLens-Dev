@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
-from typing import Optional
-from app.schemas.destinations import DestinationResponse, Destination
+
+from app.schemas.destinations import DestinationResponse
 from app.supabase_client import supabase
 
 router = APIRouter(prefix="/api/destinations", tags=["Destinations"])
@@ -60,13 +60,26 @@ MOCK_DESTINATIONS = [
     },
 ]
 
-@router.get("", response_model=DestinationResponse)
+
+@router.get(
+    "",
+    response_model=DestinationResponse,
+    summary="Retrieve travel destinations",
+    description="Fetch filtered or full catalog of Sri Lankan travel destinations, with optional category, region, and search term queries.",
+)
 def get_destinations(
-    category: Optional[str] = Query(None, description="Filter by category"),
-    region: Optional[str] = Query(None, description="Filter by region"),
-    q: Optional[str] = Query(None, description="Search query")
+    category: str | None = Query(
+        None,
+        description="Filter destinations by category (e.g. temple, nature, beach, wildlife)",
+    ),
+    region: str | None = Query(
+        None, description="Filter destinations by geographical region"
+    ),
+    q: str | None = Query(
+        None, description="Search query string matching title or description"
+    ),
 ):
-    # Try fetching from Supabase if connected
+    """Retrieve list of destinations from Supabase database with fallback to static dataset."""
     if supabase:
         try:
             query = supabase.table("destinations").select("*")
@@ -76,7 +89,7 @@ def get_destinations(
                 query = query.ilike("region", f"%{region}%")
             if q:
                 query = query.or_(f"title.ilike.%{q}%,description.ilike.%{q}%")
-            
+
             res = query.execute()
             if res.data:
                 formatted = [
@@ -89,7 +102,10 @@ def get_destinations(
                         "reviews": d.get("reviews", 0),
                         "desc": d.get("description", ""),
                         "image": d.get("image_url", "/stitch_images/discover.png"),
-                        "coords": {"x": d.get("coord_x", "50%"), "y": d.get("coord_y", "50%")},
+                        "coords": {
+                            "x": d.get("coord_x", "50%"),
+                            "y": d.get("coord_y", "50%"),
+                        },
                         "elevation": d.get("elevation", "N/A"),
                         "distance": d.get("distance_from_colombo", "N/A"),
                     }
@@ -97,15 +113,20 @@ def get_destinations(
                 ]
                 return {"destinations": formatted, "total": len(formatted)}
         except Exception as e:
-            print(f"[LankaLens Supabase Query Error] {e}, falling back to static dataset.")
+            print(
+                f"[LankaLens Supabase Query Error] {e}, falling back to static dataset."
+            )
 
-    # Static fallback
     results = MOCK_DESTINATIONS
     if category and category != "all":
         results = [d for d in results if d["category"] == category]
     if region:
         results = [d for d in results if region.lower() in d["region"].lower()]
     if q:
-        results = [d for d in results if q.lower() in d["title"].lower() or q.lower() in d["desc"].lower()]
-    
+        results = [
+            d
+            for d in results
+            if q.lower() in d["title"].lower() or q.lower() in d["desc"].lower()
+        ]
+
     return {"destinations": results, "total": len(results)}

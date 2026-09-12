@@ -37,7 +37,8 @@ export default function SustainabilityPage() {
                 Sustainability & Hazard Surveillance
               </h1>
               <p className="font-body-lg text-on-primary-container">
-                Monitor crowd density thresholds, report trail and ecosystem anomalies, and discover regenerative alternative routes across Sri Lanka.
+                Monitor crowd density thresholds, report trail and ecosystem anomalies, and discover
+                regenerative alternative routes across Sri Lanka.
               </p>
             </div>
 
@@ -61,21 +62,34 @@ export default function SustainabilityPage() {
             <div className="bg-canvas-50 rounded-2xl p-6 lg:p-8 border border-line-200 shadow-sm">
               <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h2 className="font-heading-md text-on-surface">Regional Crowd Density & Hazard Levels</h2>
-                  <p className="text-body-sm text-on-surface-variant">Real-time visitor density calculated from sensor nodes & ranger reports</p>
+                  <h2 className="font-heading-md text-on-surface">
+                    Regional Crowd Density & Hazard Levels
+                  </h2>
+                  <p className="text-body-sm text-on-surface-variant">
+                    Real-time visitor density calculated from sensor nodes & ranger reports
+                  </p>
                 </div>
                 <span className="text-body-sm text-primary font-bold">Updated 3m ago</span>
               </div>
 
               {/* Recharts Density Curve */}
               <div className="h-48 w-full mb-6 pt-2">
-                <span className="text-label-sm text-outline block mb-2 font-semibold">Hourly Visitor Load (Sigiriya Central Triangle)</span>
+                <span className="text-label-sm text-outline block mb-2 font-semibold">
+                  Hourly Visitor Load (Sigiriya Central Triangle)
+                </span>
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={densityData}>
                     <XAxis dataKey="hour" stroke="#6f7977" fontSize={12} />
                     <YAxis stroke="#6f7977" fontSize={12} />
                     <Tooltip />
-                    <Area type="monotone" dataKey="density" stroke="#0F5C56" fill="#0F5C56" fillOpacity={0.2} strokeWidth={2} />
+                    <Area
+                      type="monotone"
+                      dataKey="density"
+                      stroke="#0F5C56"
+                      fill="#0F5C56"
+                      fillOpacity={0.2}
+                      strokeWidth={2}
+                    />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -84,28 +98,39 @@ export default function SustainabilityPage() {
                 <div className="bg-surface rounded-xl p-4 border border-line-200">
                   <div className="flex justify-between items-start mb-2">
                     <span className="font-heading-sm text-on-surface">Sigiriya Rock Fortress</span>
-                    <span className="px-2 py-0.5 rounded bg-coral-500/10 text-coral-500 text-label-sm font-bold">Over Capacity</span>
+                    <span className="px-2 py-0.5 rounded bg-coral-500/10 text-coral-500 text-label-sm font-bold">
+                      Over Capacity
+                    </span>
                   </div>
                   <div className="w-full bg-canvas-50 h-2 rounded-full overflow-hidden mb-3">
                     <div className="bg-coral-500 h-full rounded-full w-[92%]" />
                   </div>
                   <div className="flex justify-between items-center text-body-sm text-on-surface-variant">
                     <span>Density: 1,420 /hr</span>
-                    <Link href="/map" className="text-coral-500 font-semibold hover:underline">View Alternative →</Link>
+                    <Link href="/map" className="text-coral-500 font-semibold hover:underline">
+                      View Alternative →
+                    </Link>
                   </div>
                 </div>
 
                 <div className="bg-surface rounded-xl p-4 border border-line-200">
                   <div className="flex justify-between items-start mb-2">
                     <span className="font-heading-sm text-on-surface">Ella Rock Trail</span>
-                    <span className="px-2 py-0.5 rounded bg-signal-amber-500/10 text-signal-amber-500 text-label-sm font-bold">Near Capacity</span>
+                    <span className="px-2 py-0.5 rounded bg-signal-amber-500/10 text-signal-amber-500 text-label-sm font-bold">
+                      Near Capacity
+                    </span>
                   </div>
                   <div className="w-full bg-canvas-50 h-2 rounded-full overflow-hidden mb-3">
                     <div className="bg-signal-amber-500 h-full rounded-full w-[78%]" />
                   </div>
                   <div className="flex justify-between items-center text-body-sm text-on-surface-variant">
                     <span>Density: 850 /hr</span>
-                    <Link href="/map" className="text-signal-amber-500 font-semibold hover:underline">View Alternative →</Link>
+                    <Link
+                      href="/map"
+                      className="text-signal-amber-500 font-semibold hover:underline"
+                    >
+                      View Alternative →
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -118,14 +143,20 @@ export default function SustainabilityPage() {
                   <span className="material-symbols-outlined text-primary">report_problem</span>
                   <h2 className="font-heading-md text-on-surface">Submit Field Hazard Report</h2>
                 </div>
-                <p className="text-body-sm text-on-surface-variant">Help protect ecosystems and fellow travelers. Reports are verified within 2 hours.</p>
+                <p className="text-body-sm text-on-surface-variant">
+                  Help protect ecosystems and fellow travelers. Reports are verified within 2 hours.
+                </p>
               </div>
 
               {reportSubmitted ? (
                 <div className="p-6 bg-primary/10 rounded-xl border border-primary text-center">
-                  <span className="material-symbols-outlined text-primary text-[36px] mb-2">check_circle</span>
+                  <span className="material-symbols-outlined text-primary text-[36px] mb-2">
+                    check_circle
+                  </span>
                   <h3 className="font-heading-sm text-primary">Report Submitted Successfully</h3>
-                  <p className="text-body-sm text-on-surface-variant mt-1">Transmitted to LankaLens Ranger Network. Eco-credits credited to your profile!</p>
+                  <p className="text-body-sm text-on-surface-variant mt-1">
+                    Transmitted to LankaLens Ranger Network. Eco-credits credited to your profile!
+                  </p>
                   <button
                     onClick={() => setReportSubmitted(false)}
                     className="mt-4 px-4 py-2 bg-primary text-on-primary rounded-lg text-label-sm font-semibold"
@@ -142,7 +173,9 @@ export default function SustainabilityPage() {
                   className="flex flex-col gap-4"
                 >
                   <div>
-                    <label className="text-label-sm text-on-surface font-semibold block mb-2">Location / Landmark Name</label>
+                    <label className="text-label-sm text-on-surface font-semibold block mb-2">
+                      Location / Landmark Name
+                    </label>
                     <input
                       type="text"
                       required
@@ -152,7 +185,9 @@ export default function SustainabilityPage() {
                   </div>
 
                   <div>
-                    <label className="text-label-sm text-on-surface font-semibold block mb-2">Hazard / Observation Description</label>
+                    <label className="text-label-sm text-on-surface font-semibold block mb-2">
+                      Hazard / Observation Description
+                    </label>
                     <textarea
                       required
                       rows={3}
@@ -180,7 +215,8 @@ export default function SustainabilityPage() {
               </span>
               <h3 className="font-heading-md mb-2">Visit Pidurangala Instead of Sigiriya</h3>
               <p className="text-body-sm text-on-primary-container leading-relaxed">
-                Sigiriya is currently experiencing a 92% visitor density. Climbing Pidurangala offers panoramic views of Sigiriya itself with 80% lower crowd congestion.
+                Sigiriya is currently experiencing a 92% visitor density. Climbing Pidurangala
+                offers panoramic views of Sigiriya itself with 80% lower crowd congestion.
               </p>
               <Link
                 href="/map"

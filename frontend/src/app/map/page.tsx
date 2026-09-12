@@ -80,7 +80,8 @@ export default function MapPage() {
 
   const filtered = destinations.filter((d) => {
     const matchesCat = selectedCategory === 'all' || d.category === selectedCategory;
-    const matchesRegion = !regionFilter || d.region.toLowerCase().includes(regionFilter.toLowerCase());
+    const matchesRegion =
+      !regionFilter || d.region.toLowerCase().includes(regionFilter.toLowerCase());
     return matchesCat && matchesRegion;
   });
 
@@ -101,10 +102,18 @@ export default function MapPage() {
                 onChange={(e) => setRegionFilter(e.target.value)}
                 className="bg-transparent text-surface text-body-sm focus:outline-none w-full cursor-pointer"
               >
-                <option value="" className="bg-ink-950 text-surface">All Regions (Sri Lanka)</option>
-                <option value="Hill Country" className="bg-ink-950 text-surface">Hill Country & Tea Estates</option>
-                <option value="Cultural" className="bg-ink-950 text-surface">Cultural Triangle</option>
-                <option value="Southern" className="bg-ink-950 text-surface">Southern Coast & Beaches</option>
+                <option value="" className="bg-ink-950 text-surface">
+                  All Regions (Sri Lanka)
+                </option>
+                <option value="Hill Country" className="bg-ink-950 text-surface">
+                  Hill Country & Tea Estates
+                </option>
+                <option value="Cultural" className="bg-ink-950 text-surface">
+                  Cultural Triangle
+                </option>
+                <option value="Southern" className="bg-ink-950 text-surface">
+                  Southern Coast & Beaches
+                </option>
               </select>
             </div>
           </div>
@@ -161,16 +170,44 @@ export default function MapPage() {
           {/* Interactive Map Canvas */}
           <div className="flex-1 h-full relative bg-[#0B1210] overflow-hidden flex items-center justify-center cursor-grab active:cursor-grabbing">
             {/* SVG Contour & Polyline overlay */}
-            <svg className="absolute inset-0 w-full h-full opacity-25 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              className="absolute inset-0 w-full h-full opacity-25 pointer-events-none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <defs>
                 <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
-                  <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#8FD3D6" strokeWidth="0.5" strokeOpacity="0.2" />
+                  <path
+                    d="M 60 0 L 0 0 0 60"
+                    fill="none"
+                    stroke="#8FD3D6"
+                    strokeWidth="0.5"
+                    strokeOpacity="0.2"
+                  />
                 </pattern>
               </defs>
               <rect width="100%" height="100%" fill="url(#grid)" />
-              <path d="M-100,100 Q300,50 600,300 T1200,200" fill="none" stroke="#8FD3D6" strokeWidth="1" strokeOpacity="0.15" />
-              <path d="M0,400 Q400,200 800,500 T1400,400" fill="none" stroke="#8FD3D6" strokeWidth="1" strokeOpacity="0.15" />
-              <path className="animate-pulse" d="M 280 220 Q 420 310 520 480 T 720 620" fill="none" stroke="#abefe7" strokeWidth="3" strokeDasharray="6 4" />
+              <path
+                d="M-100,100 Q300,50 600,300 T1200,200"
+                fill="none"
+                stroke="#8FD3D6"
+                strokeWidth="1"
+                strokeOpacity="0.15"
+              />
+              <path
+                d="M0,400 Q400,200 800,500 T1400,400"
+                fill="none"
+                stroke="#8FD3D6"
+                strokeWidth="1"
+                strokeOpacity="0.15"
+              />
+              <path
+                className="animate-pulse"
+                d="M 280 220 Q 420 310 520 480 T 720 620"
+                fill="none"
+                stroke="#abefe7"
+                strokeWidth="3"
+                strokeDasharray="6 4"
+              />
             </svg>
 
             {/* Custom Interactive Pins */}
@@ -190,20 +227,24 @@ export default function MapPage() {
                     dest.category === 'temple'
                       ? 'bg-signal-amber-500 text-on-secondary'
                       : dest.category === 'nature'
-                      ? 'bg-success-600 text-white'
-                      : 'bg-sky-300 text-ink-950'
+                        ? 'bg-success-600 text-white'
+                        : 'bg-sky-300 text-ink-950'
                   }`}
                 >
                   <span className="material-symbols-outlined text-[20px]">
-                    {dest.category === 'temple' ? 'temple_buddhist' : dest.category === 'nature' ? 'landscape' : 'surfing'}
+                    {dest.category === 'temple'
+                      ? 'temple_buddhist'
+                      : dest.category === 'nature'
+                        ? 'landscape'
+                        : 'surfing'}
                   </span>
                   <div
                     className={`absolute -bottom-1 w-2 h-2 transform rotate-45 ${
                       dest.category === 'temple'
                         ? 'bg-signal-amber-500'
                         : dest.category === 'nature'
-                        ? 'bg-success-600'
-                        : 'bg-sky-300'
+                          ? 'bg-success-600'
+                          : 'bg-sky-300'
                     }`}
                   />
                 </div>
@@ -215,14 +256,23 @@ export default function MapPage() {
 
             {/* HUD Scale & Controls */}
             <div className="absolute bottom-6 left-6 z-20 flex flex-col gap-2 bg-ink-950/80 backdrop-blur-md p-1.5 rounded-xl shadow-2xl border border-white/10">
-              <button className="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-lg text-surface transition-colors" title="Zoom In">
+              <button
+                className="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-lg text-surface transition-colors"
+                title="Zoom In"
+              >
                 <span className="material-symbols-outlined text-[20px]">add</span>
               </button>
-              <button className="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-lg text-surface transition-colors" title="Zoom Out">
+              <button
+                className="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-lg text-surface transition-colors"
+                title="Zoom Out"
+              >
                 <span className="material-symbols-outlined text-[20px]">remove</span>
               </button>
               <div className="w-full h-[1px] bg-white/10 my-0.5" />
-              <button className="w-10 h-10 flex items-center justify-center bg-primary text-on-primary rounded-lg shadow-md transition-colors" title="Current Location">
+              <button
+                className="w-10 h-10 flex items-center justify-center bg-primary text-on-primary rounded-lg shadow-md transition-colors"
+                title="Current Location"
+              >
                 <span className="material-symbols-outlined text-[20px]">my_location</span>
               </button>
             </div>
@@ -233,7 +283,9 @@ export default function MapPage() {
                 <span className="material-symbols-outlined text-primary-fixed">route</span>
                 <div>
                   <div className="text-label-sm text-outline">Active Spatial Route</div>
-                  <div className="text-body-sm text-surface font-semibold">3 Landmarks · 240 km Total</div>
+                  <div className="text-body-sm text-surface font-semibold">
+                    3 Landmarks · 240 km Total
+                  </div>
                 </div>
               </div>
               <div className="w-[1px] h-8 bg-white/10" />
@@ -250,7 +302,9 @@ export default function MapPage() {
           <div className="w-full lg:w-[420px] bg-surface text-on-surface border-l border-line-200 flex flex-col h-full z-20 shadow-2xl">
             <div className="p-6 border-b border-line-200 flex items-center justify-between">
               <div>
-                <span className="text-label-sm text-primary uppercase font-bold tracking-wider">Location Inspection</span>
+                <span className="text-label-sm text-primary uppercase font-bold tracking-wider">
+                  Location Inspection
+                </span>
                 <h2 className="font-heading-lg text-on-surface mt-0.5">Point Details</h2>
               </div>
               <span className="px-2.5 py-1 bg-canvas-50 rounded-full text-label-sm text-primary font-semibold border border-line-200">
@@ -267,24 +321,34 @@ export default function MapPage() {
                   className="object-cover"
                 />
                 <div className="absolute top-3 right-3 bg-surface/90 backdrop-blur-md px-2.5 py-1 rounded-full text-label-sm font-semibold flex items-center gap-1">
-                  <span className="material-symbols-outlined text-signal-amber-500 text-[14px]">star</span>
-                  <span>{selectedDest.rating} ({selectedDest.reviews})</span>
+                  <span className="material-symbols-outlined text-signal-amber-500 text-[14px]">
+                    star
+                  </span>
+                  <span>
+                    {selectedDest.rating} ({selectedDest.reviews})
+                  </span>
                 </div>
               </div>
 
               <div>
                 <h3 className="font-heading-md text-on-surface">{selectedDest.title}</h3>
-                <p className="text-body-sm text-on-surface-variant mt-2 leading-relaxed">{selectedDest.desc}</p>
+                <p className="text-body-sm text-on-surface-variant mt-2 leading-relaxed">
+                  {selectedDest.desc}
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-3 pt-4 border-t border-line-200">
                 <div className="bg-canvas-50 p-3 rounded-lg border border-line-200">
                   <span className="text-label-sm text-outline block">Elevation</span>
-                  <strong className="text-body-md font-semibold text-on-surface">{selectedDest.elevation}</strong>
+                  <strong className="text-body-md font-semibold text-on-surface">
+                    {selectedDest.elevation}
+                  </strong>
                 </div>
                 <div className="bg-canvas-50 p-3 rounded-lg border border-line-200">
                   <span className="text-label-sm text-outline block">Distance</span>
-                  <strong className="text-body-md font-semibold text-on-surface">{selectedDest.distance}</strong>
+                  <strong className="text-body-md font-semibold text-on-surface">
+                    {selectedDest.distance}
+                  </strong>
                 </div>
               </div>
 

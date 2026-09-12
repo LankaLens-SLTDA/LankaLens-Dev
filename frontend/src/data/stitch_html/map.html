@@ -1,282 +1,777 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@100..900&family=Inter:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {"colors": {"surface-tint": "#226962", "primary-container": "#0f5c56", "surface-container": "#efeeea", "deep-teal-800": "#0A3F3B", "surface-variant": "#e3e2df", "inverse-on-surface": "#f2f1ed", "on-primary": "#ffffff", "primary": "#00433e", "success-600": "#1B7A4C", "on-background": "#1b1c1a", "error-container": "#ffdad6", "on-secondary-fixed-variant": "#6b3b00", "tertiary": "#5e2e19", "surface-dim": "#dbdad6", "on-primary-fixed-variant": "#00504a", "secondary-fixed-dim": "#ffb875", "surface-container-highest": "#e3e2df", "on-tertiary-fixed": "#360f01", "surface": "#faf9f5", "canvas-0": "#FBFAF6", "on-surface-variant": "#3f4947", "inverse-surface": "#2f312e", "secondary-container": "#fca142", "on-error": "#ffffff", "background": "#faf9f5", "canvas-50": "#F1EFE7", "on-surface": "#1b1c1a", "ink-700": "#2B3630", "on-tertiary-container": "#ffb497", "signal-amber-500": "#E08A2C", "coral-500": "#E2604A", "secondary-fixed": "#ffdcc0", "on-primary-fixed": "#00201d", "primary-fixed-dim": "#90d3cb", "outline-variant": "#bec9c6", "sky-300": "#8FD3D6", "primary-fixed": "#abefe7", "on-primary-container": "#8fd2ca", "outline": "#6f7977", "on-tertiary": "#ffffff", "tertiary-fixed-dim": "#ffb598", "ink-950": "#0E1512", "surface-container-high": "#e9e8e4", "surface-bright": "#faf9f5", "tertiary-container": "#7a442d", "line-200": "#DEDBD0", "inverse-primary": "#90d3cb", "surface-container-lowest": "#ffffff", "on-tertiary-fixed-variant": "#6c3923", "on-error-container": "#93000a", "tertiary-fixed": "#ffdbce", "error": "#ba1a1a", "on-secondary-container": "#6c3b00", "surface-container-low": "#f4f4f0", "on-secondary-fixed": "#2d1600", "on-secondary": "#ffffff", "secondary": "#8d4f00", "deep-teal-600": "#0F5C56"}, "borderRadius": {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"}, "spacing": {"unit-4": "16px", "unit-12": "48px", "unit-3": "12px", "unit-24": "96px", "base": "4px", "desktop-max-width": "1280px", "unit-16": "64px", "unit-6": "24px", "unit-1": "4px", "unit-2": "8px", "unit-8": "32px"}, "fontFamily": {"body-lg": ["Inter"], "heading-lg": ["Inter"], "heading-sm": ["Inter"], "body-sm": ["Inter"], "heading-md": ["Inter"], "label-sm": ["Inter"], "display-lg": ["Fraunces"], "display-xl": ["Fraunces"], "body-md": ["Inter"]}, "fontSize": {"body-lg": ["17px", {"lineHeight": "26px", "fontWeight": "400"}], "heading-lg": ["28px", {"lineHeight": "34px", "fontWeight": "600"}], "heading-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}], "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}], "heading-md": ["22px", {"lineHeight": "28px", "fontWeight": "600"}], "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}], "display-lg": ["40px", {"lineHeight": "46px", "fontWeight": "500"}], "display-xl": ["56px", {"lineHeight": "60px", "fontWeight": "500"}], "body-md": ["15px", {"lineHeight": "22px", "fontWeight": "400"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface"><header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-desktop-max-width mx-auto px-6 lg:px-12 flex items-center justify-between"><div class="flex items-center gap-3"><img alt="LankaLens Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASxHhluPoKqeGUtHhACt6hWLRX53k7UyMOs5HW6LvWGNlOOUNdIOof9PVI9FStZircm88YmoQ_ASiA7RKZcjLVFTg8uvk_CmRp-Xu5L8otLgIKXf9Ek108nlk-41ptuvlCAZ-aCxUuQZitsPt79-ro1skm4Fq2DYId4xVpIrSrOwXduqErzUTEi0FzXB4o102BvRJfkt7ZDlUZxBrk16JZ64lPeWkjDJ0BdAmZkl0ShZBr7S4TpC2L"/><span class="font-heading-lg text-primary tracking-tight">LankaLens</span></div><div class="hidden lg:flex items-center flex-1 max-w-md mx-8"><div class="relative w-full"><span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-outline"><span class="material-symbols-outlined text-[18px]">search</span></span><input class="w-full pl-10 pr-4 py-2 bg-canvas-50 rounded-lg text-on-surface placeholder:text-outline text-body-sm focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Search destinations, regions, hotels..." type="text"/></div></div><nav class="hidden md:flex items-center gap-1" data-active-classes="bg-primary-container text-on-primary font-bold"><a class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors" data-path="discover" href="#">Discover</a><a aria-current="page" class="px-3 py-2 rounded-lg transition-colors bg-primary-container text-on-primary font-bold" data-path="map" href="#">Map</a><a class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors" data-path="planner" href="#">Planner</a><a class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors" data-path="ai-assistant" href="#">AI Assistant</a><a class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors" data-path="saved" href="#">Saved</a></nav><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-surface"><div class="flex flex-col w-full h-[calc(100vh-4rem)] bg-ink-950 text-surface overflow-hidden relative">
-<!-- Top Filter & Search Bar Overlay -->
-<div class="absolute top-4 left-6 z-30 flex items-center gap-3 bg-ink-950/90 backdrop-blur-md p-2 rounded-xl shadow-2xl max-w-2xl w-full">
-<div class="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg flex-1">
-<span class="material-symbols-outlined text-outline text-[18px]">explore</span>
-<select class="bg-transparent text-surface text-body-sm focus:outline-none w-full cursor-pointer">
-<option class="bg-ink-950 text-surface" value="">All Regions (Sri Lanka)</option>
-<option class="bg-ink-950 text-surface" value="hill-country">Hill Country & Tea Estates</option>
-<option class="bg-ink-950 text-surface" value="cultural">Cultural Triangle</option>
-<option class="bg-ink-950 text-surface" value="south">Southern Coast & Beaches</option>
-<option class="bg-ink-950 text-surface" value="wildlife">Wildlife & National Parks</option>
-</select>
-</div>
-<div class="flex items-center gap-1 overflow-x-auto no-scrollbar py-1">
-<button class="px-3 py-1.5 bg-primary text-on-primary rounded-lg text-label-sm whitespace-nowrap transition-all" onclick="filterCategory('all')">All Pins</button>
-<button class="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-surface rounded-lg text-label-sm whitespace-nowrap transition-all flex items-center gap-1" onclick="filterCategory('temple')">
-<span class="w-2 h-2 rounded-full bg-signal-amber-500"></span> Temples
-      </button>
-<button class="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-surface rounded-lg text-label-sm whitespace-nowrap transition-all flex items-center gap-1" onclick="filterCategory('nature')">
-<span class="w-2 h-2 rounded-full bg-success-600"></span> Nature
-      </button>
-<button class="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-surface rounded-lg text-label-sm whitespace-nowrap transition-all flex items-center gap-1" onclick="filterCategory('beach')">
-<span class="w-2 h-2 rounded-full bg-sky-300"></span> Beaches
-      </button>
-</div>
-</div>
-<!-- Main Split View: Map Canvas + Results Panel -->
-<div class="flex flex-1 w-full h-full overflow-hidden relative">
-<!-- LEFT: Interactive Map Canvas -->
-<div class="flex-1 h-full relative bg-[#0B1210] overflow-hidden flex items-center justify-center cursor-grab active:cursor-grabbing" data-location="Sri Lanka Interactive Map Canvas" style="">
-<!-- Grid & Cartographic Background Pattern via SVG -->
-<svg class="absolute inset-0 w-full h-full opacity-25 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<pattern height="60" id="grid" patternunits="userSpaceOnUse" width="60">
-<path d="M 60 0 L 0 0 0 60" fill="none" stroke="#8FD3D6" stroke-opacity="0.2" stroke-width="0.5"></path>
-</pattern>
-</defs>
-<rect fill="url(#grid)" height="100%" width="100%"></rect>
-<!-- Topography contour lines simulation -->
-<path d="M-100,100 Q300,50 600,300 T1200,200" fill="none" stroke="#8FD3D6" stroke-opacity="0.15" stroke-width="1"></path>
-<path d="M0,400 Q400,200 800,500 T1400,400" fill="none" stroke="#8FD3D6" stroke-opacity="0.15" stroke-width="1"></path>
-<path d="M100,700 Q500,400 900,800 T1500,600" fill="none" stroke="#8FD3D6" stroke-opacity="0.15" stroke-width="1"></path>
-<!-- Active Route Preview Line (SVG Polyline) -->
-<path class="animate-pulse" d="M 280 220 Q 420 310 520 480 T 720 620" fill="none" id="route-line" stroke="#abefe7" stroke-dasharray="6 4" stroke-width="3"></path>
-</svg>
-<!-- Map Zoom / Layer Controls -->
-<div class="absolute bottom-6 left-6 z-20 flex flex-col gap-2 bg-ink-950/80 backdrop-blur-md p-1.5 rounded-xl shadow-2xl">
-<button class="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-lg text-surface transition-colors" title="Zoom In">
-<span class="material-symbols-outlined text-[20px]">add</span>
-</button>
-<button class="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-lg text-surface transition-colors" title="Zoom Out">
-<span class="material-symbols-outlined text-[20px]">remove</span>
-</button>
-<div class="w-full h-[1px] bg-white/10 my-0.5"></div>
-<button class="w-10 h-10 flex items-center justify-center bg-primary text-on-primary rounded-lg shadow-md transition-colors" title="Current Location">
-<span class="material-symbols-outlined text-[20px]">my_location</span>
-</button>
-</div>
-<!-- Map Scale Bar -->
-<div class="absolute bottom-6 left-20 z-20 hidden md:flex items-center gap-2 bg-ink-950/60 backdrop-blur-sm px-3 py-1.5 rounded-lg text-body-sm text-outline">
-<span>50 km</span>
-<div class="w-20 h-1 bg-outline/40 rounded-full relative overflow-hidden">
-<div class="absolute inset-0 bg-primary-fixed w-3/4"></div>
-</div>
-</div>
-<!-- Custom Category Pins positioned on Map -->
-<!-- Pin 1: Sigiriya (Cultural) -->
-<div class="absolute top-[22%] left-[28%] z-20 group cursor-pointer transform -translate-x-1/2 -translate-y-1/2" onclick="selectDestination(1)">
-<div class="relative flex items-center justify-center w-10 h-10 rounded-full bg-signal-amber-500 text-on-secondary shadow-lg transition-transform group-hover:scale-125">
-<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">temple_buddhist</span>
-<div class="absolute -bottom-1 w-2 h-2 bg-signal-amber-500 transform rotate-45"></div>
-</div>
-<div class="absolute left-1/2 -top-10 transform -translate-x-1/2 bg-ink-950/90 text-surface text-label-sm px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl border border-white/10">
-          Sigiriya Fortress
-        </div>
-</div>
-<!-- Pin 2: Ella Rock (Nature/Hill Country) -->
-<div class="absolute top-[48%] left-[52%] z-20 group cursor-pointer transform -translate-x-1/2 -translate-y-1/2" onclick="selectDestination(2)">
-<div class="relative flex items-center justify-center w-10 h-10 rounded-full bg-success-600 text-on-primary shadow-lg transition-transform group-hover:scale-125">
-<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">landscape</span>
-<div class="absolute -bottom-1 w-2 h-2 bg-success-600 transform rotate-45"></div>
-</div>
-<div class="absolute left-1/2 -top-10 transform -translate-x-1/2 bg-ink-950/90 text-surface text-label-sm px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl border border-white/10">
-          Ella Nine Arch Bridge
-        </div>
-</div>
-<!-- Pin 3: Mirissa Beach (Beach/South) -->
-<div class="absolute top-[75%] left-[70%] z-20 group cursor-pointer transform -translate-x-1/2 -translate-y-1/2" onclick="selectDestination(3)">
-<div class="relative flex items-center justify-center w-10 h-10 rounded-full bg-sky-300 text-on-primary-fixed shadow-lg transition-transform group-hover:scale-125">
-<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">surfing</span>
-<div class="absolute -bottom-1 w-2 h-2 bg-sky-300 transform rotate-45"></div>
-</div>
-<div class="absolute left-1/2 -top-10 transform -translate-x-1/2 bg-ink-950/90 text-surface text-label-sm px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl border border-white/10">
-          Mirissa Coconut Tree Hill
-        </div>
-</div>
-<!-- Pin 4: Kandy Temple of Tooth -->
-<div class="absolute top-[35%] left-[40%] z-20 group cursor-pointer transform -translate-x-1/2 -translate-y-1/2" onclick="selectDestination(4)">
-<div class="relative flex items-center justify-center w-8 h-8 rounded-full bg-signal-amber-500/80 text-on-secondary shadow-md transition-transform group-hover:scale-125">
-<span class="material-symbols-outlined text-[16px]">place</span>
-</div>
-</div>
-<!-- Active Route Overlay Stats Pill -->
-<div class="absolute top-20 right-6 z-20 hidden lg:flex items-center gap-4 bg-ink-950/90 backdrop-blur-md px-4 py-2.5 rounded-xl shadow-2xl border border-white/5">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-primary-fixed">route</span>
-<div>
-<div class="text-label-sm text-outline">Active Route</div>
-<div class="text-body-sm text-surface font-semibold">3 Destinations · 240 km</div>
-</div>
-</div>
-<div class="w-[1px] h-8 bg-white/10"></div>
-<button class="px-3 py-1.5 bg-primary hover:bg-primary-container text-on-primary rounded-lg text-label-sm transition-colors">Optimize Path</button>
-</div>
-</div>
-<!-- RIGHT: Synchronized Collapsible Results Panel -->
-<div class="w-full lg:w-[440px] h-full bg-[#0E1512] flex flex-col z-30 transition-all duration-300 relative shadow-2xl" id="results-panel">
-<!-- Panel Header & Toggle -->
-<div class="p-5 flex items-center justify-between bg-white/[0.02]">
-<div class="flex items-center gap-3">
-<span class="material-symbols-outlined text-primary-fixed">map</span>
-<div>
-<h2 class="text-heading-sm text-surface">Curated Itinerary</h2>
-<p class="text-body-sm text-outline">4 locations along active route</p>
-</div>
-</div>
-<button class="w-9 h-9 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-lg text-surface transition-colors" onclick="togglePanel()" title="Toggle Panel">
-<span class="material-symbols-outlined text-[20px]" id="panel-icon">chevron_right</span>
-</button>
-</div>
-<!-- Search & Filters inside Panel -->
-<div class="px-5 pb-3">
-<div class="relative w-full">
-<span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-outline">
-<span class="material-symbols-outlined text-[18px]">search</span>
-</span>
-<input class="w-full pl-10 pr-4 py-2 bg-white/5 rounded-lg text-surface placeholder:text-outline text-body-sm focus:outline-none focus:ring-1 focus:ring-primary-fixed" placeholder="Filter results in view..." type="text"/>
-</div>
-</div>
-<!-- Scrollable Cards Container -->
-<div class="flex-1 overflow-y-auto px-5 py-2 space-y-4 no-scrollbar">
-<!-- Destination Card 1 -->
-<div class="group bg-white/[0.03] hover:bg-white/[0.06] rounded-xl p-4 transition-all cursor-pointer relative overflow-hidden ring-1 ring-white/5 hover:ring-primary-fixed/50" id="card-1" onclick="selectDestination(1)">
-<div class="flex gap-4">
-<div class="w-24 h-24 rounded-lg bg-cover bg-center shrink-0 relative overflow-hidden" data-alt="Breathtaking aerial view of Sigiriya Rock Fortress rising dramatically above lush green jungle canopy under a misty morning golden sun in Sri Lanka." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCvR5A5EB1Ly0YB_MgA4ZCBLl4gl2AM4izijgWo4sBKr_tdAAnGcPAifYjPULaZTCfyVdisPidAYXLOKtF7389rO07CW6CgqFmEwhy2cGFsSYa61mAsoc_C2fNglfcFNmNxr0rEkdwKF5ky8HeqOl3KyzrPD1hkri2_4PV6uGJNlJcQU1Tnb4ntNtR4A9zzNGWkPiXWSxGmrPZX6j0DYcPX6oRehkgvmbjAe71EvFI_53mrMR_oMPmn')">
-<span class="absolute top-2 left-2 px-2 py-0.5 bg-signal-amber-500 text-on-secondary text-label-sm rounded font-medium">Cultural</span>
-</div>
-<div class="flex flex-col justify-between flex-1 min-w-0">
-<div>
-<div class="flex items-center justify-between">
-<h3 class="text-heading-sm text-surface truncate">Sigiriya Lion Rock</h3>
-<span class="flex items-center text-signal-amber-500 text-body-sm font-semibold">
-<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span> 4.9
-                  </span>
-</div>
-<p class="text-body-sm text-outline line-clamp-2 mt-1">Ancient palace complex with mirror wall, frescoes, and panoramic summit views.</p>
-</div>
-<div class="flex items-center justify-between mt-3 text-label-sm text-outline">
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 3-4 hrs</span>
-<span class="text-primary-fixed font-medium group-hover:underline flex items-center gap-1">View on Map <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span>
-</div>
-</div>
-</div>
-</div>
-<!-- Destination Card 2 -->
-<div class="group bg-white/[0.03] hover:bg-white/[0.06] rounded-xl p-4 transition-all cursor-pointer relative overflow-hidden ring-1 ring-white/5 hover:ring-primary-fixed/50" id="card-2" onclick="selectDestination(2)">
-<div class="flex gap-4">
-<div class="w-24 h-24 rounded-lg bg-cover bg-center shrink-0 relative overflow-hidden" data-alt="Iconic Nine Arch Bridge in Ella Sri Lanka surrounded by dense green tea plantations as a blue train crosses the viaduct in the misty morning light." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB_M_p_3e7k0UjpxLuocbWRqVdDTQohqaz05RQXwe3cUuwaG-H9g6s3du97Y2IG0j9CnwSQ0PwWubEOkqHuo6-Xsg7P3FWuUi13qG4nZDlEYkrrO2XX95-no7NGVpwQgCl8tPnaJNMGLbThjmmviAkoE1SN8K3SddBU4Txvn3qILT2Y1wzNAOXQOH2Y1h5Gzdpo8lFgjTWDAsyBGCtKZs1CmEalfNuHG1aZRSTSFUvUzJXlWVWUvW0Y')">
-<span class="absolute top-2 left-2 px-2 py-0.5 bg-success-600 text-on-primary text-label-sm rounded font-medium">Nature</span>
-</div>
-<div class="flex flex-col justify-between flex-1 min-w-0">
-<div>
-<div class="flex items-center justify-between">
-<h3 class="text-heading-sm text-surface truncate">Nine Arch Bridge, Ella</h3>
-<span class="flex items-center text-signal-amber-500 text-body-sm font-semibold">
-<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span> 4.8
-                  </span>
-</div>
-<p class="text-body-sm text-outline line-clamp-2 mt-1">Architectural marvel built entirely of brick and stone nestled in emerald tea valleys.</p>
-</div>
-<div class="flex items-center justify-between mt-3 text-label-sm text-outline">
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 2 hrs</span>
-<span class="text-primary-fixed font-medium group-hover:underline flex items-center gap-1">View on Map <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span>
-</div>
-</div>
-</div>
-</div>
-<!-- Destination Card 3 -->
-<div class="group bg-white/[0.03] hover:bg-white/[0.06] rounded-xl p-4 transition-all cursor-pointer relative overflow-hidden ring-1 ring-white/5 hover:ring-primary-fixed/50" id="card-3" onclick="selectDestination(3)">
-<div class="flex gap-4">
-<div class="w-24 h-24 rounded-lg bg-cover bg-center shrink-0 relative overflow-hidden" data-alt="Coconut Tree Hill in Mirissa Sri Lanka overlooking turquoise Indian Ocean waves with palm trees swaying in the golden hour tropical breeze." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCDR4bJ9y2JQw1yLlgiOAeNAgskOdg26XRs6gaZePflRjfgNQXjoVS5cjZ6NY5WOgt7nsz8-IGJEBltug4EReD6KSKaixVAhIMsigc6Dv8fSI5OMB0RdIPah21KjLkh8d0fL406F0Rl5rYFg82BpwK8YTbhfmuB35UTePSW5uNYiM0r-3GLBcinTJKOAf4qK9VnStMZaJ2fdMT0Iwsipn00zHgkoCPAlIREaeKJAX2xftRJB4KSk0B0')">
-<span class="absolute top-2 left-2 px-2 py-0.5 bg-sky-300 text-on-primary-fixed text-label-sm rounded font-medium">Beach</span>
-</div>
-<div class="flex flex-col justify-between flex-1 min-w-0">
-<div>
-<div class="flex items-center justify-between">
-<h3 class="text-heading-sm text-surface truncate">Coconut Tree Hill</h3>
-<span class="flex items-center text-signal-amber-500 text-body-sm font-semibold">
-<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span> 4.7
-                  </span>
-</div>
-<p class="text-body-sm text-outline line-clamp-2 mt-1">Scenic promontory lined with majestic palms overlooking the sparkling southern ocean.</p>
-</div>
-<div class="flex items-center justify-between mt-3 text-label-sm text-outline">
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 1 hr</span>
-<span class="text-primary-fixed font-medium group-hover:underline flex items-center gap-1">View on Map <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span>
-</div>
-</div>
-</div>
-</div>
-<!-- Destination Card 4 -->
-<div class="group bg-white/[0.03] hover:bg-white/[0.06] rounded-xl p-4 transition-all cursor-pointer relative overflow-hidden ring-1 ring-white/5 hover:ring-primary-fixed/50" id="card-4" onclick="selectDestination(4)">
-<div class="flex gap-4">
-<div class="w-24 h-24 rounded-lg bg-cover bg-center shrink-0 relative overflow-hidden" data-alt="Temple of the Sacred Tooth Relic in Kandy Sri Lanka reflecting brilliantly at twilight across the serene lake surrounded by misty hills." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDSpp-txqFWqQhLRHg3Rq27Vy9bpmdlOsKQPXV_0mgWZmGu8nHKSRVZumDFmqn-XAwXDA2d954QCZAGbf6bO9NSWGjPMHbXxanHX_udQUOlaSgen9OJD8DEug9PsZEFt6ww8bf0mdp-xvQ8FNwKcR3NVXAepS1Q7XN-u0RulpJ3v96lb_E-gymY9uc0BqTPjt7974w6aDrw674vIrdNRurtWkOf835wTopaNTGta5yL59DPU3Jwf3p5')">
-<span class="absolute top-2 left-2 px-2 py-0.5 bg-signal-amber-500 text-on-secondary text-label-sm rounded font-medium">Cultural</span>
-</div>
-<div class="flex flex-col justify-between flex-1 min-w-0">
-<div>
-<div class="flex items-center justify-between">
-<h3 class="text-heading-sm text-surface truncate">Temple of the Tooth</h3>
-<span class="flex items-center text-signal-amber-500 text-body-sm font-semibold">
-<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span> 4.9
-                  </span>
-</div>
-<p class="text-body-sm text-outline line-clamp-2 mt-1">Sacred Buddhist shrine housing the relic of the tooth of Buddha in royal Kandy.</p>
-</div>
-<div class="flex items-center justify-between mt-3 text-label-sm text-outline">
-<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 2 hrs</span>
-<span class="text-primary-fixed font-medium group-hover:underline flex items-center gap-1">View on Map <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Panel Footer Action -->
-<div class="p-5 bg-white/[0.02]">
-<button class="w-full py-3 bg-primary hover:bg-primary-container text-on-primary rounded-xl text-body-md font-semibold shadow-lg transition-colors flex items-center justify-center gap-2">
-<span class="material-symbols-outlined text-[20px]">directions</span> Start Navigation Mode
-        </button>
-</div>
-</div>
-</div>
-<script>
-    function togglePanel() {
-      const panel = document.getElementById('results-panel');
-      const icon = document.getElementById('panel-icon');
-      if (panel.style.width === '72px') {
-        panel.style.width = '440px';
-        icon.style.transform = 'rotate(0deg)';
-      } else {
-        panel.style.width = '72px';
-        icon.style.transform = 'rotate(180deg)';
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@100..900&family=Inter:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @layer base {
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          overscroll-behavior: none;
+        }
+        main > :first-child {
+          margin-top: 0 !important;
+        }
+        main > :last-child {
+          margin-bottom: 0 !important;
+        }
       }
-    }
-
-    function selectDestination(id) {
-      // Highlight card
-      document.querySelectorAll('[id^="card-"]').forEach(card => {
-        card.classList.remove('ring-2', 'ring-primary-fixed');
-      });
-      const activeCard = document.getElementById('card-' + id);
-      if(activeCard) {
-        activeCard.classList.add('ring-2', 'ring-primary-fixed');
-        activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      ::-webkit-scrollbar {
+        display: none;
       }
-    }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-tint': '#226962',
+              'primary-container': '#0f5c56',
+              'surface-container': '#efeeea',
+              'deep-teal-800': '#0A3F3B',
+              'surface-variant': '#e3e2df',
+              'inverse-on-surface': '#f2f1ed',
+              'on-primary': '#ffffff',
+              primary: '#00433e',
+              'success-600': '#1B7A4C',
+              'on-background': '#1b1c1a',
+              'error-container': '#ffdad6',
+              'on-secondary-fixed-variant': '#6b3b00',
+              tertiary: '#5e2e19',
+              'surface-dim': '#dbdad6',
+              'on-primary-fixed-variant': '#00504a',
+              'secondary-fixed-dim': '#ffb875',
+              'surface-container-highest': '#e3e2df',
+              'on-tertiary-fixed': '#360f01',
+              surface: '#faf9f5',
+              'canvas-0': '#FBFAF6',
+              'on-surface-variant': '#3f4947',
+              'inverse-surface': '#2f312e',
+              'secondary-container': '#fca142',
+              'on-error': '#ffffff',
+              background: '#faf9f5',
+              'canvas-50': '#F1EFE7',
+              'on-surface': '#1b1c1a',
+              'ink-700': '#2B3630',
+              'on-tertiary-container': '#ffb497',
+              'signal-amber-500': '#E08A2C',
+              'coral-500': '#E2604A',
+              'secondary-fixed': '#ffdcc0',
+              'on-primary-fixed': '#00201d',
+              'primary-fixed-dim': '#90d3cb',
+              'outline-variant': '#bec9c6',
+              'sky-300': '#8FD3D6',
+              'primary-fixed': '#abefe7',
+              'on-primary-container': '#8fd2ca',
+              outline: '#6f7977',
+              'on-tertiary': '#ffffff',
+              'tertiary-fixed-dim': '#ffb598',
+              'ink-950': '#0E1512',
+              'surface-container-high': '#e9e8e4',
+              'surface-bright': '#faf9f5',
+              'tertiary-container': '#7a442d',
+              'line-200': '#DEDBD0',
+              'inverse-primary': '#90d3cb',
+              'surface-container-lowest': '#ffffff',
+              'on-tertiary-fixed-variant': '#6c3923',
+              'on-error-container': '#93000a',
+              'tertiary-fixed': '#ffdbce',
+              error: '#ba1a1a',
+              'on-secondary-container': '#6c3b00',
+              'surface-container-low': '#f4f4f0',
+              'on-secondary-fixed': '#2d1600',
+              'on-secondary': '#ffffff',
+              secondary: '#8d4f00',
+              'deep-teal-600': '#0F5C56',
+            },
+            borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem', full: '0.75rem' },
+            spacing: {
+              'unit-4': '16px',
+              'unit-12': '48px',
+              'unit-3': '12px',
+              'unit-24': '96px',
+              base: '4px',
+              'desktop-max-width': '1280px',
+              'unit-16': '64px',
+              'unit-6': '24px',
+              'unit-1': '4px',
+              'unit-2': '8px',
+              'unit-8': '32px',
+            },
+            fontFamily: {
+              'body-lg': ['Inter'],
+              'heading-lg': ['Inter'],
+              'heading-sm': ['Inter'],
+              'body-sm': ['Inter'],
+              'heading-md': ['Inter'],
+              'label-sm': ['Inter'],
+              'display-lg': ['Fraunces'],
+              'display-xl': ['Fraunces'],
+              'body-md': ['Inter'],
+            },
+            fontSize: {
+              'body-lg': ['17px', { lineHeight: '26px', fontWeight: '400' }],
+              'heading-lg': ['28px', { lineHeight: '34px', fontWeight: '600' }],
+              'heading-sm': ['18px', { lineHeight: '24px', fontWeight: '600' }],
+              'body-sm': ['13px', { lineHeight: '18px', fontWeight: '400' }],
+              'heading-md': ['22px', { lineHeight: '28px', fontWeight: '600' }],
+              'label-sm': ['12px', { lineHeight: '16px', fontWeight: '500' }],
+              'display-lg': ['40px', { lineHeight: '46px', fontWeight: '500' }],
+              'display-xl': ['56px', { lineHeight: '60px', fontWeight: '500' }],
+              'body-md': ['15px', { lineHeight: '22px', fontWeight: '400' }],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-surface font-body-md text-on-surface">
+    <header
+      class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"
+    >
+      <div
+        class="h-16 max-w-desktop-max-width mx-auto px-6 lg:px-12 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <img
+            alt="LankaLens Logo"
+            class="h-8 w-auto object-contain"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuASxHhluPoKqeGUtHhACt6hWLRX53k7UyMOs5HW6LvWGNlOOUNdIOof9PVI9FStZircm88YmoQ_ASiA7RKZcjLVFTg8uvk_CmRp-Xu5L8otLgIKXf9Ek108nlk-41ptuvlCAZ-aCxUuQZitsPt79-ro1skm4Fq2DYId4xVpIrSrOwXduqErzUTEi0FzXB4o102BvRJfkt7ZDlUZxBrk16JZ64lPeWkjDJ0BdAmZkl0ShZBr7S4TpC2L"
+          /><span class="font-heading-lg text-primary tracking-tight">LankaLens</span>
+        </div>
+        <div class="hidden lg:flex items-center flex-1 max-w-md mx-8">
+          <div class="relative w-full">
+            <span
+              class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-outline"
+              ><span class="material-symbols-outlined text-[18px]">search</span></span
+            ><input
+              class="w-full pl-10 pr-4 py-2 bg-canvas-50 rounded-lg text-on-surface placeholder:text-outline text-body-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="Search destinations, regions, hotels..."
+              type="text"
+            />
+          </div>
+        </div>
+        <nav
+          class="hidden md:flex items-center gap-1"
+          data-active-classes="bg-primary-container text-on-primary font-bold"
+        >
+          <a
+            class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors"
+            data-path="discover"
+            href="#"
+            >Discover</a
+          ><a
+            aria-current="page"
+            class="px-3 py-2 rounded-lg transition-colors bg-primary-container text-on-primary font-bold"
+            data-path="map"
+            href="#"
+            >Map</a
+          ><a
+            class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors"
+            data-path="planner"
+            href="#"
+            >Planner</a
+          ><a
+            class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors"
+            data-path="ai-assistant"
+            href="#"
+            >AI Assistant</a
+          ><a
+            class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors"
+            data-path="saved"
+            href="#"
+            >Saved</a
+          >
+        </nav>
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="w-full pt-16 bg-surface">
+      <div
+        class="flex flex-col w-full h-[calc(100vh-4rem)] bg-ink-950 text-surface overflow-hidden relative"
+      >
+        <!-- Top Filter & Search Bar Overlay -->
+        <div
+          class="absolute top-4 left-6 z-30 flex items-center gap-3 bg-ink-950/90 backdrop-blur-md p-2 rounded-xl shadow-2xl max-w-2xl w-full"
+        >
+          <div class="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg flex-1">
+            <span class="material-symbols-outlined text-outline text-[18px]">explore</span>
+            <select
+              class="bg-transparent text-surface text-body-sm focus:outline-none w-full cursor-pointer"
+            >
+              <option class="bg-ink-950 text-surface" value="">All Regions (Sri Lanka)</option>
+              <option class="bg-ink-950 text-surface" value="hill-country">
+                Hill Country & Tea Estates
+              </option>
+              <option class="bg-ink-950 text-surface" value="cultural">Cultural Triangle</option>
+              <option class="bg-ink-950 text-surface" value="south">
+                Southern Coast & Beaches
+              </option>
+              <option class="bg-ink-950 text-surface" value="wildlife">
+                Wildlife & National Parks
+              </option>
+            </select>
+          </div>
+          <div class="flex items-center gap-1 overflow-x-auto no-scrollbar py-1">
+            <button
+              class="px-3 py-1.5 bg-primary text-on-primary rounded-lg text-label-sm whitespace-nowrap transition-all"
+              onclick="filterCategory('all')"
+            >
+              All Pins
+            </button>
+            <button
+              class="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-surface rounded-lg text-label-sm whitespace-nowrap transition-all flex items-center gap-1"
+              onclick="filterCategory('temple')"
+            >
+              <span class="w-2 h-2 rounded-full bg-signal-amber-500"></span> Temples
+            </button>
+            <button
+              class="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-surface rounded-lg text-label-sm whitespace-nowrap transition-all flex items-center gap-1"
+              onclick="filterCategory('nature')"
+            >
+              <span class="w-2 h-2 rounded-full bg-success-600"></span> Nature
+            </button>
+            <button
+              class="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-surface rounded-lg text-label-sm whitespace-nowrap transition-all flex items-center gap-1"
+              onclick="filterCategory('beach')"
+            >
+              <span class="w-2 h-2 rounded-full bg-sky-300"></span> Beaches
+            </button>
+          </div>
+        </div>
+        <!-- Main Split View: Map Canvas + Results Panel -->
+        <div class="flex flex-1 w-full h-full overflow-hidden relative">
+          <!-- LEFT: Interactive Map Canvas -->
+          <div
+            class="flex-1 h-full relative bg-[#0B1210] overflow-hidden flex items-center justify-center cursor-grab active:cursor-grabbing"
+            data-location="Sri Lanka Interactive Map Canvas"
+            style=""
+          >
+            <!-- Grid & Cartographic Background Pattern via SVG -->
+            <svg
+              class="absolute inset-0 w-full h-full opacity-25 pointer-events-none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <pattern height="60" id="grid" patternunits="userSpaceOnUse" width="60">
+                  <path
+                    d="M 60 0 L 0 0 0 60"
+                    fill="none"
+                    stroke="#8FD3D6"
+                    stroke-opacity="0.2"
+                    stroke-width="0.5"
+                  ></path>
+                </pattern>
+              </defs>
+              <rect fill="url(#grid)" height="100%" width="100%"></rect>
+              <!-- Topography contour lines simulation -->
+              <path
+                d="M-100,100 Q300,50 600,300 T1200,200"
+                fill="none"
+                stroke="#8FD3D6"
+                stroke-opacity="0.15"
+                stroke-width="1"
+              ></path>
+              <path
+                d="M0,400 Q400,200 800,500 T1400,400"
+                fill="none"
+                stroke="#8FD3D6"
+                stroke-opacity="0.15"
+                stroke-width="1"
+              ></path>
+              <path
+                d="M100,700 Q500,400 900,800 T1500,600"
+                fill="none"
+                stroke="#8FD3D6"
+                stroke-opacity="0.15"
+                stroke-width="1"
+              ></path>
+              <!-- Active Route Preview Line (SVG Polyline) -->
+              <path
+                class="animate-pulse"
+                d="M 280 220 Q 420 310 520 480 T 720 620"
+                fill="none"
+                id="route-line"
+                stroke="#abefe7"
+                stroke-dasharray="6 4"
+                stroke-width="3"
+              ></path>
+            </svg>
+            <!-- Map Zoom / Layer Controls -->
+            <div
+              class="absolute bottom-6 left-6 z-20 flex flex-col gap-2 bg-ink-950/80 backdrop-blur-md p-1.5 rounded-xl shadow-2xl"
+            >
+              <button
+                class="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-lg text-surface transition-colors"
+                title="Zoom In"
+              >
+                <span class="material-symbols-outlined text-[20px]">add</span>
+              </button>
+              <button
+                class="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-lg text-surface transition-colors"
+                title="Zoom Out"
+              >
+                <span class="material-symbols-outlined text-[20px]">remove</span>
+              </button>
+              <div class="w-full h-[1px] bg-white/10 my-0.5"></div>
+              <button
+                class="w-10 h-10 flex items-center justify-center bg-primary text-on-primary rounded-lg shadow-md transition-colors"
+                title="Current Location"
+              >
+                <span class="material-symbols-outlined text-[20px]">my_location</span>
+              </button>
+            </div>
+            <!-- Map Scale Bar -->
+            <div
+              class="absolute bottom-6 left-20 z-20 hidden md:flex items-center gap-2 bg-ink-950/60 backdrop-blur-sm px-3 py-1.5 rounded-lg text-body-sm text-outline"
+            >
+              <span>50 km</span>
+              <div class="w-20 h-1 bg-outline/40 rounded-full relative overflow-hidden">
+                <div class="absolute inset-0 bg-primary-fixed w-3/4"></div>
+              </div>
+            </div>
+            <!-- Custom Category Pins positioned on Map -->
+            <!-- Pin 1: Sigiriya (Cultural) -->
+            <div
+              class="absolute top-[22%] left-[28%] z-20 group cursor-pointer transform -translate-x-1/2 -translate-y-1/2"
+              onclick="selectDestination(1)"
+            >
+              <div
+                class="relative flex items-center justify-center w-10 h-10 rounded-full bg-signal-amber-500 text-on-secondary shadow-lg transition-transform group-hover:scale-125"
+              >
+                <span
+                  class="material-symbols-outlined text-[20px]"
+                  style="font-variation-settings: 'FILL' 1"
+                  >temple_buddhist</span
+                >
+                <div
+                  class="absolute -bottom-1 w-2 h-2 bg-signal-amber-500 transform rotate-45"
+                ></div>
+              </div>
+              <div
+                class="absolute left-1/2 -top-10 transform -translate-x-1/2 bg-ink-950/90 text-surface text-label-sm px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl border border-white/10"
+              >
+                Sigiriya Fortress
+              </div>
+            </div>
+            <!-- Pin 2: Ella Rock (Nature/Hill Country) -->
+            <div
+              class="absolute top-[48%] left-[52%] z-20 group cursor-pointer transform -translate-x-1/2 -translate-y-1/2"
+              onclick="selectDestination(2)"
+            >
+              <div
+                class="relative flex items-center justify-center w-10 h-10 rounded-full bg-success-600 text-on-primary shadow-lg transition-transform group-hover:scale-125"
+              >
+                <span
+                  class="material-symbols-outlined text-[20px]"
+                  style="font-variation-settings: 'FILL' 1"
+                  >landscape</span
+                >
+                <div class="absolute -bottom-1 w-2 h-2 bg-success-600 transform rotate-45"></div>
+              </div>
+              <div
+                class="absolute left-1/2 -top-10 transform -translate-x-1/2 bg-ink-950/90 text-surface text-label-sm px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl border border-white/10"
+              >
+                Ella Nine Arch Bridge
+              </div>
+            </div>
+            <!-- Pin 3: Mirissa Beach (Beach/South) -->
+            <div
+              class="absolute top-[75%] left-[70%] z-20 group cursor-pointer transform -translate-x-1/2 -translate-y-1/2"
+              onclick="selectDestination(3)"
+            >
+              <div
+                class="relative flex items-center justify-center w-10 h-10 rounded-full bg-sky-300 text-on-primary-fixed shadow-lg transition-transform group-hover:scale-125"
+              >
+                <span
+                  class="material-symbols-outlined text-[20px]"
+                  style="font-variation-settings: 'FILL' 1"
+                  >surfing</span
+                >
+                <div class="absolute -bottom-1 w-2 h-2 bg-sky-300 transform rotate-45"></div>
+              </div>
+              <div
+                class="absolute left-1/2 -top-10 transform -translate-x-1/2 bg-ink-950/90 text-surface text-label-sm px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl border border-white/10"
+              >
+                Mirissa Coconut Tree Hill
+              </div>
+            </div>
+            <!-- Pin 4: Kandy Temple of Tooth -->
+            <div
+              class="absolute top-[35%] left-[40%] z-20 group cursor-pointer transform -translate-x-1/2 -translate-y-1/2"
+              onclick="selectDestination(4)"
+            >
+              <div
+                class="relative flex items-center justify-center w-8 h-8 rounded-full bg-signal-amber-500/80 text-on-secondary shadow-md transition-transform group-hover:scale-125"
+              >
+                <span class="material-symbols-outlined text-[16px]">place</span>
+              </div>
+            </div>
+            <!-- Active Route Overlay Stats Pill -->
+            <div
+              class="absolute top-20 right-6 z-20 hidden lg:flex items-center gap-4 bg-ink-950/90 backdrop-blur-md px-4 py-2.5 rounded-xl shadow-2xl border border-white/5"
+            >
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary-fixed">route</span>
+                <div>
+                  <div class="text-label-sm text-outline">Active Route</div>
+                  <div class="text-body-sm text-surface font-semibold">3 Destinations · 240 km</div>
+                </div>
+              </div>
+              <div class="w-[1px] h-8 bg-white/10"></div>
+              <button
+                class="px-3 py-1.5 bg-primary hover:bg-primary-container text-on-primary rounded-lg text-label-sm transition-colors"
+              >
+                Optimize Path
+              </button>
+            </div>
+          </div>
+          <!-- RIGHT: Synchronized Collapsible Results Panel -->
+          <div
+            class="w-full lg:w-[440px] h-full bg-[#0E1512] flex flex-col z-30 transition-all duration-300 relative shadow-2xl"
+            id="results-panel"
+          >
+            <!-- Panel Header & Toggle -->
+            <div class="p-5 flex items-center justify-between bg-white/[0.02]">
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary-fixed">map</span>
+                <div>
+                  <h2 class="text-heading-sm text-surface">Curated Itinerary</h2>
+                  <p class="text-body-sm text-outline">4 locations along active route</p>
+                </div>
+              </div>
+              <button
+                class="w-9 h-9 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-lg text-surface transition-colors"
+                onclick="togglePanel()"
+                title="Toggle Panel"
+              >
+                <span class="material-symbols-outlined text-[20px]" id="panel-icon"
+                  >chevron_right</span
+                >
+              </button>
+            </div>
+            <!-- Search & Filters inside Panel -->
+            <div class="px-5 pb-3">
+              <div class="relative w-full">
+                <span
+                  class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-outline"
+                >
+                  <span class="material-symbols-outlined text-[18px]">search</span>
+                </span>
+                <input
+                  class="w-full pl-10 pr-4 py-2 bg-white/5 rounded-lg text-surface placeholder:text-outline text-body-sm focus:outline-none focus:ring-1 focus:ring-primary-fixed"
+                  placeholder="Filter results in view..."
+                  type="text"
+                />
+              </div>
+            </div>
+            <!-- Scrollable Cards Container -->
+            <div class="flex-1 overflow-y-auto px-5 py-2 space-y-4 no-scrollbar">
+              <!-- Destination Card 1 -->
+              <div
+                class="group bg-white/[0.03] hover:bg-white/[0.06] rounded-xl p-4 transition-all cursor-pointer relative overflow-hidden ring-1 ring-white/5 hover:ring-primary-fixed/50"
+                id="card-1"
+                onclick="selectDestination(1)"
+              >
+                <div class="flex gap-4">
+                  <div
+                    class="w-24 h-24 rounded-lg bg-cover bg-center shrink-0 relative overflow-hidden"
+                    data-alt="Breathtaking aerial view of Sigiriya Rock Fortress rising dramatically above lush green jungle canopy under a misty morning golden sun in Sri Lanka."
+                    style="
+                      background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCvR5A5EB1Ly0YB_MgA4ZCBLl4gl2AM4izijgWo4sBKr_tdAAnGcPAifYjPULaZTCfyVdisPidAYXLOKtF7389rO07CW6CgqFmEwhy2cGFsSYa61mAsoc_C2fNglfcFNmNxr0rEkdwKF5ky8HeqOl3KyzrPD1hkri2_4PV6uGJNlJcQU1Tnb4ntNtR4A9zzNGWkPiXWSxGmrPZX6j0DYcPX6oRehkgvmbjAe71EvFI_53mrMR_oMPmn');
+                    "
+                  >
+                    <span
+                      class="absolute top-2 left-2 px-2 py-0.5 bg-signal-amber-500 text-on-secondary text-label-sm rounded font-medium"
+                      >Cultural</span
+                    >
+                  </div>
+                  <div class="flex flex-col justify-between flex-1 min-w-0">
+                    <div>
+                      <div class="flex items-center justify-between">
+                        <h3 class="text-heading-sm text-surface truncate">Sigiriya Lion Rock</h3>
+                        <span
+                          class="flex items-center text-signal-amber-500 text-body-sm font-semibold"
+                        >
+                          <span
+                            class="material-symbols-outlined text-[16px]"
+                            style="font-variation-settings: 'FILL' 1"
+                            >star</span
+                          >
+                          4.9
+                        </span>
+                      </div>
+                      <p class="text-body-sm text-outline line-clamp-2 mt-1">
+                        Ancient palace complex with mirror wall, frescoes, and panoramic summit
+                        views.
+                      </p>
+                    </div>
+                    <div class="flex items-center justify-between mt-3 text-label-sm text-outline">
+                      <span class="flex items-center gap-1"
+                        ><span class="material-symbols-outlined text-[14px]">schedule</span> 3-4
+                        hrs</span
+                      >
+                      <span
+                        class="text-primary-fixed font-medium group-hover:underline flex items-center gap-1"
+                        >View on Map
+                        <span class="material-symbols-outlined text-[14px]"
+                          >arrow_forward</span
+                        ></span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Destination Card 2 -->
+              <div
+                class="group bg-white/[0.03] hover:bg-white/[0.06] rounded-xl p-4 transition-all cursor-pointer relative overflow-hidden ring-1 ring-white/5 hover:ring-primary-fixed/50"
+                id="card-2"
+                onclick="selectDestination(2)"
+              >
+                <div class="flex gap-4">
+                  <div
+                    class="w-24 h-24 rounded-lg bg-cover bg-center shrink-0 relative overflow-hidden"
+                    data-alt="Iconic Nine Arch Bridge in Ella Sri Lanka surrounded by dense green tea plantations as a blue train crosses the viaduct in the misty morning light."
+                    style="
+                      background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB_M_p_3e7k0UjpxLuocbWRqVdDTQohqaz05RQXwe3cUuwaG-H9g6s3du97Y2IG0j9CnwSQ0PwWubEOkqHuo6-Xsg7P3FWuUi13qG4nZDlEYkrrO2XX95-no7NGVpwQgCl8tPnaJNMGLbThjmmviAkoE1SN8K3SddBU4Txvn3qILT2Y1wzNAOXQOH2Y1h5Gzdpo8lFgjTWDAsyBGCtKZs1CmEalfNuHG1aZRSTSFUvUzJXlWVWUvW0Y');
+                    "
+                  >
+                    <span
+                      class="absolute top-2 left-2 px-2 py-0.5 bg-success-600 text-on-primary text-label-sm rounded font-medium"
+                      >Nature</span
+                    >
+                  </div>
+                  <div class="flex flex-col justify-between flex-1 min-w-0">
+                    <div>
+                      <div class="flex items-center justify-between">
+                        <h3 class="text-heading-sm text-surface truncate">
+                          Nine Arch Bridge, Ella
+                        </h3>
+                        <span
+                          class="flex items-center text-signal-amber-500 text-body-sm font-semibold"
+                        >
+                          <span
+                            class="material-symbols-outlined text-[16px]"
+                            style="font-variation-settings: 'FILL' 1"
+                            >star</span
+                          >
+                          4.8
+                        </span>
+                      </div>
+                      <p class="text-body-sm text-outline line-clamp-2 mt-1">
+                        Architectural marvel built entirely of brick and stone nestled in emerald
+                        tea valleys.
+                      </p>
+                    </div>
+                    <div class="flex items-center justify-between mt-3 text-label-sm text-outline">
+                      <span class="flex items-center gap-1"
+                        ><span class="material-symbols-outlined text-[14px]">schedule</span> 2
+                        hrs</span
+                      >
+                      <span
+                        class="text-primary-fixed font-medium group-hover:underline flex items-center gap-1"
+                        >View on Map
+                        <span class="material-symbols-outlined text-[14px]"
+                          >arrow_forward</span
+                        ></span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Destination Card 3 -->
+              <div
+                class="group bg-white/[0.03] hover:bg-white/[0.06] rounded-xl p-4 transition-all cursor-pointer relative overflow-hidden ring-1 ring-white/5 hover:ring-primary-fixed/50"
+                id="card-3"
+                onclick="selectDestination(3)"
+              >
+                <div class="flex gap-4">
+                  <div
+                    class="w-24 h-24 rounded-lg bg-cover bg-center shrink-0 relative overflow-hidden"
+                    data-alt="Coconut Tree Hill in Mirissa Sri Lanka overlooking turquoise Indian Ocean waves with palm trees swaying in the golden hour tropical breeze."
+                    style="
+                      background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCDR4bJ9y2JQw1yLlgiOAeNAgskOdg26XRs6gaZePflRjfgNQXjoVS5cjZ6NY5WOgt7nsz8-IGJEBltug4EReD6KSKaixVAhIMsigc6Dv8fSI5OMB0RdIPah21KjLkh8d0fL406F0Rl5rYFg82BpwK8YTbhfmuB35UTePSW5uNYiM0r-3GLBcinTJKOAf4qK9VnStMZaJ2fdMT0Iwsipn00zHgkoCPAlIREaeKJAX2xftRJB4KSk0B0');
+                    "
+                  >
+                    <span
+                      class="absolute top-2 left-2 px-2 py-0.5 bg-sky-300 text-on-primary-fixed text-label-sm rounded font-medium"
+                      >Beach</span
+                    >
+                  </div>
+                  <div class="flex flex-col justify-between flex-1 min-w-0">
+                    <div>
+                      <div class="flex items-center justify-between">
+                        <h3 class="text-heading-sm text-surface truncate">Coconut Tree Hill</h3>
+                        <span
+                          class="flex items-center text-signal-amber-500 text-body-sm font-semibold"
+                        >
+                          <span
+                            class="material-symbols-outlined text-[16px]"
+                            style="font-variation-settings: 'FILL' 1"
+                            >star</span
+                          >
+                          4.7
+                        </span>
+                      </div>
+                      <p class="text-body-sm text-outline line-clamp-2 mt-1">
+                        Scenic promontory lined with majestic palms overlooking the sparkling
+                        southern ocean.
+                      </p>
+                    </div>
+                    <div class="flex items-center justify-between mt-3 text-label-sm text-outline">
+                      <span class="flex items-center gap-1"
+                        ><span class="material-symbols-outlined text-[14px]">schedule</span> 1
+                        hr</span
+                      >
+                      <span
+                        class="text-primary-fixed font-medium group-hover:underline flex items-center gap-1"
+                        >View on Map
+                        <span class="material-symbols-outlined text-[14px]"
+                          >arrow_forward</span
+                        ></span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Destination Card 4 -->
+              <div
+                class="group bg-white/[0.03] hover:bg-white/[0.06] rounded-xl p-4 transition-all cursor-pointer relative overflow-hidden ring-1 ring-white/5 hover:ring-primary-fixed/50"
+                id="card-4"
+                onclick="selectDestination(4)"
+              >
+                <div class="flex gap-4">
+                  <div
+                    class="w-24 h-24 rounded-lg bg-cover bg-center shrink-0 relative overflow-hidden"
+                    data-alt="Temple of the Sacred Tooth Relic in Kandy Sri Lanka reflecting brilliantly at twilight across the serene lake surrounded by misty hills."
+                    style="
+                      background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDSpp-txqFWqQhLRHg3Rq27Vy9bpmdlOsKQPXV_0mgWZmGu8nHKSRVZumDFmqn-XAwXDA2d954QCZAGbf6bO9NSWGjPMHbXxanHX_udQUOlaSgen9OJD8DEug9PsZEFt6ww8bf0mdp-xvQ8FNwKcR3NVXAepS1Q7XN-u0RulpJ3v96lb_E-gymY9uc0BqTPjt7974w6aDrw674vIrdNRurtWkOf835wTopaNTGta5yL59DPU3Jwf3p5');
+                    "
+                  >
+                    <span
+                      class="absolute top-2 left-2 px-2 py-0.5 bg-signal-amber-500 text-on-secondary text-label-sm rounded font-medium"
+                      >Cultural</span
+                    >
+                  </div>
+                  <div class="flex flex-col justify-between flex-1 min-w-0">
+                    <div>
+                      <div class="flex items-center justify-between">
+                        <h3 class="text-heading-sm text-surface truncate">Temple of the Tooth</h3>
+                        <span
+                          class="flex items-center text-signal-amber-500 text-body-sm font-semibold"
+                        >
+                          <span
+                            class="material-symbols-outlined text-[16px]"
+                            style="font-variation-settings: 'FILL' 1"
+                            >star</span
+                          >
+                          4.9
+                        </span>
+                      </div>
+                      <p class="text-body-sm text-outline line-clamp-2 mt-1">
+                        Sacred Buddhist shrine housing the relic of the tooth of Buddha in royal
+                        Kandy.
+                      </p>
+                    </div>
+                    <div class="flex items-center justify-between mt-3 text-label-sm text-outline">
+                      <span class="flex items-center gap-1"
+                        ><span class="material-symbols-outlined text-[14px]">schedule</span> 2
+                        hrs</span
+                      >
+                      <span
+                        class="text-primary-fixed font-medium group-hover:underline flex items-center gap-1"
+                        >View on Map
+                        <span class="material-symbols-outlined text-[14px]"
+                          >arrow_forward</span
+                        ></span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Panel Footer Action -->
+            <div class="p-5 bg-white/[0.02]">
+              <button
+                class="w-full py-3 bg-primary hover:bg-primary-container text-on-primary rounded-xl text-body-md font-semibold shadow-lg transition-colors flex items-center justify-center gap-2"
+              >
+                <span class="material-symbols-outlined text-[20px]">directions</span> Start
+                Navigation Mode
+              </button>
+            </div>
+          </div>
+        </div>
+        <script>
+          function togglePanel() {
+            const panel = document.getElementById('results-panel');
+            const icon = document.getElementById('panel-icon');
+            if (panel.style.width === '72px') {
+              panel.style.width = '440px';
+              icon.style.transform = 'rotate(0deg)';
+            } else {
+              panel.style.width = '72px';
+              icon.style.transform = 'rotate(180deg)';
+            }
+          }
 
-    function filterCategory(category) {
-      // Interactive filter feedback
-      event.currentTarget.parentElement.querySelectorAll('button').forEach(btn => {
-        btn.classList.remove('bg-primary', 'text-on-primary');
-        btn.classList.add('bg-white/5', 'text-surface');
-      });
-      event.currentTarget.classList.remove('bg-white/5', 'text-surface');
-      event.currentTarget.classList.add('bg-primary', 'text-on-primary');
-    }
-  </script>
-</div></main><footer class="w-full bg-surface-container-low py-12"><div class="max-w-desktop-max-width mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-6 text-on-surface-variant text-body-sm"><div>© 2024 LankaLens. All rights reserved.</div><div class="flex gap-6"><a class="hover:text-on-surface" href="#">Privacy Policy</a><a class="hover:text-on-surface" href="#">Terms of Service</a><a class="hover:text-on-surface" href="#">Contact</a></div></div></footer></body></html>
+          function selectDestination(id) {
+            // Highlight card
+            document.querySelectorAll('[id^="card-"]').forEach((card) => {
+              card.classList.remove('ring-2', 'ring-primary-fixed');
+            });
+            const activeCard = document.getElementById('card-' + id);
+            if (activeCard) {
+              activeCard.classList.add('ring-2', 'ring-primary-fixed');
+              activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+          }
+
+          function filterCategory(category) {
+            // Interactive filter feedback
+            event.currentTarget.parentElement.querySelectorAll('button').forEach((btn) => {
+              btn.classList.remove('bg-primary', 'text-on-primary');
+              btn.classList.add('bg-white/5', 'text-surface');
+            });
+            event.currentTarget.classList.remove('bg-white/5', 'text-surface');
+            event.currentTarget.classList.add('bg-primary', 'text-on-primary');
+          }
+        </script>
+      </div>
+    </main>
+    <footer class="w-full bg-surface-container-low py-12">
+      <div
+        class="max-w-desktop-max-width mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-6 text-on-surface-variant text-body-sm"
+      >
+        <div>© 2024 LankaLens. All rights reserved.</div>
+        <div class="flex gap-6">
+          <a class="hover:text-on-surface" href="#">Privacy Policy</a
+          ><a class="hover:text-on-surface" href="#">Terms of Service</a
+          ><a class="hover:text-on-surface" href="#">Contact</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

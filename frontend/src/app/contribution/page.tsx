@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import Image from 'next/image';
-import Link from 'next/link';
 
 // Zod Schema for validation
 const contributionSchema = z.object({
@@ -50,13 +49,18 @@ export default function ContributionPage() {
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-12">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-body-sm tracking-wider uppercase text-primary font-bold">Community Portal</span>
+                <span className="text-body-sm tracking-wider uppercase text-primary font-bold">
+                  Community Portal
+                </span>
                 <span className="text-outline">/</span>
                 <span className="text-body-sm text-on-surface-variant">Contribution Form</span>
               </div>
-              <h1 className="font-display-lg text-primary tracking-tight mb-2">Contribute a Discovery</h1>
+              <h1 className="font-display-lg text-primary tracking-tight mb-2">
+                Contribute a Discovery
+              </h1>
               <p className="text-body-lg text-on-surface-variant max-w-2xl">
-                Share hidden tea estates, sacred shrines, or secluded coastal spots with the LankaLens community.
+                Share hidden tea estates, sacred shrines, or secluded coastal spots with the
+                LankaLens community.
               </p>
             </div>
 
@@ -67,12 +71,18 @@ export default function ContributionPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-heading-sm text-primary">Level 3 Cartographer</span>
-                  <span className="bg-primary/10 text-primary text-label-sm px-2 py-0.5 rounded-full font-bold">Active</span>
+                  <span className="bg-primary/10 text-primary text-label-sm px-2 py-0.5 rounded-full font-bold">
+                    Active
+                  </span>
                 </div>
                 <div className="flex items-center gap-4 mt-1 text-body-sm text-on-surface-variant">
-                  <span><strong className="text-on-surface">14</strong> Contributions</span>
+                  <span>
+                    <strong className="text-on-surface">14</strong> Contributions
+                  </span>
                   <span className="w-1 h-1 rounded-full bg-outline" />
-                  <span><strong className="text-on-surface">1,240</strong> Rep Points</span>
+                  <span>
+                    <strong className="text-on-surface">1,240</strong> Rep Points
+                  </span>
                 </div>
               </div>
             </div>
@@ -83,10 +93,15 @@ export default function ContributionPage() {
             <div className="lg:col-span-8 bg-canvas-50 rounded-2xl p-8 lg:p-10 shadow-sm border border-line-200">
               {submitted ? (
                 <div className="p-8 bg-surface rounded-xl border border-primary text-center flex flex-col items-center gap-3">
-                  <span className="material-symbols-outlined text-primary text-[48px]">verified_user</span>
-                  <h2 className="font-display-lg text-primary">Discovery Transmitted for AI Verification</h2>
+                  <span className="material-symbols-outlined text-primary text-[48px]">
+                    verified_user
+                  </span>
+                  <h2 className="font-display-lg text-primary">
+                    Discovery Transmitted for AI Verification
+                  </h2>
                   <p className="text-body-md text-on-surface-variant max-w-lg">
-                    Thank you! Your submission is being analyzed for cartographic accuracy. You have earned +50 Cartographer Points.
+                    Thank you! Your submission is being analyzed for cartographic accuracy. You have
+                    earned +50 Cartographer Points.
                   </p>
                   <button
                     onClick={() => setSubmitted(false)}
@@ -109,7 +124,9 @@ export default function ContributionPage() {
                         placeholder="e.g., Secret Waterfall at Ella Gap"
                         className="w-full px-4 py-3 bg-surface rounded-lg text-body-md text-on-surface placeholder:text-outline border border-line-200 focus:outline-none focus:ring-2 focus:ring-primary"
                       />
-                      {errors.title && <p className="text-coral-500 text-body-sm mt-1">{errors.title.message}</p>}
+                      {errors.title && (
+                        <p className="text-coral-500 text-body-sm mt-1">{errors.title.message}</p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
@@ -146,13 +163,18 @@ export default function ContributionPage() {
                     <div className="border-2 border-dashed border-line-200 rounded-xl p-8 text-center bg-surface hover:bg-surface-container transition-all cursor-pointer relative group">
                       <div className="flex flex-col items-center justify-center space-y-3">
                         <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                          <span className="material-symbols-outlined text-[24px]">cloud_upload</span>
+                          <span className="material-symbols-outlined text-[24px]">
+                            cloud_upload
+                          </span>
                         </div>
                         <div>
                           <p className="text-body-md font-medium text-on-surface">
-                            Drag and drop photos here, or <span className="text-primary underline">browse</span>
+                            Drag and drop photos here, or{' '}
+                            <span className="text-primary underline">browse</span>
                           </p>
-                          <p className="text-body-sm text-outline mt-1">High-res JPEG, PNG up to 25MB. WCAG compliant alt-text required below.</p>
+                          <p className="text-body-sm text-outline mt-1">
+                            High-res JPEG, PNG up to 25MB. WCAG compliant alt-text required below.
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -163,7 +185,9 @@ export default function ContributionPage() {
                         placeholder="Describe the image for screen readers (e.g., A misty green tea plantation at sunrise)..."
                         className="w-full px-4 py-2.5 bg-surface border border-line-200 rounded-lg text-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary"
                       />
-                      {errors.altText && <p className="text-coral-500 text-body-sm mt-1">{errors.altText.message}</p>}
+                      {errors.altText && (
+                        <p className="text-coral-500 text-body-sm mt-1">{errors.altText.message}</p>
+                      )}
                     </div>
                   </div>
 
@@ -174,24 +198,42 @@ export default function ContributionPage() {
                         Location Pin & Coordinates
                       </label>
                       <span className="text-body-sm text-primary font-semibold flex items-center gap-1 cursor-pointer hover:underline">
-                        <span className="material-symbols-outlined text-[16px]">my_location</span> Detect GPS Location
+                        <span className="material-symbols-outlined text-[16px]">my_location</span>{' '}
+                        Detect GPS Location
                       </span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="md:col-span-2 relative h-40 rounded-xl overflow-hidden shadow-inner border border-line-200">
-                        <Image src="/stitch_images/map.png" alt="Location preview" fill className="object-cover" />
+                        <Image
+                          src="/stitch_images/map.png"
+                          alt="Location preview"
+                          fill
+                          className="object-cover"
+                        />
                         <div className="absolute inset-0 bg-primary/10 flex items-center justify-center">
-                          <span className="material-symbols-outlined text-[36px] text-coral-500 drop-shadow-md">location_pin</span>
+                          <span className="material-symbols-outlined text-[36px] text-coral-500 drop-shadow-md">
+                            location_pin
+                          </span>
                         </div>
                       </div>
                       <div className="flex flex-col justify-between bg-surface p-4 rounded-xl border border-line-200">
                         <div>
-                          <span className="text-label-sm text-outline uppercase font-semibold">Coordinates</span>
-                          <p className="text-body-md font-mono text-on-surface mt-1 font-bold">6.8667° N, 81.0465° E</p>
-                          <p className="text-body-sm text-on-surface-variant mt-1">Ella Rock Foothills</p>
+                          <span className="text-label-sm text-outline uppercase font-semibold">
+                            Coordinates
+                          </span>
+                          <p className="text-body-md font-mono text-on-surface mt-1 font-bold">
+                            6.8667° N, 81.0465° E
+                          </p>
+                          <p className="text-body-sm text-on-surface-variant mt-1">
+                            Ella Rock Foothills
+                          </p>
                         </div>
-                        <button type="button" className="w-full py-2 px-3 bg-canvas-50 hover:bg-surface-container text-on-surface rounded-lg text-body-sm font-semibold transition-colors flex items-center justify-center gap-2 border border-line-200">
-                          <span className="material-symbols-outlined text-[18px]">map</span> Pick on Map
+                        <button
+                          type="button"
+                          className="w-full py-2 px-3 bg-canvas-50 hover:bg-surface-container text-on-surface rounded-lg text-body-sm font-semibold transition-colors flex items-center justify-center gap-2 border border-line-200"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">map</span> Pick on
+                          Map
                         </button>
                       </div>
                     </div>
@@ -209,7 +251,9 @@ export default function ContributionPage() {
                         placeholder="Provide context, best times to visit, hidden pathways, or cultural significance..."
                         className="w-full px-4 py-3 bg-surface border border-line-200 rounded-lg text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary"
                       />
-                      {errors.notes && <p className="text-coral-500 text-body-sm mt-1">{errors.notes.message}</p>}
+                      {errors.notes && (
+                        <p className="text-coral-500 text-body-sm mt-1">{errors.notes.message}</p>
+                      )}
                     </div>
 
                     <div>
@@ -228,7 +272,9 @@ export default function ContributionPage() {
                   {/* Submit Action */}
                   <div className="pt-4 flex items-center justify-between border-t border-line-200">
                     <div className="flex items-center gap-2 text-body-sm text-on-surface-variant">
-                      <span className="material-symbols-outlined text-[18px] text-success-600">verified_user</span>
+                      <span className="material-symbols-outlined text-[18px] text-success-600">
+                        verified_user
+                      </span>
                       <span>Verified by LankaLens AI Integrity Guard</span>
                     </div>
 
@@ -250,15 +296,21 @@ export default function ContributionPage() {
                 <h3 className="font-heading-md text-on-surface mb-3">Moderation Guidelines</h3>
                 <ul className="space-y-2.5 text-body-sm text-on-surface-variant">
                   <li className="flex items-start gap-2">
-                    <span className="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                    <span className="material-symbols-outlined text-primary text-[18px]">
+                      check_circle
+                    </span>
                     <span>High-resolution unedited photos preferred</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                    <span className="material-symbols-outlined text-primary text-[18px]">
+                      check_circle
+                    </span>
                     <span>Exact GPS coordinate pinpoint required</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+                    <span className="material-symbols-outlined text-primary text-[18px]">
+                      check_circle
+                    </span>
                     <span>Respect sacred and private property boundaries</span>
                   </li>
                 </ul>

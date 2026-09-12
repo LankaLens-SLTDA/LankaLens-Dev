@@ -1,10 +1,12 @@
 import json
-from typing import List, Union
+
 from pydantic import field_validator
+
 try:
     from pydantic_settings import BaseSettings, SettingsConfigDict
 except ImportError:
     from pydantic import BaseSettings
+
     SettingsConfigDict = None
 
 
@@ -18,7 +20,7 @@ class Settings(BaseSettings):
     HOST: str = "127.0.0.1"
 
     # Security & CORS
-    CORS_ORIGINS: Union[List[str], str] = [
+    CORS_ORIGINS: list[str] | str = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
     ]
@@ -33,7 +35,7 @@ class Settings(BaseSettings):
 
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
-    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
+    def assemble_cors_origins(cls, v: str | list[str]) -> list[str]:
         if isinstance(v, str):
             if not v.strip():
                 return []
@@ -47,12 +49,16 @@ class Settings(BaseSettings):
             return v
         return []
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore",
-        case_sensitive=True
-    ) if SettingsConfigDict else {}
+    model_config = (
+        SettingsConfigDict(
+            env_file=".env",
+            env_file_encoding="utf-8",
+            extra="ignore",
+            case_sensitive=True,
+        )
+        if SettingsConfigDict
+        else {}
+    )
 
 
 settings = Settings()

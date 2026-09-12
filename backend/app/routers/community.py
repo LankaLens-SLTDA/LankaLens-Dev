@@ -1,25 +1,18 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
-from typing import List, Optional
+
+from app.schemas.community import Post
 
 router = APIRouter(prefix="/api/community", tags=["Community Feed"])
 
-class Post(BaseModel):
-    id: int
-    author: str
-    role: str
-    avatar: str
-    time: str
-    verified: bool
-    location: str
-    image: str
-    caption: str
-    tags: List[str]
-    ecoPoints: int
-    commentsCount: int
 
-@router.get("/posts", response_model=List[Post])
+@router.get(
+    "/posts",
+    response_model=list[Post],
+    summary="Get community feed posts",
+    description="Retrieve verified explorer posts, eco-guide updates, and hidden travel discoveries.",
+)
 def get_community_posts():
+    """Fetch recent community social posts and eco contributions."""
     return [
         {
             "id": 1,

@@ -34,7 +34,9 @@ export default function PlannerPage() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-label-sm uppercase tracking-widest text-primary font-semibold">Itinerary Builder</span>
+                <span className="text-label-sm uppercase tracking-widest text-primary font-semibold">
+                  Itinerary Builder
+                </span>
                 <span className="text-line-200">/</span>
                 <span className="text-label-sm text-on-surface-variant">10-Day Ceylon Odyssey</span>
               </div>
@@ -73,7 +75,9 @@ export default function PlannerPage() {
                   }`}
                 >
                   <div>
-                    <div className={`text-label-sm uppercase ${activeDay === day.id ? 'opacity-80' : 'text-outline'}`}>
+                    <div
+                      className={`text-label-sm uppercase ${activeDay === day.id ? 'opacity-80' : 'text-outline'}`}
+                    >
                       Day 0{day.id}
                     </div>
                     <div className="font-heading-sm mt-0.5">{day.title}</div>
@@ -104,8 +108,13 @@ export default function PlannerPage() {
             <div className="lg:col-span-5 flex flex-col gap-4">
               <div className="flex items-center justify-between px-1">
                 <div>
-                  <h2 className="font-heading-md text-on-surface">Day {activeDay}: {days.find((d) => d.id === activeDay)?.title}</h2>
-                  <p className="text-body-sm text-on-surface-variant mt-0.5">3 activities scheduled • {days.find((d) => d.id === activeDay)?.duration} total travel</p>
+                  <h2 className="font-heading-md text-on-surface">
+                    Day {activeDay}: {days.find((d) => d.id === activeDay)?.title}
+                  </h2>
+                  <p className="text-body-sm text-on-surface-variant mt-0.5">
+                    3 activities scheduled • {days.find((d) => d.id === activeDay)?.duration} total
+                    travel
+                  </p>
                 </div>
                 <button className="text-body-sm text-primary font-semibold hover:underline flex items-center gap-1">
                   <span className="material-symbols-outlined text-[16px]">add</span>
@@ -121,18 +130,33 @@ export default function PlannerPage() {
                       <span className="material-symbols-outlined">drag_indicator</span>
                     </div>
                     <div className="w-16 h-16 rounded-lg relative overflow-hidden bg-surface-container shrink-0">
-                      <Image src="/stitch_images/discover.png" alt="Activity thumbnail" fill className="object-cover" />
+                      <Image
+                        src="/stitch_images/discover.png"
+                        alt="Activity thumbnail"
+                        fill
+                        className="object-cover"
+                      />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <span className="text-label-sm text-primary font-bold">09:00 AM • 2 hrs</span>
+                        <span className="text-label-sm text-primary font-bold">
+                          09:00 AM • 2 hrs
+                        </span>
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="p-1 text-outline hover:text-on-surface rounded"><span className="material-symbols-outlined text-[18px]">edit</span></button>
-                          <button className="p-1 text-outline hover:text-coral-500 rounded"><span className="material-symbols-outlined text-[18px]">delete</span></button>
+                          <button className="p-1 text-outline hover:text-on-surface rounded">
+                            <span className="material-symbols-outlined text-[18px]">edit</span>
+                          </button>
+                          <button className="p-1 text-outline hover:text-coral-500 rounded">
+                            <span className="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
                         </div>
                       </div>
-                      <h3 className="font-heading-sm text-on-surface truncate mt-0.5">Heritage Walk & Monument Inspection</h3>
-                      <p className="text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">Stroll through colonial corridors & archaeological landmarks.</p>
+                      <h3 className="font-heading-sm text-on-surface truncate mt-0.5">
+                        Heritage Walk & Monument Inspection
+                      </h3>
+                      <p className="text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">
+                        Stroll through colonial corridors & archaeological landmarks.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -150,18 +174,33 @@ export default function PlannerPage() {
                       <span className="material-symbols-outlined">drag_indicator</span>
                     </div>
                     <div className="w-16 h-16 rounded-lg relative overflow-hidden bg-surface-container shrink-0">
-                      <Image src="/stitch_images/planner.png" alt="Activity thumbnail" fill className="object-cover" />
+                      <Image
+                        src="/stitch_images/planner.png"
+                        alt="Activity thumbnail"
+                        fill
+                        className="object-cover"
+                      />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <span className="text-label-sm text-primary font-bold">01:30 PM • 3 hrs</span>
+                        <span className="text-label-sm text-primary font-bold">
+                          01:30 PM • 3 hrs
+                        </span>
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="p-1 text-outline hover:text-on-surface rounded"><span className="material-symbols-outlined text-[18px]">edit</span></button>
-                          <button className="p-1 text-outline hover:text-coral-500 rounded"><span className="material-symbols-outlined text-[18px]">delete</span></button>
+                          <button className="p-1 text-outline hover:text-on-surface rounded">
+                            <span className="material-symbols-outlined text-[18px]">edit</span>
+                          </button>
+                          <button className="p-1 text-outline hover:text-coral-500 rounded">
+                            <span className="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
                         </div>
                       </div>
-                      <h3 className="font-heading-sm text-on-surface truncate mt-0.5">Spice Tasting & Local Market Trail</h3>
-                      <p className="text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">Immersive aromatic walk through historical trading alleys.</p>
+                      <h3 className="font-heading-sm text-on-surface truncate mt-0.5">
+                        Spice Tasting & Local Market Trail
+                      </h3>
+                      <p className="text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">
+                        Immersive aromatic walk through historical trading alleys.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -173,7 +212,9 @@ export default function PlannerPage() {
               <div className="bg-canvas-50 p-6 rounded-2xl border border-line-200 shadow-sm">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-heading-md text-on-surface">Estimated Budget</h3>
-                  <span className="text-label-sm bg-surface-container px-2.5 py-1 rounded-full font-bold text-primary">$1,160 Total</span>
+                  <span className="text-label-sm bg-surface-container px-2.5 py-1 rounded-full font-bold text-primary">
+                    $1,160 Total
+                  </span>
                 </div>
 
                 <div className="h-48 w-full">
@@ -195,7 +236,10 @@ export default function PlannerPage() {
                   {budgetData.map((b, i) => (
                     <div key={i} className="flex items-center justify-between text-body-sm">
                       <span className="flex items-center gap-1.5 text-on-surface-variant">
-                        <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: b.color }} />
+                        <span
+                          className="w-2.5 h-2.5 rounded-full"
+                          style={{ backgroundColor: b.color }}
+                        />
                         {b.name}
                       </span>
                       <strong className="text-on-surface font-semibold">${b.cost}</strong>
@@ -212,7 +256,8 @@ export default function PlannerPage() {
                 </div>
                 <h4 className="font-heading-sm">Highland Train Ticket Warning</h4>
                 <p className="text-body-sm text-on-primary-container leading-relaxed">
-                  First-class observation carriage seats for Kandy → Ella sell out 30 days in advance. Would you like us to add auto-booking alerts?
+                  First-class observation carriage seats for Kandy → Ella sell out 30 days in
+                  advance. Would you like us to add auto-booking alerts?
                 </p>
                 <button className="bg-secondary hover:bg-secondary-container text-on-secondary py-2 px-4 rounded-lg font-label-sm font-semibold mt-2 transition-colors cursor-pointer text-center">
                   Enable Train Booking Reminders

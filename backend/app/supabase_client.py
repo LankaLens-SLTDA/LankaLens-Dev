@@ -1,4 +1,5 @@
-from supabase import create_client, Client
+from supabase import Client, create_client
+
 from app.config import settings
 
 SUPABASE_URL = settings.SUPABASE_URL
@@ -13,5 +14,6 @@ if SUPABASE_URL and SUPABASE_KEY and "your-supabase" not in SUPABASE_URL:
     except Exception as e:
         print(f"[LankaLens Supabase] Failed to initialize Supabase client: {e}")
 else:
-    print("[LankaLens Supabase] Warning: SUPABASE_URL or SUPABASE_KEY not configured or using default placeholders.")
-
+    print(
+        "[LankaLens Supabase] Warning: SUPABASE_URL or SUPABASE_KEY not configured or using default placeholders."
+    )
