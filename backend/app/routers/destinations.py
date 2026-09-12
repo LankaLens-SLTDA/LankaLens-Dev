@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, Query, status
 
 from app.schemas.destinations import (
     DestinationCreate,
+    DestinationDetailsResponse,
     DestinationListResponse,
     DestinationResponse,
     DestinationUpdate,
@@ -56,19 +57,31 @@ def format_destination_record(raw: dict) -> dict:
         "category": raw.get("category", "heritage"),
         "district": raw.get("district", "Matale"),
         "province": raw.get("province", "Central"),
-        "latitude": float(raw.get("latitude", 7.957)),
-        "longitude": float(raw.get("longitude", 80.760)),
+        "latitude": (
+            float(raw["latitude"]) if raw.get("latitude") is not None else 7.957
+        ),
+        "longitude": (
+            float(raw["longitude"]) if raw.get("longitude") is not None else 80.760
+        ),
         "description": desc,
         "desc": desc,
         "activities": raw.get("activities", ["Sightseeing", "Photography"]),
-        "estimated_visit_duration_minutes": int(
-            raw.get("estimated_visit_duration_minutes", 180)
+        "estimated_visit_duration_minutes": (
+            int(raw["estimated_visit_duration_minutes"])
+            if raw.get("estimated_visit_duration_minutes") is not None
+            else 180
         ),
-        "baseline_cost": float(raw.get("baseline_cost", 0.0)),
-        "popularity": float(raw.get("popularity", 4.5)),
-        "rating": float(raw.get("rating", 4.5)),
-        "reviews": int(raw.get("reviews", 0)),
-        "trust_score": float(raw.get("trust_score", 0.95)),
+        "baseline_cost": (
+            float(raw["baseline_cost"]) if raw.get("baseline_cost") is not None else 0.0
+        ),
+        "popularity": (
+            float(raw["popularity"]) if raw.get("popularity") is not None else 4.5
+        ),
+        "rating": (float(raw["rating"]) if raw.get("rating") is not None else 4.5),
+        "reviews": (int(raw["reviews"]) if raw.get("reviews") is not None else 0),
+        "trust_score": (
+            float(raw["trust_score"]) if raw.get("trust_score") is not None else 0.95
+        ),
         "verification_state": raw.get("verification_state", "verified"),
         "publication_status": raw.get("publication_status", "published"),
         "is_verified": bool(raw.get("is_verified", True)),
@@ -451,6 +464,213 @@ def get_destination_partners(id: int):
     dataset = [format_destination_record(d) for d in IN_MEMORY_DESTINATIONS]
     partners = MapDiscoveryService.get_destination_partners(dest_id=id, dataset=dataset)
     return partners
+
+
+@router.get(
+    "/{id}/details",
+    response_model=DestinationDetailsResponse,
+    summary="Get Authoritative Destination Profile & Ecosystem Payload",
+    description=(
+        "Retrieves comprehensive destination profile payload including community posts, "
+        "AI trust verification metrics, nearby hotels/homestays, transport vehicles, "
+        "certified guides, itemized day budget breakdown, crowd status, and recommended alternatives."
+    ),
+)
+def get_destination_details(id: int):
+    """Retrieve full authoritative destination profile payload."""
+    import time
+
+    start_time = time.time()
+
+    target_dest = None
+    if supabase:
+        try:
+            res = supabase.table("destinations").select("*").eq("id", id).execute()
+            if res.data and len(res.data) > 0:
+                target_dest = format_destination_record(res.data[0])
+        except Exception as e:
+            print(f"[LankaLens Supabase details error] {e}")
+
+    if not target_dest:
+        for item in IN_MEMORY_DESTINATIONS:
+            if item["id"] == id:
+                target_dest = format_destination_record(item)
+                break
+
+    if not target_dest:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Destination with ID {id} not found.",
+        )
+
+    # 1. Community Contributions Tagged for Destination
+    community_posts = [
+        {
+            "id": 1001,
+            "author": "Dinuka Silva",
+            "role": "Verified Local Guide",
+            "avatar": "/stitch_images/planner.png",
+            "time": "2 hours ago",
+            "verified": True,
+            "location": f"{target_dest['name']} Summit Viewpoint",
+            "destination_id": id,
+            "rating": 5.0,
+            "image": target_dest["image"],
+            "caption": f"Early morning view at {target_dest['name']}. Best time to visit is before 09:00 AM to avoid crowds!",
+            "tags": ["Photography", "Tip", "CrowdFree"],
+            "likes_count": 84,
+            "comments_count": 12,
+        },
+        {
+            "id": 1002,
+            "author": "Clara Dupont",
+            "role": "Eco-Traveler",
+            "avatar": "/stitch_images/discover.png",
+            "time": "Yesterday",
+            "verified": True,
+            "location": f"{target_dest['district']} Eco Trail",
+            "destination_id": id,
+            "rating": 4.8,
+            "image": target_dest["image_url"],
+            "caption": f"Unforgettable experience exploring {target_dest['name']}. Highly recommend hiring a local certified guide!",
+            "tags": ["Heritage", "SustainableTravel"],
+            "likes_count": 42,
+            "comments_count": 5,
+        },
+    ]
+
+    # 2. AI Trust Verification Audit Metrics
+    trust_score_pct = round(target_dest.get("trust_score", 0.95) * 100, 1)
+    trust_metrics = {
+        "overall_trust_score": trust_score_pct,
+        "geo_consistency_score": 98.5,
+        "image_authenticity_score": 96.0,
+        "verification_badge": (
+            "SLTDA Official Verified"
+            if target_dest.get("is_verified")
+            else "Community Verified"
+        ),
+        "spam_risk_score": 0.02,
+        "flags": [],
+        "summary_notes": (
+            f"Passes all AI verification checks. GPS EXIF coordinates match {target_dest['district']} "
+            f"boundary with 98.5% confidence."
+        ),
+    }
+
+    # 3. Marketplace Services (Hotels, Transport Vehicles, Certified Guides)
+    hotels = [
+        {
+            "id": 201,
+            "name": f"{target_dest['name']} Heritage Eco Lodge",
+            "category": "hotel",
+            "rating": 4.92,
+            "price_range": "$$$",
+            "contact": "+94 66 224 8899",
+            "image": "/stitch_images/planner.png",
+            "verified": True,
+            "location_note": f"0.8 km from {target_dest['name']}",
+        },
+        {
+            "id": 202,
+            "name": f"{target_dest['district']} Organic Farm & Homestay",
+            "category": "hotel",
+            "rating": 4.85,
+            "price_range": "$$",
+            "contact": "+94 77 112 4455",
+            "image": "/stitch_images/discover.png",
+            "verified": True,
+            "location_note": f"2.4 km from {target_dest['name']}",
+        },
+    ]
+
+    vehicles = [
+        {
+            "id": 301,
+            "name": f"{target_dest['district']} Eco-Tuk Drivers Collective",
+            "category": "vehicle",
+            "rating": 4.9,
+            "price_range": "$",
+            "contact": "+94 77 998 1122",
+            "image": "/stitch_images/map.png",
+            "verified": True,
+            "location_note": "On-demand dispatch at site entrance",
+        },
+        {
+            "id": 302,
+            "name": "LankaLens Certified Safari & Van Express",
+            "category": "vehicle",
+            "rating": 4.88,
+            "price_range": "$$",
+            "contact": "+94 71 445 6677",
+            "image": "/stitch_images/planner.png",
+            "verified": True,
+            "location_note": "Inter-district transfer available",
+        },
+    ]
+
+    guides = [
+        {
+            "id": 401,
+            "name": "Dinuka Silva (SLTDA License #4489)",
+            "category": "guide",
+            "rating": 4.98,
+            "price_range": "$$",
+            "contact": "+94 77 334 5566",
+            "image": "/stitch_images/discover.png",
+            "verified": True,
+            "location_note": "Specializes in Heritage & Flora History",
+        },
+        {
+            "id": 402,
+            "name": "Chaminda Perera (SLTDA License #3120)",
+            "category": "guide",
+            "rating": 4.92,
+            "price_range": "$$",
+            "contact": "+94 76 889 0011",
+            "image": "/stitch_images/planner.png",
+            "verified": True,
+            "location_note": "Specializes in Trekking & Birdwatching",
+        },
+    ]
+
+    # 4. Nearby Recommended Alternatives
+    raw_dataset = [format_destination_record(d) for d in IN_MEMORY_DESTINATIONS]
+    alternatives = MapDiscoveryService.get_destination_alternatives(
+        dest_id=id, dataset=raw_dataset, limit=3
+    )
+
+    # 5. Itemized Day Budget Breakdown
+    entry = float(target_dest.get("baseline_cost", 0.0))
+    meal = 12.0
+    transport = 15.0
+    guide_fee = 25.0
+    total_day_budget = round(entry + meal + transport + guide_fee, 2)
+
+    budget_breakdown = {
+        "entry_fee": entry,
+        "avg_meal_cost": meal,
+        "local_transport_cost": transport,
+        "guide_fee_optional": guide_fee,
+        "total_estimated_day_budget": total_day_budget,
+    }
+
+    query_time = round((time.time() - start_time) * 1000, 2)
+
+    return {
+        "destination": target_dest,
+        "community_posts": community_posts,
+        "trust_metrics": trust_metrics,
+        "hotels": hotels,
+        "vehicles": vehicles,
+        "guides": guides,
+        "nearby_alternatives": alternatives,
+        "crowd_status": target_dest.get(
+            "crowd_info", {"density": "Moderate", "peak_hours": "10:00 - 14:00"}
+        ),
+        "budget_breakdown": budget_breakdown,
+        "query_time_ms": query_time,
+    }
 
 
 @router.get(

@@ -882,6 +882,49 @@
         }
       }
     },
+    "/api/destinations/{id}/details": {
+      "get": {
+        "tags": [
+          "Destinations"
+        ],
+        "summary": "Get Authoritative Destination Profile & Ecosystem Payload",
+        "description": "Retrieves comprehensive destination profile payload including community posts, AI trust verification metrics, nearby hotels/homestays, transport vehicles, certified guides, itemized day budget breakdown, crowd status, and recommended alternatives.",
+        "operationId": "get_destination_details_api_destinations__id__details_get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DestinationDetailsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/destinations/{id}": {
       "get": {
         "tags": [
@@ -2112,6 +2155,42 @@
         ],
         "title": "Badge"
       },
+      "BudgetBreakdown": {
+        "properties": {
+          "entry_fee": {
+            "type": "number",
+            "title": "Entry Fee",
+            "description": "Ticket or entry cost in USD",
+            "default": 0.0
+          },
+          "avg_meal_cost": {
+            "type": "number",
+            "title": "Avg Meal Cost",
+            "description": "Estimated average local meal cost",
+            "default": 12.0
+          },
+          "local_transport_cost": {
+            "type": "number",
+            "title": "Local Transport Cost",
+            "description": "Estimated local transport cost",
+            "default": 15.0
+          },
+          "guide_fee_optional": {
+            "type": "number",
+            "title": "Guide Fee Optional",
+            "description": "Optional local certified guide fee",
+            "default": 25.0
+          },
+          "total_estimated_day_budget": {
+            "type": "number",
+            "title": "Total Estimated Day Budget",
+            "description": "Estimated total single-day budget",
+            "default": 52.0
+          }
+        },
+        "type": "object",
+        "title": "BudgetBreakdown"
+      },
       "BudgetItem": {
         "properties": {
           "name": {
@@ -3128,6 +3207,80 @@
         ],
         "title": "DestinationCreate"
       },
+      "DestinationDetailsResponse": {
+        "properties": {
+          "destination": {
+            "$ref": "#/components/schemas/Destination",
+            "description": "Primary destination profile record"
+          },
+          "community_posts": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Community Posts",
+            "description": "Approved community posts tagged for destination"
+          },
+          "trust_metrics": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Trust Metrics",
+            "description": "AI Trust score breakdown & verification audit"
+          },
+          "hotels": {
+            "items": {
+              "$ref": "#/components/schemas/MarketplaceService"
+            },
+            "type": "array",
+            "title": "Hotels",
+            "description": "Nearby recommended hotels & homestays"
+          },
+          "vehicles": {
+            "items": {
+              "$ref": "#/components/schemas/MarketplaceService"
+            },
+            "type": "array",
+            "title": "Vehicles",
+            "description": "Nearby transport vehicle cooperatives"
+          },
+          "guides": {
+            "items": {
+              "$ref": "#/components/schemas/MarketplaceService"
+            },
+            "type": "array",
+            "title": "Guides",
+            "description": "Nearby SLTDA certified local guides"
+          },
+          "nearby_alternatives": {
+            "items": {
+              "$ref": "#/components/schemas/Destination"
+            },
+            "type": "array",
+            "title": "Nearby Alternatives",
+            "description": "Recommended alternative destinations"
+          },
+          "crowd_status": {
+            "$ref": "#/components/schemas/CrowdInfo",
+            "description": "Crowd density and peak periods"
+          },
+          "budget_breakdown": {
+            "$ref": "#/components/schemas/BudgetBreakdown",
+            "description": "Itemized budget breakdown"
+          },
+          "query_time_ms": {
+            "type": "number",
+            "title": "Query Time Ms",
+            "description": "Execution duration in milliseconds",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "destination"
+        ],
+        "title": "DestinationDetailsResponse"
+      },
       "DestinationListResponse": {
         "properties": {
           "destinations": {
@@ -3814,6 +3967,68 @@
         },
         "type": "object",
         "title": "MapDiscoveryResponse"
+      },
+      "MarketplaceService": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Unique service entity ID"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Business or service provider name"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "Service category: 'hotel', 'vehicle', 'guide'"
+          },
+          "rating": {
+            "type": "number",
+            "title": "Rating",
+            "description": "Average service rating",
+            "default": 4.9
+          },
+          "price_range": {
+            "type": "string",
+            "title": "Price Range",
+            "description": "Price tier indicator ($ / $$ / $$$ / $$$$)",
+            "default": "$$"
+          },
+          "contact": {
+            "type": "string",
+            "title": "Contact",
+            "description": "Contact phone or line",
+            "default": "+94 77 123 4567"
+          },
+          "image": {
+            "type": "string",
+            "title": "Image",
+            "description": "Service asset image",
+            "default": "/stitch_images/planner.png"
+          },
+          "verified": {
+            "type": "boolean",
+            "title": "Verified",
+            "description": "SLTDA or community verified status",
+            "default": true
+          },
+          "location_note": {
+            "type": "string",
+            "title": "Location Note",
+            "description": "Proximity location note",
+            "default": "Near destination"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "category"
+        ],
+        "title": "MarketplaceService"
       },
       "ModerationQueueResponse": {
         "properties": {

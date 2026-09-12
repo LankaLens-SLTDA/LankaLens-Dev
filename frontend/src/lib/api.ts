@@ -534,3 +534,50 @@ export async function getDestinationAlternatives(
 export async function getDestinationPartners(id: number): Promise<PartnerLocation[] | null> {
   return fetchFromBackend<PartnerLocation[]>(`/destinations/${id}/partners`);
 }
+
+export interface MarketplaceService {
+  id: number;
+  name: string;
+  category: 'hotel' | 'vehicle' | 'guide' | string;
+  rating: number;
+  price_range: string;
+  contact: string;
+  image: string;
+  verified: boolean;
+  location_note: string;
+}
+
+export interface BudgetBreakdown {
+  entry_fee: number;
+  avg_meal_cost: number;
+  local_transport_cost: number;
+  guide_fee_optional: number;
+  total_estimated_day_budget: number;
+}
+
+export interface DestinationDetailsResponse {
+  destination: Destination;
+  community_posts: CommunityPost[];
+  trust_metrics: {
+    overall_trust_score: number;
+    geo_consistency_score: number;
+    image_authenticity_score: number;
+    verification_badge: string;
+    spam_risk_score: number;
+    flags: string[];
+    summary_notes: string;
+  };
+  hotels: MarketplaceService[];
+  vehicles: MarketplaceService[];
+  guides: MarketplaceService[];
+  nearby_alternatives: Destination[];
+  crowd_status: CrowdInfo;
+  budget_breakdown: BudgetBreakdown;
+  query_time_ms: number;
+}
+
+export async function getDestinationDetails(
+  id: number
+): Promise<DestinationDetailsResponse | null> {
+  return fetchFromBackend<DestinationDetailsResponse>(`/destinations/${id}/details`);
+}
