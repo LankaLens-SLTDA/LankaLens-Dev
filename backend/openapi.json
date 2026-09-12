@@ -1,0 +1,864 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "LankaLens FastAPI Backend",
+    "description": "**LankaLens API Platform**: Precision Cartography & Intelligent Sustainable Tourism API for Sri Lanka.\n\nProvides REST endpoints for exploring destinations, building dynamic multi-day itineraries, interacting with AI assistants, tracking real-time site crowd density, and reporting eco hazards.",
+    "contact": {
+      "name": "LankaLens Platform Engineering",
+      "url": "https://github.com/LankaLens-SLTDA/LankaLens-Dev",
+      "email": "dev@lankalens.lk"
+    },
+    "license": {
+      "name": "MIT License",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/destinations": {
+      "get": {
+        "tags": [
+          "Destinations"
+        ],
+        "summary": "Retrieve travel destinations",
+        "description": "Fetch filtered or full catalog of Sri Lankan travel destinations, with optional category, region, and search term queries.",
+        "operationId": "get_destinations_api_destinations_get",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter destinations by category (e.g. temple, nature, beach, wildlife)",
+              "title": "Category"
+            },
+            "description": "Filter destinations by category (e.g. temple, nature, beach, wildlife)"
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter destinations by geographical region",
+              "title": "Region"
+            },
+            "description": "Filter destinations by geographical region"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Search query string matching title or description",
+              "title": "Q"
+            },
+            "description": "Search query string matching title or description"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DestinationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/planner": {
+      "get": {
+        "tags": [
+          "Planner"
+        ],
+        "summary": "Get active itinerary & budget overview",
+        "description": "Retrieve multi-day travel schedule, day stops, duration, total budget, and categorized expense allocation.",
+        "operationId": "get_planner_data_api_planner_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlannerOverview"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai-assistant/query": {
+      "post": {
+        "tags": [
+          "AI Assistant"
+        ],
+        "summary": "Query AI Travel Assistant",
+        "description": "Submit user prompt to receive intelligent itinerary recommendations, context cards, and interactive follow-ups.",
+        "operationId": "query_ai_assistant_api_ai_assistant_query_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sustainability/density": {
+      "get": {
+        "tags": [
+          "Sustainability"
+        ],
+        "summary": "Get real-time crowd density",
+        "description": "Retrieve hourly visitor density numbers to encourage eco-friendly, off-peak travel.",
+        "operationId": "get_crowd_density_api_sustainability_density_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DensityPoint"
+                  },
+                  "type": "array",
+                  "title": "Response Get Crowd Density Api Sustainability Density Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sustainability/report": {
+      "post": {
+        "tags": [
+          "Sustainability"
+        ],
+        "summary": "Submit environmental or safety hazard report",
+        "description": "Report environmental issues, trail damage, or safety hazards to earn eco reward points.",
+        "operationId": "submit_hazard_report_api_sustainability_report_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HazardReport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HazardReportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/community/posts": {
+      "get": {
+        "tags": [
+          "Community Feed"
+        ],
+        "summary": "Get community feed posts",
+        "description": "Retrieve verified explorer posts, eco-guide updates, and hidden travel discoveries.",
+        "operationId": "get_community_posts_api_community_posts_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Post"
+                  },
+                  "type": "array",
+                  "title": "Response Get Community Posts Api Community Posts Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health check endpoint",
+        "description": "Returns current API operational status, service name, and active environment.",
+        "operationId": "health_check_api_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BudgetItem": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Category of expense",
+            "example": "Stay"
+          },
+          "cost": {
+            "type": "number",
+            "title": "Cost",
+            "description": "Estimated cost in USD",
+            "example": 450.0
+          },
+          "color": {
+            "type": "string",
+            "title": "Color",
+            "description": "Hex color code for UI visualization",
+            "example": "#0F5C56"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "cost",
+          "color"
+        ],
+        "title": "BudgetItem"
+      },
+      "CardData": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Card title for recommended destination or activity",
+            "example": "Damro Labookellie High Tea Estate"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "Category or activity type",
+            "example": "Cultural Tea Estate"
+          },
+          "desc": {
+            "type": "string",
+            "title": "Desc",
+            "description": "Brief description of the recommendation",
+            "example": "Experience high-altitude Ceylon tea picking and factory tours."
+          },
+          "image": {
+            "type": "string",
+            "title": "Image",
+            "description": "Relative image URL path",
+            "example": "/stitch_images/planner.png"
+          },
+          "duration": {
+            "type": "string",
+            "title": "Duration",
+            "description": "Recommended duration",
+            "example": "Recommended: 3.5 hrs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "type",
+          "desc",
+          "image",
+          "duration"
+        ],
+        "title": "CardData"
+      },
+      "ChatRequest": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "User prompt or query sent to the AI travel assistant",
+            "example": "Tell me about tea tasting in Kandy and Ella"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "ChatRequest"
+      },
+      "ChatResponse": {
+        "properties": {
+          "reply": {
+            "type": "string",
+            "title": "Reply",
+            "description": "AI generated textual response",
+            "example": "The journey from Kandy to Ella passes through tea country..."
+          },
+          "hasCard": {
+            "type": "boolean",
+            "title": "Hascard",
+            "description": "Flag indicating if a structured UI card recommendation is attached",
+            "default": false
+          },
+          "cardData": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CardData"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional structured card data recommendation"
+          },
+          "followUps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Followups",
+            "description": "Suggested quick action or follow-up prompt options"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reply"
+        ],
+        "title": "ChatResponse"
+      },
+      "Coords": {
+        "properties": {
+          "x": {
+            "type": "string",
+            "title": "X",
+            "description": "Map coordinate percentage on the X axis",
+            "example": "28%"
+          },
+          "y": {
+            "type": "string",
+            "title": "Y",
+            "description": "Map coordinate percentage on the Y axis",
+            "example": "22%"
+          }
+        },
+        "type": "object",
+        "required": [
+          "x",
+          "y"
+        ],
+        "title": "Coords"
+      },
+      "DayPlan": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Day index of the itinerary",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Title and focus for the day",
+            "example": "Colombo Arrival & Coastal Heritage"
+          },
+          "stopsCount": {
+            "type": "integer",
+            "title": "Stopscount",
+            "description": "Number of scheduled stops",
+            "example": 3
+          },
+          "duration": {
+            "type": "string",
+            "title": "Duration",
+            "description": "Estimated total activity duration",
+            "example": "4.5 hrs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "stopsCount",
+          "duration"
+        ],
+        "title": "DayPlan"
+      },
+      "DensityPoint": {
+        "properties": {
+          "hour": {
+            "type": "string",
+            "title": "Hour",
+            "description": "Time of day in 24-hour HH:MM format",
+            "example": "10:00"
+          },
+          "density": {
+            "type": "integer",
+            "title": "Density",
+            "description": "Estimated visitor density count at the site",
+            "example": 1100
+          }
+        },
+        "type": "object",
+        "required": [
+          "hour",
+          "density"
+        ],
+        "title": "DensityPoint"
+      },
+      "Destination": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Unique destination identifier",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Name of the tourist destination or landmark",
+            "example": "Sigiriya Ancient Rock Fortress"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "Category tag (e.g. temple, nature, beach, wildlife)",
+            "example": "temple"
+          },
+          "region": {
+            "type": "string",
+            "title": "Region",
+            "description": "Geographical region in Sri Lanka",
+            "example": "Cultural Triangle"
+          },
+          "rating": {
+            "type": "number",
+            "title": "Rating",
+            "description": "Average visitor rating out of 5.0",
+            "example": 4.9
+          },
+          "reviews": {
+            "type": "integer",
+            "title": "Reviews",
+            "description": "Total review count",
+            "example": 320
+          },
+          "desc": {
+            "type": "string",
+            "title": "Desc",
+            "description": "Detailed description of the destination",
+            "example": "5th-century royal citadel towering 200 meters over emerald jungle."
+          },
+          "image": {
+            "type": "string",
+            "title": "Image",
+            "description": "Relative URL path to the destination image asset",
+            "example": "/stitch_images/planner.png"
+          },
+          "coords": {
+            "$ref": "#/components/schemas/Coords",
+            "description": "2D map coordinate placement"
+          },
+          "elevation": {
+            "type": "string",
+            "title": "Elevation",
+            "description": "Elevation above sea level",
+            "example": "349 m"
+          },
+          "distance": {
+            "type": "string",
+            "title": "Distance",
+            "description": "Travel distance from Colombo",
+            "example": "165 km from Colombo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "category",
+          "region",
+          "rating",
+          "reviews",
+          "desc",
+          "image",
+          "coords",
+          "elevation",
+          "distance"
+        ],
+        "title": "Destination"
+      },
+      "DestinationResponse": {
+        "properties": {
+          "destinations": {
+            "items": {
+              "$ref": "#/components/schemas/Destination"
+            },
+            "type": "array",
+            "title": "Destinations",
+            "description": "List of matching destination items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total number of destinations returned",
+            "example": 4
+          }
+        },
+        "type": "object",
+        "required": [
+          "destinations",
+          "total"
+        ],
+        "title": "DestinationResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HazardReport": {
+        "properties": {
+          "location": {
+            "type": "string",
+            "title": "Location",
+            "description": "Location name or coordinates of reported environmental/safety hazard",
+            "example": "Sigiriya Stairway North Pass"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Details regarding the hazard or maintenance concern",
+            "example": "Loose handrail section near step 420."
+          }
+        },
+        "type": "object",
+        "required": [
+          "location",
+          "description"
+        ],
+        "title": "HazardReport"
+      },
+      "HazardReportResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Status of submission",
+            "example": "success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Confirmation response message",
+            "example": "Hazard report transmitted to LankaLens Ranger Network."
+          },
+          "rewardPoints": {
+            "type": "integer",
+            "title": "Rewardpoints",
+            "description": "Eco reward points awarded for contribution",
+            "example": 50
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "message",
+          "rewardPoints"
+        ],
+        "title": "HazardReportResponse"
+      },
+      "PlannerOverview": {
+        "properties": {
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/DayPlan"
+            },
+            "type": "array",
+            "title": "Days",
+            "description": "List of daily itinerary plans"
+          },
+          "totalBudget": {
+            "type": "number",
+            "title": "Totalbudget",
+            "description": "Total estimated budget in USD",
+            "example": 1160.0
+          },
+          "budgetBreakdown": {
+            "items": {
+              "$ref": "#/components/schemas/BudgetItem"
+            },
+            "type": "array",
+            "title": "Budgetbreakdown",
+            "description": "Breakdown of costs by category"
+          }
+        },
+        "type": "object",
+        "required": [
+          "days",
+          "totalBudget",
+          "budgetBreakdown"
+        ],
+        "title": "PlannerOverview"
+      },
+      "Post": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Unique community post ID",
+            "example": 1
+          },
+          "author": {
+            "type": "string",
+            "title": "Author",
+            "description": "Display name of the author",
+            "example": "Chaminda Perera"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "description": "User role (e.g. Local Guide, Explorer)",
+            "example": "Local Guide"
+          },
+          "avatar": {
+            "type": "string",
+            "title": "Avatar",
+            "description": "Avatar image URL path",
+            "example": "/stitch_images/discover.png"
+          },
+          "time": {
+            "type": "string",
+            "title": "Time",
+            "description": "Human-readable relative timestamp",
+            "example": "2 hours ago"
+          },
+          "verified": {
+            "type": "boolean",
+            "title": "Verified",
+            "description": "Verified contributor badge status",
+            "example": true
+          },
+          "location": {
+            "type": "string",
+            "title": "Location",
+            "description": "Geographic location of post",
+            "example": "Ella, Uva Province"
+          },
+          "image": {
+            "type": "string",
+            "title": "Image",
+            "description": "Post main photo URL path",
+            "example": "/stitch_images/discover.png"
+          },
+          "caption": {
+            "type": "string",
+            "title": "Caption",
+            "description": "Text caption or story",
+            "example": "Discovered this secret vantage point just past the second tea bungalow."
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags",
+            "description": "Hashtags associated with post",
+            "example": [
+              "#EllaRock",
+              "#HiddenVistas"
+            ]
+          },
+          "ecoPoints": {
+            "type": "integer",
+            "title": "Ecopoints",
+            "description": "Earned eco community points",
+            "example": 248
+          },
+          "commentsCount": {
+            "type": "integer",
+            "title": "Commentscount",
+            "description": "Total comment count",
+            "example": 32
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "author",
+          "role",
+          "avatar",
+          "time",
+          "verified",
+          "location",
+          "image",
+          "caption",
+          "tags",
+          "ecoPoints",
+          "commentsCount"
+        ],
+        "title": "Post"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Health",
+      "description": "System health and status monitoring endpoints."
+    },
+    {
+      "name": "Destinations",
+      "description": "Cartographic destinations, cultural heritage sites, and filtering capabilities."
+    },
+    {
+      "name": "Planner",
+      "description": "Smart itinerary builder, day-by-day routing, and travel budget optimization."
+    },
+    {
+      "name": "AI Assistant",
+      "description": "Conversational travel recommendations powered by AI models."
+    },
+    {
+      "name": "Sustainability",
+      "description": "Real-time crowd density analysis and crowdsourced environmental hazard reporting."
+    },
+    {
+      "name": "Community Feed",
+      "description": "Verified traveler posts, eco contributions, and local explorer stories."
+    }
+  ]
+}

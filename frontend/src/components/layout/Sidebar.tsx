@@ -115,7 +115,9 @@ export default function Sidebar() {
                     : 'text-surface/80 hover:bg-white/10 hover:text-white'
                 }`}
               >
-                <span className={`material-symbols-outlined text-[22px] shrink-0 ${isActive ? 'text-sky-300' : 'text-surface/70 group-hover:text-white'}`}>
+                <span
+                  className={`material-symbols-outlined text-[22px] shrink-0 ${isActive ? 'text-sky-300' : 'text-surface/70 group-hover:text-white'}`}
+                >
                   {item.icon}
                 </span>
 

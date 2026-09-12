@@ -1,193 +1,543 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@100..900&family=Inter:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {"colors": {"surface-tint": "#226962", "primary-container": "#0f5c56", "surface-container": "#efeeea", "deep-teal-800": "#0A3F3B", "surface-variant": "#e3e2df", "inverse-on-surface": "#f2f1ed", "on-primary": "#ffffff", "primary": "#00433e", "success-600": "#1B7A4C", "on-background": "#1b1c1a", "error-container": "#ffdad6", "on-secondary-fixed-variant": "#6b3b00", "tertiary": "#5e2e19", "surface-dim": "#dbdad6", "on-primary-fixed-variant": "#00504a", "secondary-fixed-dim": "#ffb875", "surface-container-highest": "#e3e2df", "on-tertiary-fixed": "#360f01", "surface": "#faf9f5", "canvas-0": "#FBFAF6", "on-surface-variant": "#3f4947", "inverse-surface": "#2f312e", "secondary-container": "#fca142", "on-error": "#ffffff", "background": "#faf9f5", "canvas-50": "#F1EFE7", "on-surface": "#1b1c1a", "ink-700": "#2B3630", "on-tertiary-container": "#ffb497", "signal-amber-500": "#E08A2C", "coral-500": "#E2604A", "secondary-fixed": "#ffdcc0", "on-primary-fixed": "#00201d", "primary-fixed-dim": "#90d3cb", "outline-variant": "#bec9c6", "sky-300": "#8FD3D6", "primary-fixed": "#abefe7", "on-primary-container": "#8fd2ca", "outline": "#6f7977", "on-tertiary": "#ffffff", "tertiary-fixed-dim": "#ffb598", "ink-950": "#0E1512", "surface-container-high": "#e9e8e4", "surface-bright": "#faf9f5", "tertiary-container": "#7a442d", "line-200": "#DEDBD0", "inverse-primary": "#90d3cb", "surface-container-lowest": "#ffffff", "on-tertiary-fixed-variant": "#6c3923", "on-error-container": "#93000a", "tertiary-fixed": "#ffdbce", "error": "#ba1a1a", "on-secondary-container": "#6c3b00", "surface-container-low": "#f4f4f0", "on-secondary-fixed": "#2d1600", "on-secondary": "#ffffff", "secondary": "#8d4f00", "deep-teal-600": "#0F5C56"}, "borderRadius": {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"}, "spacing": {"unit-4": "16px", "unit-12": "48px", "unit-3": "12px", "unit-24": "96px", "base": "4px", "desktop-max-width": "1280px", "unit-16": "64px", "unit-6": "24px", "unit-1": "4px", "unit-2": "8px", "unit-8": "32px"}, "fontFamily": {"body-lg": ["Inter"], "heading-lg": ["Inter"], "heading-sm": ["Inter"], "body-sm": ["Inter"], "heading-md": ["Inter"], "label-sm": ["Inter"], "display-lg": ["Fraunces"], "display-xl": ["Fraunces"], "body-md": ["Inter"]}, "fontSize": {"body-lg": ["17px", {"lineHeight": "26px", "fontWeight": "400"}], "heading-lg": ["28px", {"lineHeight": "34px", "fontWeight": "600"}], "heading-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}], "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}], "heading-md": ["22px", {"lineHeight": "28px", "fontWeight": "600"}], "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}], "display-lg": ["40px", {"lineHeight": "46px", "fontWeight": "500"}], "display-xl": ["56px", {"lineHeight": "60px", "fontWeight": "500"}], "body-md": ["15px", {"lineHeight": "22px", "fontWeight": "400"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface"><header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-desktop-max-width mx-auto px-6 lg:px-12 flex items-center justify-between"><div class="flex items-center gap-3"><img alt="LankaLens Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASxHhluPoKqeGUtHhACt6hWLRX53k7UyMOs5HW6LvWGNlOOUNdIOof9PVI9FStZircm88YmoQ_ASiA7RKZcjLVFTg8uvk_CmRp-Xu5L8otLgIKXf9Ek108nlk-41ptuvlCAZ-aCxUuQZitsPt79-ro1skm4Fq2DYId4xVpIrSrOwXduqErzUTEi0FzXB4o102BvRJfkt7ZDlUZxBrk16JZ64lPeWkjDJ0BdAmZkl0ShZBr7S4TpC2L"/><span class="font-heading-lg text-primary tracking-tight">LankaLens</span></div><div class="hidden lg:flex items-center flex-1 max-w-md mx-8"><div class="relative w-full"><span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-outline"><span class="material-symbols-outlined text-[18px]">search</span></span><input class="w-full pl-10 pr-4 py-2 bg-canvas-50 rounded-lg text-on-surface placeholder:text-outline text-body-sm focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Search destinations, regions, hotels..." type="text"/></div></div><nav class="hidden md:flex items-center gap-1" data-active-classes="bg-primary-container text-on-primary font-bold"><a class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors" data-path="discover" href="#">Discover</a><a class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors" data-path="map" href="#">Map</a><a aria-current="page" class="px-3 py-2 rounded-lg transition-colors bg-primary-container text-on-primary font-bold" data-path="planner" href="#">Planner</a><a class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors" data-path="ai-assistant" href="#">AI Assistant</a><a class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors" data-path="saved" href="#">Saved</a></nav><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-surface"><div class="flex flex-col w-full">
-<div class="max-w-desktop-max-width mx-auto w-full px-6 lg:px-12 py-12">
-<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
-<div>
-<div class="flex items-center gap-2 mb-2">
-<span class="text-label-sm uppercase tracking-widest text-primary font-semibold">Itinerary Builder</span>
-<span class="text-line-200">/</span>
-<span class="text-label-sm text-on-surface-variant">10-Day Ceylon Odyssey</span>
-</div>
-<h1 class="font-display-lg text-on-surface">Curate Your Journey</h1>
-</div>
-<div class="flex items-center gap-3">
-<button class="px-4 py-2 bg-canvas-50 text-on-surface hover:bg-surface-container rounded-lg text-body-sm font-medium transition-colors flex items-center gap-2">
-<span class="material-symbols-outlined text-[18px]">share</span>
-          Share Trip
-        </button>
-<button class="px-5 py-2 bg-deep-teal-600 text-on-primary hover:bg-primary rounded-lg text-body-sm font-medium transition-colors flex items-center gap-2 shadow-sm">
-<span class="material-symbols-outlined text-[18px]">auto_fix_high</span>
-          AI Optimize Route
-        </button>
-</div>
-</div>
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-<div class="lg:col-span-3 flex flex-col gap-2">
-<div class="text-label-sm text-on-surface-variant uppercase tracking-wider mb-2 px-1">Timeline</div>
-<button class="w-full text-left p-4 rounded-xl bg-primary-container text-on-primary transition-all flex items-center justify-between group">
-<div>
-<div class="text-label-sm opacity-80 uppercase">Day 01</div>
-<div class="font-heading-sm mt-0.5">Colombo Arrival</div>
-</div>
-<span class="material-symbols-outlined text-on-primary">chevron_right</span>
-</button>
-<button class="w-full text-left p-4 rounded-xl bg-canvas-50 hover:bg-surface-container text-on-surface transition-all flex items-center justify-between group">
-<div>
-<div class="text-label-sm text-outline uppercase">Day 02</div>
-<div class="font-heading-sm mt-0.5">Sigiriya & Dambulla</div>
-</div>
-<span class="material-symbols-outlined text-outline group-hover:text-on-surface">chevron_right</span>
-</button>
-<button class="w-full text-left p-4 rounded-xl bg-canvas-50 hover:bg-surface-container text-on-surface transition-all flex items-center justify-between group">
-<div>
-<div class="text-label-sm text-outline uppercase">Day 03</div>
-<div class="font-heading-sm mt-0.5">Kandy Temple of Tooth</div>
-</div>
-<span class="material-symbols-outlined text-outline group-hover:text-on-surface">chevron_right</span>
-</button>
-<button class="w-full text-left p-4 rounded-xl bg-canvas-50 hover:bg-surface-container text-on-surface transition-all flex items-center justify-between group">
-<div>
-<div class="text-label-sm text-outline uppercase">Day 04</div>
-<div class="font-heading-sm mt-0.5">Nuwara Eliya Tea Trails</div>
-</div>
-<span class="material-symbols-outlined text-outline group-hover:text-on-surface">chevron_right</span>
-</button>
-<button class="w-full text-left p-4 rounded-xl bg-canvas-50 hover:bg-surface-container text-on-surface transition-all flex items-center justify-between group">
-<div>
-<div class="text-label-sm text-outline uppercase">Day 05</div>
-<div class="font-heading-sm mt-0.5">Ella Mountain Vista</div>
-</div>
-<span class="material-symbols-outlined text-outline group-hover:text-on-surface">chevron_right</span>
-</button>
-<button class="w-full py-3 px-4 border border-dashed border-outline-variant hover:border-primary text-primary rounded-xl text-body-sm font-medium flex items-center justify-center gap-2 mt-2 transition-colors">
-<span class="material-symbols-outlined text-[18px]">add</span>
-          Add Day 06
-        </button>
-</div>
-<div class="lg:col-span-5 flex flex-col gap-4">
-<div class="flex items-center justify-between px-1">
-<div>
-<h2 class="font-heading-md text-on-surface">Day 1: Colombo Arrival</h2>
-<p class="text-body-sm text-on-surface-variant">3 activities scheduled • 4.5 hrs total travel</p>
-</div>
-<button class="text-body-sm text-primary font-medium hover:underline flex items-center gap-1">
-<span class="material-symbols-outlined text-[16px]">add</span> Add activity
-          </button>
-</div>
-<div class="flex flex-col gap-3">
-<div class="p-4 bg-canvas-50 rounded-xl relative group transition-all hover:shadow-sm">
-<div class="flex items-start gap-4">
-<div class="cursor-grab active:cursor-grabbing text-outline hover:text-on-surface pt-1">
-<span class="material-symbols-outlined">drag_indicator</span>
-</div>
-<div class="w-16 h-16 rounded-lg bg-cover bg-center shrink-0" data-alt="A detailed editorial photograph of the colonial Galle Face Hotel in Colombo at sunset, featuring grand architecture, ocean views, and warm golden hour lighting across the facade." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCiLO2LGS_7NOk5z2qytQ-3gwr2Z9WKcyd3msQNDgPC3uwQDHyq6AOLPPGqRRX0W1oBS4fEUK_09bG7MbVOsEkCbjBGmx3m7tOAUjZ6dNslCInbMgymSAvEepa7WHPW5Gza6SEZBk6-Mu79DLMnC1oa2D0MuLWPnsk7gaZnvggfLjg_kADaiJPDZeVASxATwsbDkmLGIS37TCmg6c-ZRavFWrTBRWwoumDZOgg2RwqBUhYTw5i4jL3C')"></div>
-<div class="flex-1 min-w-0">
-<div class="flex items-center justify-between">
-<span class="text-label-sm text-primary font-semibold">09:00 AM • 2 hrs</span>
-<div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-<button class="p-1 text-outline hover:text-on-surface rounded"><span class="material-symbols-outlined text-[18px]">edit</span></button>
-<button class="p-1 text-outline hover:text-coral-500 rounded"><span class="material-symbols-outlined text-[18px]">delete</span></button>
-</div>
-</div>
-<h3 class="font-heading-sm text-on-surface truncate mt-0.5">Galle Face Hotel Heritage Walk</h3>
-<p class="text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">Stroll through the iconic seaside chess-lawn and colonial corridors.</p>
-</div>
-</div>
-</div>
-<div class="flex items-center gap-3 px-8 py-1.5 text-body-sm text-outline">
-<div class="h-4 w-px bg-outline-variant ml-2"></div>
-<span class="material-symbols-outlined text-[16px]">directions_car</span>
-<span>Auto-suggest: 35 min drive via Galle Road (12.4 km)</span>
-</div>
-<div class="p-4 bg-canvas-50 rounded-xl relative group transition-all hover:shadow-sm">
-<div class="flex items-start gap-4">
-<div class="cursor-grab active:cursor-grabbing text-outline hover:text-on-surface pt-1">
-<span class="material-symbols-outlined">drag_indicator</span>
-</div>
-<div class="w-16 h-16 rounded-lg bg-cover bg-center shrink-0" data-alt="A detailed photo of the vibrant Pettah Floating Market in Colombo, showcasing colorful stalls, fresh tropical fruits, spices, and bustling local atmosphere." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAT06-eb7PUsdD0gKpVeBOraoVHb4czoISMdLmvBWMiv0lBOOaPyaQNVWF8H4n7ianYyPEe0pIrGVNeoE1pN7k9P_9hyC5NOqtt4pyrTDiZaCrFfFvAUKZzyCC6wBPnuSFnVl0-GU4PQ6J92ThLlN-WWq9WDNcqTs9qcyK3RrurhvjhqE8p276Dh0SdS3M5PZl9K-haUgJBwDe78efqGDNpRfSO7Jp2ObeMWDBfVRWXEcx9jcYSltu6')"></div>
-<div class="flex-1 min-w-0">
-<div class="flex items-center justify-between">
-<span class="text-label-sm text-primary font-semibold">12:30 PM • 3 hrs</span>
-<div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-<button class="p-1 text-outline hover:text-on-surface rounded"><span class="material-symbols-outlined text-[18px]">edit</span></button>
-<button class="p-1 text-outline hover:text-coral-500 rounded"><span class="material-symbols-outlined text-[18px]">delete</span></button>
-</div>
-</div>
-<h3 class="font-heading-sm text-on-surface truncate mt-0.5">Pettah Spice & Bazaar Tour</h3>
-<p class="text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">Immersive aromatic walk through historical trading alleys.</p>
-</div>
-</div>
-</div>
-<div class="flex items-center gap-3 px-8 py-1.5 text-body-sm text-outline">
-<div class="h-4 w-px bg-outline-variant ml-2"></div>
-<span class="material-symbols-outlined text-[16px]">directions_walk</span>
-<span>Auto-suggest: 15 min walk through Fort district</span>
-</div>
-<div class="p-4 bg-canvas-50 rounded-xl relative group transition-all hover:shadow-sm">
-<div class="flex items-start gap-4">
-<div class="cursor-grab active:cursor-grabbing text-outline hover:text-on-surface pt-1">
-<span class="material-symbols-outlined">drag_indicator</span>
-</div>
-<div class="w-16 h-16 rounded-lg bg-cover bg-center shrink-0" data-alt="A detailed photo of the Ministry of Crab restaurant in Colombo, featuring atmospheric dining spaces and gourmet culinary presentations." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCQMgYlLQ36tyWT6ioUG9awbpV_aS1NTp6CUrJp4vyLFBTgjb2n7YXrlhMeQP3XMBU8YdCkZMjbltLtlM_67I86Lm-oSu8Kf1ou84xZi-mZ58Xfllnz1X-mF80_uTzvowXrhpKBFBuzZHFxsKUjWtzbW3TiLVftYur4QbiHmOGnb_iBanxAQ-LOmhg88blJhKfFIP6ATQuky0FqSojtKBZ_YbE5dUKIYj7QCnFwUMtMC_kkkNeqTrWp')"></div>
-<div class="flex-1 min-w-0">
-<div class="flex items-center justify-between">
-<span class="text-label-sm text-primary font-semibold">07:00 PM • 2.5 hrs</span>
-<div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-<button class="p-1 text-outline hover:text-on-surface rounded"><span class="material-symbols-outlined text-[18px]">edit</span></button>
-<button class="p-1 text-outline hover:text-coral-500 rounded"><span class="material-symbols-outlined text-[18px]">delete</span></button>
-</div>
-</div>
-<h3 class="font-heading-sm text-on-surface truncate mt-0.5">Dinner at Dutch Hospital Precinct</h3>
-<p class="text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">Dine in 400-year-old restored Dutch colonial architecture.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="p-4 bg-primary-container/10 rounded-xl border border-primary/20 flex items-center justify-between mt-4">
-<div class="flex items-center gap-3">
-<span class="material-symbols-outlined text-primary">lightbulb</span>
-<div class="text-body-sm text-on-surface">
-<span class="font-semibold">AI Recommendation:</span> Swap Pettah and Galle Face to beat afternoon heat.
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@100..900&family=Inter:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @layer base {
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          overscroll-behavior: none;
+        }
+        main > :first-child {
+          margin-top: 0 !important;
+        }
+        main > :last-child {
+          margin-bottom: 0 !important;
+        }
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-tint': '#226962',
+              'primary-container': '#0f5c56',
+              'surface-container': '#efeeea',
+              'deep-teal-800': '#0A3F3B',
+              'surface-variant': '#e3e2df',
+              'inverse-on-surface': '#f2f1ed',
+              'on-primary': '#ffffff',
+              primary: '#00433e',
+              'success-600': '#1B7A4C',
+              'on-background': '#1b1c1a',
+              'error-container': '#ffdad6',
+              'on-secondary-fixed-variant': '#6b3b00',
+              tertiary: '#5e2e19',
+              'surface-dim': '#dbdad6',
+              'on-primary-fixed-variant': '#00504a',
+              'secondary-fixed-dim': '#ffb875',
+              'surface-container-highest': '#e3e2df',
+              'on-tertiary-fixed': '#360f01',
+              surface: '#faf9f5',
+              'canvas-0': '#FBFAF6',
+              'on-surface-variant': '#3f4947',
+              'inverse-surface': '#2f312e',
+              'secondary-container': '#fca142',
+              'on-error': '#ffffff',
+              background: '#faf9f5',
+              'canvas-50': '#F1EFE7',
+              'on-surface': '#1b1c1a',
+              'ink-700': '#2B3630',
+              'on-tertiary-container': '#ffb497',
+              'signal-amber-500': '#E08A2C',
+              'coral-500': '#E2604A',
+              'secondary-fixed': '#ffdcc0',
+              'on-primary-fixed': '#00201d',
+              'primary-fixed-dim': '#90d3cb',
+              'outline-variant': '#bec9c6',
+              'sky-300': '#8FD3D6',
+              'primary-fixed': '#abefe7',
+              'on-primary-container': '#8fd2ca',
+              outline: '#6f7977',
+              'on-tertiary': '#ffffff',
+              'tertiary-fixed-dim': '#ffb598',
+              'ink-950': '#0E1512',
+              'surface-container-high': '#e9e8e4',
+              'surface-bright': '#faf9f5',
+              'tertiary-container': '#7a442d',
+              'line-200': '#DEDBD0',
+              'inverse-primary': '#90d3cb',
+              'surface-container-lowest': '#ffffff',
+              'on-tertiary-fixed-variant': '#6c3923',
+              'on-error-container': '#93000a',
+              'tertiary-fixed': '#ffdbce',
+              error: '#ba1a1a',
+              'on-secondary-container': '#6c3b00',
+              'surface-container-low': '#f4f4f0',
+              'on-secondary-fixed': '#2d1600',
+              'on-secondary': '#ffffff',
+              secondary: '#8d4f00',
+              'deep-teal-600': '#0F5C56',
+            },
+            borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem', full: '0.75rem' },
+            spacing: {
+              'unit-4': '16px',
+              'unit-12': '48px',
+              'unit-3': '12px',
+              'unit-24': '96px',
+              base: '4px',
+              'desktop-max-width': '1280px',
+              'unit-16': '64px',
+              'unit-6': '24px',
+              'unit-1': '4px',
+              'unit-2': '8px',
+              'unit-8': '32px',
+            },
+            fontFamily: {
+              'body-lg': ['Inter'],
+              'heading-lg': ['Inter'],
+              'heading-sm': ['Inter'],
+              'body-sm': ['Inter'],
+              'heading-md': ['Inter'],
+              'label-sm': ['Inter'],
+              'display-lg': ['Fraunces'],
+              'display-xl': ['Fraunces'],
+              'body-md': ['Inter'],
+            },
+            fontSize: {
+              'body-lg': ['17px', { lineHeight: '26px', fontWeight: '400' }],
+              'heading-lg': ['28px', { lineHeight: '34px', fontWeight: '600' }],
+              'heading-sm': ['18px', { lineHeight: '24px', fontWeight: '600' }],
+              'body-sm': ['13px', { lineHeight: '18px', fontWeight: '400' }],
+              'heading-md': ['22px', { lineHeight: '28px', fontWeight: '600' }],
+              'label-sm': ['12px', { lineHeight: '16px', fontWeight: '500' }],
+              'display-lg': ['40px', { lineHeight: '46px', fontWeight: '500' }],
+              'display-xl': ['56px', { lineHeight: '60px', fontWeight: '500' }],
+              'body-md': ['15px', { lineHeight: '22px', fontWeight: '400' }],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-surface font-body-md text-on-surface">
+    <header
+      class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"
+    >
+      <div
+        class="h-16 max-w-desktop-max-width mx-auto px-6 lg:px-12 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <img
+            alt="LankaLens Logo"
+            class="h-8 w-auto object-contain"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuASxHhluPoKqeGUtHhACt6hWLRX53k7UyMOs5HW6LvWGNlOOUNdIOof9PVI9FStZircm88YmoQ_ASiA7RKZcjLVFTg8uvk_CmRp-Xu5L8otLgIKXf9Ek108nlk-41ptuvlCAZ-aCxUuQZitsPt79-ro1skm4Fq2DYId4xVpIrSrOwXduqErzUTEi0FzXB4o102BvRJfkt7ZDlUZxBrk16JZ64lPeWkjDJ0BdAmZkl0ShZBr7S4TpC2L"
+          /><span class="font-heading-lg text-primary tracking-tight">LankaLens</span>
+        </div>
+        <div class="hidden lg:flex items-center flex-1 max-w-md mx-8">
+          <div class="relative w-full">
+            <span
+              class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-outline"
+              ><span class="material-symbols-outlined text-[18px]">search</span></span
+            ><input
+              class="w-full pl-10 pr-4 py-2 bg-canvas-50 rounded-lg text-on-surface placeholder:text-outline text-body-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="Search destinations, regions, hotels..."
+              type="text"
+            />
+          </div>
+        </div>
+        <nav
+          class="hidden md:flex items-center gap-1"
+          data-active-classes="bg-primary-container text-on-primary font-bold"
+        >
+          <a
+            class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors"
+            data-path="discover"
+            href="#"
+            >Discover</a
+          ><a
+            class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors"
+            data-path="map"
+            href="#"
+            >Map</a
+          ><a
+            aria-current="page"
+            class="px-3 py-2 rounded-lg transition-colors bg-primary-container text-on-primary font-bold"
+            data-path="planner"
+            href="#"
+            >Planner</a
+          ><a
+            class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors"
+            data-path="ai-assistant"
+            href="#"
+            >AI Assistant</a
+          ><a
+            class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors"
+            data-path="saved"
+            href="#"
+            >Saved</a
+          >
+        </nav>
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="w-full pt-16 bg-surface">
+      <div class="flex flex-col w-full">
+        <div class="max-w-desktop-max-width mx-auto w-full px-6 lg:px-12 py-12">
+          <div
+            class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12"
+          >
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-label-sm uppercase tracking-widest text-primary font-semibold"
+                  >Itinerary Builder</span
+                >
+                <span class="text-line-200">/</span>
+                <span class="text-label-sm text-on-surface-variant">10-Day Ceylon Odyssey</span>
+              </div>
+              <h1 class="font-display-lg text-on-surface">Curate Your Journey</h1>
             </div>
-</div>
-<button class="px-3 py-1.5 bg-deep-teal-600 text-on-primary rounded text-body-sm font-medium hover:bg-primary transition-colors">Apply</button>
-</div>
-</div>
-<div class="lg:col-span-4 sticky top-24">
-<div class="bg-canvas-50 rounded-xl p-4 flex flex-col gap-4">
-<div class="flex items-center justify-between">
-<div class="text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Route Map Preview</div>
-<span class="text-label-sm bg-success-600/10 text-success-600 px-2 py-0.5 rounded font-medium">Optimized Path</span>
-</div>
-<div class="w-full h-80 bg-cover bg-center rounded-lg relative overflow-hidden shadow-sm" data-location="Colombo, Sri Lanka" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAA67gmPd1nYHA3IgT4T9UMuIm1E4n9zLddLt2YtKJCCKHTLwbbjhNTyd2obQhXJmeERziKTV8W51nEEoHIHM75V5SgNpGrAhKhhFiDh-etuYIMVi55iMsj873QwVfzf21GMSU6DuB3B9C87_8AuyrmVYQq29zANCzwLPoNkEpOYU1jTx8oGrc3ThVPY_gXahUcgieejW9IQuc0qsfQS9RwtbheBbPx_oqjXG_853CvjgkuoN-1g6OS')">
-<div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white">
-<div>
-<div class="text-label-sm opacity-90">Day 1 Segment</div>
-<div class="font-heading-sm text-white">Colombo Urban Circuit</div>
-</div>
-<span class="px-2.5 py-1 bg-surface/90 text-on-surface rounded text-body-sm font-medium backdrop-blur-md">12.4 km</span>
-</div>
-</div>
-<div class="grid grid-cols-3 gap-2 text-center pt-2 border-t border-line-200">
-<div>
-<div class="text-label-sm text-outline">Total Distance</div>
-<div class="font-heading-sm text-on-surface mt-0.5">14.2 km</div>
-</div>
-<div>
-<div class="text-label-sm text-outline">Transit Time</div>
-<div class="font-heading-sm text-on-surface mt-0.5">50 mins</div>
-</div>
-<div>
-<div class="text-label-sm text-outline">Carbon Offset</div>
-<div class="font-heading-sm text-success-600 mt-0.5">1.2 kg</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div></main><footer class="w-full bg-surface-container-low py-12"><div class="max-w-desktop-max-width mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-6 text-on-surface-variant text-body-sm"><div>© 2024 LankaLens. All rights reserved.</div><div class="flex gap-6"><a class="hover:text-on-surface" href="#">Privacy Policy</a><a class="hover:text-on-surface" href="#">Terms of Service</a><a class="hover:text-on-surface" href="#">Contact</a></div></div></footer></body></html>
+            <div class="flex items-center gap-3">
+              <button
+                class="px-4 py-2 bg-canvas-50 text-on-surface hover:bg-surface-container rounded-lg text-body-sm font-medium transition-colors flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined text-[18px]">share</span>
+                Share Trip
+              </button>
+              <button
+                class="px-5 py-2 bg-deep-teal-600 text-on-primary hover:bg-primary rounded-lg text-body-sm font-medium transition-colors flex items-center gap-2 shadow-sm"
+              >
+                <span class="material-symbols-outlined text-[18px]">auto_fix_high</span>
+                AI Optimize Route
+              </button>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div class="lg:col-span-3 flex flex-col gap-2">
+              <div class="text-label-sm text-on-surface-variant uppercase tracking-wider mb-2 px-1">
+                Timeline
+              </div>
+              <button
+                class="w-full text-left p-4 rounded-xl bg-primary-container text-on-primary transition-all flex items-center justify-between group"
+              >
+                <div>
+                  <div class="text-label-sm opacity-80 uppercase">Day 01</div>
+                  <div class="font-heading-sm mt-0.5">Colombo Arrival</div>
+                </div>
+                <span class="material-symbols-outlined text-on-primary">chevron_right</span>
+              </button>
+              <button
+                class="w-full text-left p-4 rounded-xl bg-canvas-50 hover:bg-surface-container text-on-surface transition-all flex items-center justify-between group"
+              >
+                <div>
+                  <div class="text-label-sm text-outline uppercase">Day 02</div>
+                  <div class="font-heading-sm mt-0.5">Sigiriya & Dambulla</div>
+                </div>
+                <span class="material-symbols-outlined text-outline group-hover:text-on-surface"
+                  >chevron_right</span
+                >
+              </button>
+              <button
+                class="w-full text-left p-4 rounded-xl bg-canvas-50 hover:bg-surface-container text-on-surface transition-all flex items-center justify-between group"
+              >
+                <div>
+                  <div class="text-label-sm text-outline uppercase">Day 03</div>
+                  <div class="font-heading-sm mt-0.5">Kandy Temple of Tooth</div>
+                </div>
+                <span class="material-symbols-outlined text-outline group-hover:text-on-surface"
+                  >chevron_right</span
+                >
+              </button>
+              <button
+                class="w-full text-left p-4 rounded-xl bg-canvas-50 hover:bg-surface-container text-on-surface transition-all flex items-center justify-between group"
+              >
+                <div>
+                  <div class="text-label-sm text-outline uppercase">Day 04</div>
+                  <div class="font-heading-sm mt-0.5">Nuwara Eliya Tea Trails</div>
+                </div>
+                <span class="material-symbols-outlined text-outline group-hover:text-on-surface"
+                  >chevron_right</span
+                >
+              </button>
+              <button
+                class="w-full text-left p-4 rounded-xl bg-canvas-50 hover:bg-surface-container text-on-surface transition-all flex items-center justify-between group"
+              >
+                <div>
+                  <div class="text-label-sm text-outline uppercase">Day 05</div>
+                  <div class="font-heading-sm mt-0.5">Ella Mountain Vista</div>
+                </div>
+                <span class="material-symbols-outlined text-outline group-hover:text-on-surface"
+                  >chevron_right</span
+                >
+              </button>
+              <button
+                class="w-full py-3 px-4 border border-dashed border-outline-variant hover:border-primary text-primary rounded-xl text-body-sm font-medium flex items-center justify-center gap-2 mt-2 transition-colors"
+              >
+                <span class="material-symbols-outlined text-[18px]">add</span>
+                Add Day 06
+              </button>
+            </div>
+            <div class="lg:col-span-5 flex flex-col gap-4">
+              <div class="flex items-center justify-between px-1">
+                <div>
+                  <h2 class="font-heading-md text-on-surface">Day 1: Colombo Arrival</h2>
+                  <p class="text-body-sm text-on-surface-variant">
+                    3 activities scheduled • 4.5 hrs total travel
+                  </p>
+                </div>
+                <button
+                  class="text-body-sm text-primary font-medium hover:underline flex items-center gap-1"
+                >
+                  <span class="material-symbols-outlined text-[16px]">add</span> Add activity
+                </button>
+              </div>
+              <div class="flex flex-col gap-3">
+                <div
+                  class="p-4 bg-canvas-50 rounded-xl relative group transition-all hover:shadow-sm"
+                >
+                  <div class="flex items-start gap-4">
+                    <div
+                      class="cursor-grab active:cursor-grabbing text-outline hover:text-on-surface pt-1"
+                    >
+                      <span class="material-symbols-outlined">drag_indicator</span>
+                    </div>
+                    <div
+                      class="w-16 h-16 rounded-lg bg-cover bg-center shrink-0"
+                      data-alt="A detailed editorial photograph of the colonial Galle Face Hotel in Colombo at sunset, featuring grand architecture, ocean views, and warm golden hour lighting across the facade."
+                      style="
+                        background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCiLO2LGS_7NOk5z2qytQ-3gwr2Z9WKcyd3msQNDgPC3uwQDHyq6AOLPPGqRRX0W1oBS4fEUK_09bG7MbVOsEkCbjBGmx3m7tOAUjZ6dNslCInbMgymSAvEepa7WHPW5Gza6SEZBk6-Mu79DLMnC1oa2D0MuLWPnsk7gaZnvggfLjg_kADaiJPDZeVASxATwsbDkmLGIS37TCmg6c-ZRavFWrTBRWwoumDZOgg2RwqBUhYTw5i4jL3C');
+                      "
+                    ></div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center justify-between">
+                        <span class="text-label-sm text-primary font-semibold"
+                          >09:00 AM • 2 hrs</span
+                        >
+                        <div
+                          class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <button class="p-1 text-outline hover:text-on-surface rounded">
+                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                          </button>
+                          <button class="p-1 text-outline hover:text-coral-500 rounded">
+                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
+                        </div>
+                      </div>
+                      <h3 class="font-heading-sm text-on-surface truncate mt-0.5">
+                        Galle Face Hotel Heritage Walk
+                      </h3>
+                      <p class="text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">
+                        Stroll through the iconic seaside chess-lawn and colonial corridors.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3 px-8 py-1.5 text-body-sm text-outline">
+                  <div class="h-4 w-px bg-outline-variant ml-2"></div>
+                  <span class="material-symbols-outlined text-[16px]">directions_car</span>
+                  <span>Auto-suggest: 35 min drive via Galle Road (12.4 km)</span>
+                </div>
+                <div
+                  class="p-4 bg-canvas-50 rounded-xl relative group transition-all hover:shadow-sm"
+                >
+                  <div class="flex items-start gap-4">
+                    <div
+                      class="cursor-grab active:cursor-grabbing text-outline hover:text-on-surface pt-1"
+                    >
+                      <span class="material-symbols-outlined">drag_indicator</span>
+                    </div>
+                    <div
+                      class="w-16 h-16 rounded-lg bg-cover bg-center shrink-0"
+                      data-alt="A detailed photo of the vibrant Pettah Floating Market in Colombo, showcasing colorful stalls, fresh tropical fruits, spices, and bustling local atmosphere."
+                      style="
+                        background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAT06-eb7PUsdD0gKpVeBOraoVHb4czoISMdLmvBWMiv0lBOOaPyaQNVWF8H4n7ianYyPEe0pIrGVNeoE1pN7k9P_9hyC5NOqtt4pyrTDiZaCrFfFvAUKZzyCC6wBPnuSFnVl0-GU4PQ6J92ThLlN-WWq9WDNcqTs9qcyK3RrurhvjhqE8p276Dh0SdS3M5PZl9K-haUgJBwDe78efqGDNpRfSO7Jp2ObeMWDBfVRWXEcx9jcYSltu6');
+                      "
+                    ></div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center justify-between">
+                        <span class="text-label-sm text-primary font-semibold"
+                          >12:30 PM • 3 hrs</span
+                        >
+                        <div
+                          class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <button class="p-1 text-outline hover:text-on-surface rounded">
+                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                          </button>
+                          <button class="p-1 text-outline hover:text-coral-500 rounded">
+                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
+                        </div>
+                      </div>
+                      <h3 class="font-heading-sm text-on-surface truncate mt-0.5">
+                        Pettah Spice & Bazaar Tour
+                      </h3>
+                      <p class="text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">
+                        Immersive aromatic walk through historical trading alleys.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3 px-8 py-1.5 text-body-sm text-outline">
+                  <div class="h-4 w-px bg-outline-variant ml-2"></div>
+                  <span class="material-symbols-outlined text-[16px]">directions_walk</span>
+                  <span>Auto-suggest: 15 min walk through Fort district</span>
+                </div>
+                <div
+                  class="p-4 bg-canvas-50 rounded-xl relative group transition-all hover:shadow-sm"
+                >
+                  <div class="flex items-start gap-4">
+                    <div
+                      class="cursor-grab active:cursor-grabbing text-outline hover:text-on-surface pt-1"
+                    >
+                      <span class="material-symbols-outlined">drag_indicator</span>
+                    </div>
+                    <div
+                      class="w-16 h-16 rounded-lg bg-cover bg-center shrink-0"
+                      data-alt="A detailed photo of the Ministry of Crab restaurant in Colombo, featuring atmospheric dining spaces and gourmet culinary presentations."
+                      style="
+                        background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCQMgYlLQ36tyWT6ioUG9awbpV_aS1NTp6CUrJp4vyLFBTgjb2n7YXrlhMeQP3XMBU8YdCkZMjbltLtlM_67I86Lm-oSu8Kf1ou84xZi-mZ58Xfllnz1X-mF80_uTzvowXrhpKBFBuzZHFxsKUjWtzbW3TiLVftYur4QbiHmOGnb_iBanxAQ-LOmhg88blJhKfFIP6ATQuky0FqSojtKBZ_YbE5dUKIYj7QCnFwUMtMC_kkkNeqTrWp');
+                      "
+                    ></div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center justify-between">
+                        <span class="text-label-sm text-primary font-semibold"
+                          >07:00 PM • 2.5 hrs</span
+                        >
+                        <div
+                          class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <button class="p-1 text-outline hover:text-on-surface rounded">
+                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                          </button>
+                          <button class="p-1 text-outline hover:text-coral-500 rounded">
+                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
+                        </div>
+                      </div>
+                      <h3 class="font-heading-sm text-on-surface truncate mt-0.5">
+                        Dinner at Dutch Hospital Precinct
+                      </h3>
+                      <p class="text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">
+                        Dine in 400-year-old restored Dutch colonial architecture.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="p-4 bg-primary-container/10 rounded-xl border border-primary/20 flex items-center justify-between mt-4"
+              >
+                <div class="flex items-center gap-3">
+                  <span class="material-symbols-outlined text-primary">lightbulb</span>
+                  <div class="text-body-sm text-on-surface">
+                    <span class="font-semibold">AI Recommendation:</span> Swap Pettah and Galle Face
+                    to beat afternoon heat.
+                  </div>
+                </div>
+                <button
+                  class="px-3 py-1.5 bg-deep-teal-600 text-on-primary rounded text-body-sm font-medium hover:bg-primary transition-colors"
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+            <div class="lg:col-span-4 sticky top-24">
+              <div class="bg-canvas-50 rounded-xl p-4 flex flex-col gap-4">
+                <div class="flex items-center justify-between">
+                  <div
+                    class="text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold"
+                  >
+                    Route Map Preview
+                  </div>
+                  <span
+                    class="text-label-sm bg-success-600/10 text-success-600 px-2 py-0.5 rounded font-medium"
+                    >Optimized Path</span
+                  >
+                </div>
+                <div
+                  class="w-full h-80 bg-cover bg-center rounded-lg relative overflow-hidden shadow-sm"
+                  data-location="Colombo, Sri Lanka"
+                  style="
+                    background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAA67gmPd1nYHA3IgT4T9UMuIm1E4n9zLddLt2YtKJCCKHTLwbbjhNTyd2obQhXJmeERziKTV8W51nEEoHIHM75V5SgNpGrAhKhhFiDh-etuYIMVi55iMsj873QwVfzf21GMSU6DuB3B9C87_8AuyrmVYQq29zANCzwLPoNkEpOYU1jTx8oGrc3ThVPY_gXahUcgieejW9IQuc0qsfQS9RwtbheBbPx_oqjXG_853CvjgkuoN-1g6OS');
+                  "
+                >
+                  <div
+                    class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"
+                  ></div>
+                  <div
+                    class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white"
+                  >
+                    <div>
+                      <div class="text-label-sm opacity-90">Day 1 Segment</div>
+                      <div class="font-heading-sm text-white">Colombo Urban Circuit</div>
+                    </div>
+                    <span
+                      class="px-2.5 py-1 bg-surface/90 text-on-surface rounded text-body-sm font-medium backdrop-blur-md"
+                      >12.4 km</span
+                    >
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center pt-2 border-t border-line-200">
+                  <div>
+                    <div class="text-label-sm text-outline">Total Distance</div>
+                    <div class="font-heading-sm text-on-surface mt-0.5">14.2 km</div>
+                  </div>
+                  <div>
+                    <div class="text-label-sm text-outline">Transit Time</div>
+                    <div class="font-heading-sm text-on-surface mt-0.5">50 mins</div>
+                  </div>
+                  <div>
+                    <div class="text-label-sm text-outline">Carbon Offset</div>
+                    <div class="font-heading-sm text-success-600 mt-0.5">1.2 kg</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer class="w-full bg-surface-container-low py-12">
+      <div
+        class="max-w-desktop-max-width mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-6 text-on-surface-variant text-body-sm"
+      >
+        <div>© 2024 LankaLens. All rights reserved.</div>
+        <div class="flex gap-6">
+          <a class="hover:text-on-surface" href="#">Privacy Policy</a
+          ><a class="hover:text-on-surface" href="#">Terms of Service</a
+          ><a class="hover:text-on-surface" href="#">Contact</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

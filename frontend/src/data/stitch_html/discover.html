@@ -1,152 +1,458 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@100..900&family=Inter:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {"colors": {"surface-tint": "#226962", "primary-container": "#0f5c56", "surface-container": "#efeeea", "deep-teal-800": "#0A3F3B", "surface-variant": "#e3e2df", "inverse-on-surface": "#f2f1ed", "on-primary": "#ffffff", "primary": "#00433e", "success-600": "#1B7A4C", "on-background": "#1b1c1a", "error-container": "#ffdad6", "on-secondary-fixed-variant": "#6b3b00", "tertiary": "#5e2e19", "surface-dim": "#dbdad6", "on-primary-fixed-variant": "#00504a", "secondary-fixed-dim": "#ffb875", "surface-container-highest": "#e3e2df", "on-tertiary-fixed": "#360f01", "surface": "#faf9f5", "canvas-0": "#FBFAF6", "on-surface-variant": "#3f4947", "inverse-surface": "#2f312e", "secondary-container": "#fca142", "on-error": "#ffffff", "background": "#faf9f5", "canvas-50": "#F1EFE7", "on-surface": "#1b1c1a", "ink-700": "#2B3630", "on-tertiary-container": "#ffb497", "signal-amber-500": "#E08A2C", "coral-500": "#E2604A", "secondary-fixed": "#ffdcc0", "on-primary-fixed": "#00201d", "primary-fixed-dim": "#90d3cb", "outline-variant": "#bec9c6", "sky-300": "#8FD3D6", "primary-fixed": "#abefe7", "on-primary-container": "#8fd2ca", "outline": "#6f7977", "on-tertiary": "#ffffff", "tertiary-fixed-dim": "#ffb598", "ink-950": "#0E1512", "surface-container-high": "#e9e8e4", "surface-bright": "#faf9f5", "tertiary-container": "#7a442d", "line-200": "#DEDBD0", "inverse-primary": "#90d3cb", "surface-container-lowest": "#ffffff", "on-tertiary-fixed-variant": "#6c3923", "on-error-container": "#93000a", "tertiary-fixed": "#ffdbce", "error": "#ba1a1a", "on-secondary-container": "#6c3b00", "surface-container-low": "#f4f4f0", "on-secondary-fixed": "#2d1600", "on-secondary": "#ffffff", "secondary": "#8d4f00", "deep-teal-600": "#0F5C56"}, "borderRadius": {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"}, "spacing": {"unit-4": "16px", "unit-12": "48px", "unit-3": "12px", "unit-24": "96px", "base": "4px", "desktop-max-width": "1280px", "unit-16": "64px", "unit-6": "24px", "unit-1": "4px", "unit-2": "8px", "unit-8": "32px"}, "fontFamily": {"body-lg": ["Inter"], "heading-lg": ["Inter"], "heading-sm": ["Inter"], "body-sm": ["Inter"], "heading-md": ["Inter"], "label-sm": ["Inter"], "display-lg": ["Fraunces"], "display-xl": ["Fraunces"], "body-md": ["Inter"]}, "fontSize": {"body-lg": ["17px", {"lineHeight": "26px", "fontWeight": "400"}], "heading-lg": ["28px", {"lineHeight": "34px", "fontWeight": "600"}], "heading-sm": ["18px", {"lineHeight": "24px", "fontWeight": "600"}], "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}], "heading-md": ["22px", {"lineHeight": "28px", "fontWeight": "600"}], "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}], "display-lg": ["40px", {"lineHeight": "46px", "fontWeight": "500"}], "display-xl": ["56px", {"lineHeight": "60px", "fontWeight": "500"}], "body-md": ["15px", {"lineHeight": "22px", "fontWeight": "400"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface"><header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-desktop-max-width mx-auto px-6 lg:px-12 flex items-center justify-between"><div class="flex items-center gap-3"><img alt="LankaLens Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASxHhluPoKqeGUtHhACt6hWLRX53k7UyMOs5HW6LvWGNlOOUNdIOof9PVI9FStZircm88YmoQ_ASiA7RKZcjLVFTg8uvk_CmRp-Xu5L8otLgIKXf9Ek108nlk-41ptuvlCAZ-aCxUuQZitsPt79-ro1skm4Fq2DYId4xVpIrSrOwXduqErzUTEi0FzXB4o102BvRJfkt7ZDlUZxBrk16JZ64lPeWkjDJ0BdAmZkl0ShZBr7S4TpC2L"/><span class="font-heading-lg text-primary tracking-tight">LankaLens</span></div><div class="hidden lg:flex items-center flex-1 max-w-md mx-8"><div class="relative w-full"><span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-outline"><span class="material-symbols-outlined text-[18px]">search</span></span><input class="w-full pl-10 pr-4 py-2 bg-canvas-50 rounded-lg text-on-surface placeholder:text-outline text-body-sm focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Search destinations, regions, hotels..." type="text"/></div></div><nav class="hidden md:flex items-center gap-1" data-active-classes="bg-primary-container text-on-primary font-bold"><a aria-current="page" class="px-3 py-2 rounded-lg transition-colors bg-primary-container text-on-primary font-bold" data-path="discover" href="#">Discover</a><a class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors" data-path="map" href="#">Map</a><a class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors" data-path="planner" href="#">Planner</a><a class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors" data-path="ai-assistant" href="#">AI Assistant</a><a class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors" data-path="saved" href="#">Saved</a></nav><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-surface"><div class="flex flex-col w-full">
-<!-- Hero Section with Immersive Map Fragment & Overlays -->
-<section class="relative w-full min-h-[870px] bg-canvas-0 overflow-hidden flex flex-col justify-between pt-8 pb-16">
-<!-- Background decorative grid / cartography aesthetic lines -->
-<div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(#0F5C56 1px, transparent 1px); background-size: 32px 32px;"></div>
-<!-- Floating ambient glow -->
-<div class="absolute top-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-primary/5 blur-3xl pointer-events-none"></div>
-<div class="max-w-desktop-max-width mx-auto px-6 lg:px-12 w-full z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-<!-- Left Content Column -->
-<div class="lg:col-span-7 flex flex-col items-start gap-6">
-<div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container rounded-full text-label-sm text-primary font-medium tracking-wide">
-<span class="material-symbols-outlined text-[16px]">explore</span>
-          CARTOGRAPHIC TRAVEL DISCOVERY
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@100..900&family=Inter:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @layer base {
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          overscroll-behavior: none;
+        }
+        main > :first-child {
+          margin-top: 0 !important;
+        }
+        main > :last-child {
+          margin-bottom: 0 !important;
+        }
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-tint': '#226962',
+              'primary-container': '#0f5c56',
+              'surface-container': '#efeeea',
+              'deep-teal-800': '#0A3F3B',
+              'surface-variant': '#e3e2df',
+              'inverse-on-surface': '#f2f1ed',
+              'on-primary': '#ffffff',
+              primary: '#00433e',
+              'success-600': '#1B7A4C',
+              'on-background': '#1b1c1a',
+              'error-container': '#ffdad6',
+              'on-secondary-fixed-variant': '#6b3b00',
+              tertiary: '#5e2e19',
+              'surface-dim': '#dbdad6',
+              'on-primary-fixed-variant': '#00504a',
+              'secondary-fixed-dim': '#ffb875',
+              'surface-container-highest': '#e3e2df',
+              'on-tertiary-fixed': '#360f01',
+              surface: '#faf9f5',
+              'canvas-0': '#FBFAF6',
+              'on-surface-variant': '#3f4947',
+              'inverse-surface': '#2f312e',
+              'secondary-container': '#fca142',
+              'on-error': '#ffffff',
+              background: '#faf9f5',
+              'canvas-50': '#F1EFE7',
+              'on-surface': '#1b1c1a',
+              'ink-700': '#2B3630',
+              'on-tertiary-container': '#ffb497',
+              'signal-amber-500': '#E08A2C',
+              'coral-500': '#E2604A',
+              'secondary-fixed': '#ffdcc0',
+              'on-primary-fixed': '#00201d',
+              'primary-fixed-dim': '#90d3cb',
+              'outline-variant': '#bec9c6',
+              'sky-300': '#8FD3D6',
+              'primary-fixed': '#abefe7',
+              'on-primary-container': '#8fd2ca',
+              outline: '#6f7977',
+              'on-tertiary': '#ffffff',
+              'tertiary-fixed-dim': '#ffb598',
+              'ink-950': '#0E1512',
+              'surface-container-high': '#e9e8e4',
+              'surface-bright': '#faf9f5',
+              'tertiary-container': '#7a442d',
+              'line-200': '#DEDBD0',
+              'inverse-primary': '#90d3cb',
+              'surface-container-lowest': '#ffffff',
+              'on-tertiary-fixed-variant': '#6c3923',
+              'on-error-container': '#93000a',
+              'tertiary-fixed': '#ffdbce',
+              error: '#ba1a1a',
+              'on-secondary-container': '#6c3b00',
+              'surface-container-low': '#f4f4f0',
+              'on-secondary-fixed': '#2d1600',
+              'on-secondary': '#ffffff',
+              secondary: '#8d4f00',
+              'deep-teal-600': '#0F5C56',
+            },
+            borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem', full: '0.75rem' },
+            spacing: {
+              'unit-4': '16px',
+              'unit-12': '48px',
+              'unit-3': '12px',
+              'unit-24': '96px',
+              base: '4px',
+              'desktop-max-width': '1280px',
+              'unit-16': '64px',
+              'unit-6': '24px',
+              'unit-1': '4px',
+              'unit-2': '8px',
+              'unit-8': '32px',
+            },
+            fontFamily: {
+              'body-lg': ['Inter'],
+              'heading-lg': ['Inter'],
+              'heading-sm': ['Inter'],
+              'body-sm': ['Inter'],
+              'heading-md': ['Inter'],
+              'label-sm': ['Inter'],
+              'display-lg': ['Fraunces'],
+              'display-xl': ['Fraunces'],
+              'body-md': ['Inter'],
+            },
+            fontSize: {
+              'body-lg': ['17px', { lineHeight: '26px', fontWeight: '400' }],
+              'heading-lg': ['28px', { lineHeight: '34px', fontWeight: '600' }],
+              'heading-sm': ['18px', { lineHeight: '24px', fontWeight: '600' }],
+              'body-sm': ['13px', { lineHeight: '18px', fontWeight: '400' }],
+              'heading-md': ['22px', { lineHeight: '28px', fontWeight: '600' }],
+              'label-sm': ['12px', { lineHeight: '16px', fontWeight: '500' }],
+              'display-lg': ['40px', { lineHeight: '46px', fontWeight: '500' }],
+              'display-xl': ['56px', { lineHeight: '60px', fontWeight: '500' }],
+              'body-md': ['15px', { lineHeight: '22px', fontWeight: '400' }],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-surface font-body-md text-on-surface">
+    <header
+      class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"
+    >
+      <div
+        class="h-16 max-w-desktop-max-width mx-auto px-6 lg:px-12 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <img
+            alt="LankaLens Logo"
+            class="h-8 w-auto object-contain"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuASxHhluPoKqeGUtHhACt6hWLRX53k7UyMOs5HW6LvWGNlOOUNdIOof9PVI9FStZircm88YmoQ_ASiA7RKZcjLVFTg8uvk_CmRp-Xu5L8otLgIKXf9Ek108nlk-41ptuvlCAZ-aCxUuQZitsPt79-ro1skm4Fq2DYId4xVpIrSrOwXduqErzUTEi0FzXB4o102BvRJfkt7ZDlUZxBrk16JZ64lPeWkjDJ0BdAmZkl0ShZBr7S4TpC2L"
+          /><span class="font-heading-lg text-primary tracking-tight">LankaLens</span>
         </div>
-<h1 class="font-display-xl text-on-background tracking-tight">
-          Uncover the soulful essence of <span class="text-primary italic">Lanka.</span>
-</h1>
-<p class="font-body-lg text-on-surface-variant max-w-xl">
-          An editorial guide to Sri Lanka. Precision maps, bespoke itineraries, and AI-curated journeys through misty peaks, ancient temples, and golden coastlines.
-        </p>
-<!-- Overlaid Quick Search Bar -->
-<div class="w-full max-w-xl bg-surface shadow-md rounded-xl p-2 flex items-center gap-3">
-<div class="flex items-center gap-2 pl-3 flex-1">
-<span class="material-symbols-outlined text-outline">location_on</span>
-<input class="w-full bg-transparent text-on-surface placeholder:text-outline text-body-md focus:outline-none" placeholder="Where do you want to explore? (e.g., Ella, Sigiriya)" type="text"/>
-</div>
-<button class="bg-primary hover:bg-primary-container text-on-primary px-6 py-3 rounded-lg font-label-sm tracking-wide transition-colors flex items-center gap-2 cursor-pointer">
-<span>Explore</span>
-<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-</button>
-</div>
-<div class="flex items-center gap-8 pt-4 text-body-sm text-on-surface-variant border-t border-line-200/60 w-full">
-<div>
-<strong class="text-on-surface block font-heading-lg text-[20px]">120+</strong> Curated Stops
+        <div class="hidden lg:flex items-center flex-1 max-w-md mx-8">
+          <div class="relative w-full">
+            <span
+              class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-outline"
+              ><span class="material-symbols-outlined text-[18px]">search</span></span
+            ><input
+              class="w-full pl-10 pr-4 py-2 bg-canvas-50 rounded-lg text-on-surface placeholder:text-outline text-body-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="Search destinations, regions, hotels..."
+              type="text"
+            />
           </div>
-<div class="w-px h-8 bg-line-200"></div>
-<div>
-<strong class="text-on-surface block font-heading-lg text-[20px]">4.9/5</strong> Traveler Rating
+        </div>
+        <nav
+          class="hidden md:flex items-center gap-1"
+          data-active-classes="bg-primary-container text-on-primary font-bold"
+        >
+          <a
+            aria-current="page"
+            class="px-3 py-2 rounded-lg transition-colors bg-primary-container text-on-primary font-bold"
+            data-path="discover"
+            href="#"
+            >Discover</a
+          ><a
+            class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors"
+            data-path="map"
+            href="#"
+            >Map</a
+          ><a
+            class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors"
+            data-path="planner"
+            href="#"
+            >Planner</a
+          ><a
+            class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors"
+            data-path="ai-assistant"
+            href="#"
+            >AI Assistant</a
+          ><a
+            class="px-3 py-2 rounded-lg text-body-sm text-on-surface-variant hover:bg-canvas-50 hover:text-on-surface transition-colors"
+            data-path="saved"
+            href="#"
+            >Saved</a
+          >
+        </nav>
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
           </div>
-<div class="w-px h-8 bg-line-200"></div>
-<div>
-<strong class="text-on-surface block font-heading-lg text-[20px]">100%</strong> Bespoke AI
+        </div>
+      </div>
+    </header>
+    <main class="w-full pt-16 bg-surface">
+      <div class="flex flex-col w-full">
+        <!-- Hero Section with Immersive Map Fragment & Overlays -->
+        <section
+          class="relative w-full min-h-[870px] bg-canvas-0 overflow-hidden flex flex-col justify-between pt-8 pb-16"
+        >
+          <!-- Background decorative grid / cartography aesthetic lines -->
+          <div
+            class="absolute inset-0 opacity-[0.03] pointer-events-none"
+            style="
+              background-image: radial-gradient(#0f5c56 1px, transparent 1px);
+              background-size: 32px 32px;
+            "
+          ></div>
+          <!-- Floating ambient glow -->
+          <div
+            class="absolute top-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-primary/5 blur-3xl pointer-events-none"
+          ></div>
+          <div
+            class="max-w-desktop-max-width mx-auto px-6 lg:px-12 w-full z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
+          >
+            <!-- Left Content Column -->
+            <div class="lg:col-span-7 flex flex-col items-start gap-6">
+              <div
+                class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container rounded-full text-label-sm text-primary font-medium tracking-wide"
+              >
+                <span class="material-symbols-outlined text-[16px]">explore</span>
+                CARTOGRAPHIC TRAVEL DISCOVERY
+              </div>
+              <h1 class="font-display-xl text-on-background tracking-tight">
+                Uncover the soulful essence of <span class="text-primary italic">Lanka.</span>
+              </h1>
+              <p class="font-body-lg text-on-surface-variant max-w-xl">
+                An editorial guide to Sri Lanka. Precision maps, bespoke itineraries, and AI-curated
+                journeys through misty peaks, ancient temples, and golden coastlines.
+              </p>
+              <!-- Overlaid Quick Search Bar -->
+              <div
+                class="w-full max-w-xl bg-surface shadow-md rounded-xl p-2 flex items-center gap-3"
+              >
+                <div class="flex items-center gap-2 pl-3 flex-1">
+                  <span class="material-symbols-outlined text-outline">location_on</span>
+                  <input
+                    class="w-full bg-transparent text-on-surface placeholder:text-outline text-body-md focus:outline-none"
+                    placeholder="Where do you want to explore? (e.g., Ella, Sigiriya)"
+                    type="text"
+                  />
+                </div>
+                <button
+                  class="bg-primary hover:bg-primary-container text-on-primary px-6 py-3 rounded-lg font-label-sm tracking-wide transition-colors flex items-center gap-2 cursor-pointer"
+                >
+                  <span>Explore</span>
+                  <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </button>
+              </div>
+              <div
+                class="flex items-center gap-8 pt-4 text-body-sm text-on-surface-variant border-t border-line-200/60 w-full"
+              >
+                <div>
+                  <strong class="text-on-surface block font-heading-lg text-[20px]">120+</strong>
+                  Curated Stops
+                </div>
+                <div class="w-px h-8 bg-line-200"></div>
+                <div>
+                  <strong class="text-on-surface block font-heading-lg text-[20px]">4.9/5</strong>
+                  Traveler Rating
+                </div>
+                <div class="w-px h-8 bg-line-200"></div>
+                <div>
+                  <strong class="text-on-surface block font-heading-lg text-[20px]">100%</strong>
+                  Bespoke AI
+                </div>
+              </div>
+            </div>
+            <!-- Right Column: Interactive Map Fragment Preview -->
+            <div class="lg:col-span-5 relative">
+              <div
+                class="w-full h-[420px] rounded-xl overflow-hidden shadow-xl relative bg-surface-container flex items-center justify-center"
+              >
+                <!-- Interactive Map Simulation -->
+                <div
+                  class="absolute inset-0 bg-cover bg-center opacity-90 transition-transform duration-700 hover:scale-105"
+                  data-alt="A detailed cartographic map visualization of Sri Lanka with topographic elevation contours in deep teal and warm sand tones, highlighting the central highlands and coastal routes with high precision."
+                  data-location="Sri Lanka Central Highlands"
+                  style="
+                    background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD34fRDKeY0v84ecc8VNZ3gET0U_m3OIG5_e226lTrKQj-7bif8OkwlqnkP6jWLte4UvqmaGKVgWOxs6UcjFZxRNJ8WHe3-iIMHe2RK5eExUPltTqIAsyrNqgXIXS3e8ye7YcIr3K41ygTkBEv-I6nYCCvlAd6Z24M2wVfqKcssIm7DexVO9Gj5OlbHSrJIMB4ES6J81aXhIt333qj0NpikKSq0hEeTFz3fNmr9i4VCi5waMzcm9ns7');
+                  "
+                ></div>
+                <!-- Soft animated pins -->
+                <div
+                  class="absolute top-[35%] left-[45%] flex flex-col items-center group cursor-pointer"
+                >
+                  <div class="w-4 h-4 rounded-full bg-secondary animate-ping absolute"></div>
+                  <div
+                    class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md relative z-10"
+                  >
+                    <span class="material-symbols-outlined text-[14px]">mountain_flag</span>
+                  </div>
+                  <div
+                    class="bg-surface/90 backdrop-blur-md px-2 py-1 rounded text-label-sm text-on-surface mt-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                  >
+                    Ella Rock
+                  </div>
+                </div>
+                <div
+                  class="absolute top-[25%] left-[30%] flex flex-col items-center group cursor-pointer"
+                >
+                  <div class="w-4 h-4 rounded-full bg-secondary animate-ping absolute"></div>
+                  <div
+                    class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md relative z-10"
+                  >
+                    <span class="material-symbols-outlined text-[14px]">save_as</span>
+                  </div>
+                  <div
+                    class="bg-surface/90 backdrop-blur-md px-2 py-1 rounded text-label-sm text-on-surface mt-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                  >
+                    Sigiriya
+                  </div>
+                </div>
+                <div
+                  class="absolute bottom-[30%] left-[60%] flex flex-col items-center group cursor-pointer"
+                >
+                  <div class="w-4 h-4 rounded-full bg-secondary animate-ping absolute"></div>
+                  <div
+                    class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md relative z-10"
+                  >
+                    <span class="material-symbols-outlined text-[14px]">surfing</span>
+                  </div>
+                  <div
+                    class="bg-surface/90 backdrop-blur-md px-2 py-1 rounded text-label-sm text-on-surface mt-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                  >
+                    Arugam Bay
+                  </div>
+                </div>
+                <!-- Map HUD Overlay -->
+                <div
+                  class="absolute bottom-4 left-4 right-4 bg-surface/90 backdrop-blur-md p-3 rounded-lg flex items-center justify-between text-body-sm text-on-surface shadow-sm"
+                >
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[18px]">near_me</span>
+                    <span>Interactive Cartography Layer</span>
+                  </div>
+                  <span class="text-outline text-label-sm">Live GPS Active</span>
+                </div>
+              </div>
+            </div>
           </div>
-</div>
-</div>
-<!-- Right Column: Interactive Map Fragment Preview -->
-<div class="lg:col-span-5 relative">
-<div class="w-full h-[420px] rounded-xl overflow-hidden shadow-xl relative bg-surface-container flex items-center justify-center">
-<!-- Interactive Map Simulation -->
-<div class="absolute inset-0 bg-cover bg-center opacity-90 transition-transform duration-700 hover:scale-105" data-alt="A detailed cartographic map visualization of Sri Lanka with topographic elevation contours in deep teal and warm sand tones, highlighting the central highlands and coastal routes with high precision." data-location="Sri Lanka Central Highlands" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD34fRDKeY0v84ecc8VNZ3gET0U_m3OIG5_e226lTrKQj-7bif8OkwlqnkP6jWLte4UvqmaGKVgWOxs6UcjFZxRNJ8WHe3-iIMHe2RK5eExUPltTqIAsyrNqgXIXS3e8ye7YcIr3K41ygTkBEv-I6nYCCvlAd6Z24M2wVfqKcssIm7DexVO9Gj5OlbHSrJIMB4ES6J81aXhIt333qj0NpikKSq0hEeTFz3fNmr9i4VCi5waMzcm9ns7')"></div>
-<!-- Soft animated pins -->
-<div class="absolute top-[35%] left-[45%] flex flex-col items-center group cursor-pointer">
-<div class="w-4 h-4 rounded-full bg-secondary animate-ping absolute"></div>
-<div class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md relative z-10">
-<span class="material-symbols-outlined text-[14px]">mountain_flag</span>
-</div>
-<div class="bg-surface/90 backdrop-blur-md px-2 py-1 rounded text-label-sm text-on-surface mt-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
-              Ella Rock
+        </section>
+        <!-- Three Equal-Weight Entry Cards Section -->
+        <section class="max-w-desktop-max-width mx-auto px-6 lg:px-12 w-full py-20">
+          <div class="flex flex-col items-center text-center mb-12">
+            <span class="text-label-sm text-primary uppercase tracking-widest mb-2"
+              >Tailored Navigation</span
+            >
+            <h2 class="font-display-lg text-on-background">Choose your way to discover</h2>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Card 1: Explore by map -->
+            <div
+              class="bg-surface-container hover:bg-surface-container-high transition-all duration-300 rounded-xl p-8 flex flex-col justify-between group cursor-pointer shadow-sm hover:shadow-md"
+            >
+              <div class="flex flex-col gap-4">
+                <div
+                  class="w-12 h-12 rounded-lg bg-primary text-on-primary flex items-center justify-center group-hover:scale-110 transition-transform"
+                >
+                  <span class="material-symbols-outlined text-[24px]">map</span>
+                </div>
+                <h3 class="font-heading-lg text-on-surface">Explore by Map</h3>
+                <p class="font-body-md text-on-surface-variant">
+                  Navigate through spatial clusters, terrain shifts, and hidden cultural points
+                  across the island with our high-fidelity interactive map.
+                </p>
+              </div>
+              <div class="pt-8 flex items-center gap-2 text-primary font-label-sm tracking-wide">
+                <span>Open interactive map</span>
+                <span
+                  class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform"
+                  >arrow_forward</span
+                >
+              </div>
             </div>
-</div>
-<div class="absolute top-[25%] left-[30%] flex flex-col items-center group cursor-pointer">
-<div class="w-4 h-4 rounded-full bg-secondary animate-ping absolute"></div>
-<div class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md relative z-10">
-<span class="material-symbols-outlined text-[14px]">save_as</span>
-</div>
-<div class="bg-surface/90 backdrop-blur-md px-2 py-1 rounded text-label-sm text-on-surface mt-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
-              Sigiriya
+            <!-- Card 2: Plan a trip -->
+            <div
+              class="bg-surface-container hover:bg-surface-container-high transition-all duration-300 rounded-xl p-8 flex flex-col justify-between group cursor-pointer shadow-sm hover:shadow-md"
+            >
+              <div class="flex flex-col gap-4">
+                <div
+                  class="w-12 h-12 rounded-lg bg-primary text-on-primary flex items-center justify-center group-hover:scale-110 transition-transform"
+                >
+                  <span class="material-symbols-outlined text-[24px]">event_note</span>
+                </div>
+                <h3 class="font-heading-lg text-on-surface">Plan a Trip</h3>
+                <p class="font-body-md text-on-surface-variant">
+                  Craft custom day-by-day itineraries tailored to your pace, accommodation
+                  preferences, and must-see archaeological or natural wonders.
+                </p>
+              </div>
+              <div class="pt-8 flex items-center gap-2 text-primary font-label-sm tracking-wide">
+                <span>Start planning</span>
+                <span
+                  class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform"
+                  >arrow_forward</span
+                >
+              </div>
             </div>
-</div>
-<div class="absolute bottom-[30%] left-[60%] flex flex-col items-center group cursor-pointer">
-<div class="w-4 h-4 rounded-full bg-secondary animate-ping absolute"></div>
-<div class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md relative z-10">
-<span class="material-symbols-outlined text-[14px]">surfing</span>
-</div>
-<div class="bg-surface/90 backdrop-blur-md px-2 py-1 rounded text-label-sm text-on-surface mt-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
-              Arugam Bay
+            <!-- Card 3: Ask AI assistant -->
+            <div
+              class="bg-surface-container hover:bg-surface-container-high transition-all duration-300 rounded-xl p-8 flex flex-col justify-between group cursor-pointer shadow-sm hover:shadow-md"
+            >
+              <div class="flex flex-col gap-4">
+                <div
+                  class="w-12 h-12 rounded-lg bg-gradient-to-br from-deep-teal-600 to-sky-300 text-on-primary flex items-center justify-center group-hover:scale-110 transition-transform"
+                >
+                  <span class="material-symbols-outlined text-[24px]">auto_awesome</span>
+                </div>
+                <h3 class="font-heading-lg text-on-surface">Ask AI Assistant</h3>
+                <p class="font-body-md text-on-surface-variant">
+                  Consult our intelligent travel companion for instant recommendations on local
+                  cuisine, train ticket bookings, and off-the-beaten-path advice.
+                </p>
+              </div>
+              <div class="pt-8 flex items-center gap-2 text-primary font-label-sm tracking-wide">
+                <span>Chat with AI</span>
+                <span
+                  class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform"
+                  >arrow_forward</span
+                >
+              </div>
             </div>
-</div>
-<!-- Map HUD Overlay -->
-<div class="absolute bottom-4 left-4 right-4 bg-surface/90 backdrop-blur-md p-3 rounded-lg flex items-center justify-between text-body-sm text-on-surface shadow-sm">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-primary text-[18px]">near_me</span>
-<span>Interactive Cartography Layer</span>
-</div>
-<span class="text-outline text-label-sm">Live GPS Active</span>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- Three Equal-Weight Entry Cards Section -->
-<section class="max-w-desktop-max-width mx-auto px-6 lg:px-12 w-full py-20">
-<div class="flex flex-col items-center text-center mb-12">
-<span class="text-label-sm text-primary uppercase tracking-widest mb-2">Tailored Navigation</span>
-<h2 class="font-display-lg text-on-background">Choose your way to discover</h2>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-<!-- Card 1: Explore by map -->
-<div class="bg-surface-container hover:bg-surface-container-high transition-all duration-300 rounded-xl p-8 flex flex-col justify-between group cursor-pointer shadow-sm hover:shadow-md">
-<div class="flex flex-col gap-4">
-<div class="w-12 h-12 rounded-lg bg-primary text-on-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-<span class="material-symbols-outlined text-[24px]">map</span>
-</div>
-<h3 class="font-heading-lg text-on-surface">Explore by Map</h3>
-<p class="font-body-md text-on-surface-variant">
-            Navigate through spatial clusters, terrain shifts, and hidden cultural points across the island with our high-fidelity interactive map.
-          </p>
-</div>
-<div class="pt-8 flex items-center gap-2 text-primary font-label-sm tracking-wide">
-<span>Open interactive map</span>
-<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
-</div>
-</div>
-<!-- Card 2: Plan a trip -->
-<div class="bg-surface-container hover:bg-surface-container-high transition-all duration-300 rounded-xl p-8 flex flex-col justify-between group cursor-pointer shadow-sm hover:shadow-md">
-<div class="flex flex-col gap-4">
-<div class="w-12 h-12 rounded-lg bg-primary text-on-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-<span class="material-symbols-outlined text-[24px]">event_note</span>
-</div>
-<h3 class="font-heading-lg text-on-surface">Plan a Trip</h3>
-<p class="font-body-md text-on-surface-variant">
-            Craft custom day-by-day itineraries tailored to your pace, accommodation preferences, and must-see archaeological or natural wonders.
-          </p>
-</div>
-<div class="pt-8 flex items-center gap-2 text-primary font-label-sm tracking-wide">
-<span>Start planning</span>
-<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
-</div>
-</div>
-<!-- Card 3: Ask AI assistant -->
-<div class="bg-surface-container hover:bg-surface-container-high transition-all duration-300 rounded-xl p-8 flex flex-col justify-between group cursor-pointer shadow-sm hover:shadow-md">
-<div class="flex flex-col gap-4">
-<div class="w-12 h-12 rounded-lg bg-gradient-to-br from-deep-teal-600 to-sky-300 text-on-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-<span class="material-symbols-outlined text-[24px]">auto_awesome</span>
-</div>
-<h3 class="font-heading-lg text-on-surface">Ask AI Assistant</h3>
-<p class="font-body-md text-on-surface-variant">
-            Consult our intelligent travel companion for instant recommendations on local cuisine, train ticket bookings, and off-the-beaten-path advice.
-          </p>
-</div>
-<div class="pt-8 flex items-center gap-2 text-primary font-label-sm tracking-wide">
-<span>Chat with AI</span>
-<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
-</div>
-</div>
-</div>
-</section>
-</div></main><footer class="w-full bg-surface-container-low py-12"><div class="max-w-desktop-max-width mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-6 text-on-surface-variant text-body-sm"><div>© 2024 LankaLens. All rights reserved.</div><div class="flex gap-6"><a class="hover:text-on-surface" href="#">Privacy Policy</a><a class="hover:text-on-surface" href="#">Terms of Service</a><a class="hover:text-on-surface" href="#">Contact</a></div></div></footer></body></html>
+          </div>
+        </section>
+      </div>
+    </main>
+    <footer class="w-full bg-surface-container-low py-12">
+      <div
+        class="max-w-desktop-max-width mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-6 text-on-surface-variant text-body-sm"
+      >
+        <div>© 2024 LankaLens. All rights reserved.</div>
+        <div class="flex gap-6">
+          <a class="hover:text-on-surface" href="#">Privacy Policy</a
+          ><a class="hover:text-on-surface" href="#">Terms of Service</a
+          ><a class="hover:text-on-surface" href="#">Contact</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

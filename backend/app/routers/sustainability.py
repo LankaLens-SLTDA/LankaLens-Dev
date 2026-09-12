@@ -1,19 +1,18 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
-from typing import List
+
+from app.schemas.sustainability import DensityPoint, HazardReport, HazardReportResponse
 
 router = APIRouter(prefix="/api/sustainability", tags=["Sustainability"])
 
-class DensityPoint(BaseModel):
-    hour: str
-    density: int
 
-class HazardReport(BaseModel):
-    location: str
-    description: str
-
-@router.get("/density", response_model=List[DensityPoint])
+@router.get(
+    "/density",
+    response_model=list[DensityPoint],
+    summary="Get real-time crowd density",
+    description="Retrieve hourly visitor density numbers to encourage eco-friendly, off-peak travel.",
+)
 def get_crowd_density():
+    """Fetch hourly site crowd density curve."""
     return [
         {"hour": "06:00", "density": 120},
         {"hour": "08:00", "density": 450},
@@ -24,10 +23,17 @@ def get_crowd_density():
         {"hour": "18:00", "density": 310},
     ]
 
-@router.post("/report")
+
+@router.post(
+    "/report",
+    response_model=HazardReportResponse,
+    summary="Submit environmental or safety hazard report",
+    description="Report environmental issues, trail damage, or safety hazards to earn eco reward points.",
+)
 def submit_hazard_report(report: HazardReport):
+    """Submit crowdsourced hazard report for Ranger response."""
     return {
         "status": "success",
         "message": f"Hazard report for '{report.location}' transmitted to LankaLens Ranger Network.",
-        "rewardPoints": 50
+        "rewardPoints": 50,
     }

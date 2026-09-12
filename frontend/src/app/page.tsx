@@ -5,16 +5,39 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { Search, MapPin, ArrowRight, ShieldAlert, Users } from 'lucide-react';
 
 export default function DiscoverPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const featuredStops = [
-    { title: 'Ella Rock & Nine Arch Bridge', region: 'Central Highlands', category: 'Hiking & Scenery', image: '/stitch_images/discover.png', rating: 4.9 },
-    { title: 'Sigiriya Ancient Fortress', region: 'Cultural Triangle', category: 'Heritage & Archaeology', image: '/stitch_images/planner.png', rating: 5.0 },
-    { title: 'Arugam Bay Surf Points', region: 'Eastern Coast', category: 'Surfing & Beaches', image: '/stitch_images/map.png', rating: 4.8 },
-    { title: 'Yala Elephant Sanctuary', region: 'Southern Province', category: 'Wildlife & Safari', image: '/stitch_images/sustainability.png', rating: 4.9 },
+    {
+      title: 'Ella Rock & Nine Arch Bridge',
+      region: 'Central Highlands',
+      category: 'Hiking & Scenery',
+      image: '/stitch_images/discover.png',
+      rating: 4.9,
+    },
+    {
+      title: 'Sigiriya Ancient Fortress',
+      region: 'Cultural Triangle',
+      category: 'Heritage & Archaeology',
+      image: '/stitch_images/planner.png',
+      rating: 5.0,
+    },
+    {
+      title: 'Arugam Bay Surf Points',
+      region: 'Eastern Coast',
+      category: 'Surfing & Beaches',
+      image: '/stitch_images/map.png',
+      rating: 4.8,
+    },
+    {
+      title: 'Yala Elephant Sanctuary',
+      region: 'Southern Province',
+      category: 'Wildlife & Safari',
+      image: '/stitch_images/sustainability.png',
+      rating: 4.9,
+    },
   ];
 
   return (
@@ -52,7 +75,8 @@ export default function DiscoverPage() {
               </h1>
 
               <p className="font-body-lg text-on-surface-variant max-w-xl">
-                An editorial cartographic guide to Sri Lanka. Precision maps, bespoke itineraries, and AI-curated journeys through misty peaks, ancient temples, and golden coastlines.
+                An editorial cartographic guide to Sri Lanka. Precision maps, bespoke itineraries,
+                and AI-curated journeys through misty peaks, ancient temples, and golden coastlines.
               </p>
 
               {/* Overlaid Quick Search Bar */}
@@ -79,17 +103,23 @@ export default function DiscoverPage() {
               {/* Stats Bar */}
               <div className="flex items-center gap-8 pt-4 text-body-sm text-on-surface-variant border-t border-line-200/60 w-full">
                 <div>
-                  <strong className="text-on-surface block font-heading-lg text-[20px]">120+</strong>
+                  <strong className="text-on-surface block font-heading-lg text-[20px]">
+                    120+
+                  </strong>
                   <span>Curated Stops</span>
                 </div>
                 <div className="w-px h-8 bg-line-200" />
                 <div>
-                  <strong className="text-on-surface block font-heading-lg text-[20px]">4.9/5</strong>
+                  <strong className="text-on-surface block font-heading-lg text-[20px]">
+                    4.9/5
+                  </strong>
                   <span>Traveler Rating</span>
                 </div>
                 <div className="w-px h-8 bg-line-200" />
                 <div>
-                  <strong className="text-on-surface block font-heading-lg text-[20px]">100%</strong>
+                  <strong className="text-on-surface block font-heading-lg text-[20px]">
+                    100%
+                  </strong>
                   <span>Bespoke AI</span>
                 </div>
               </div>
@@ -144,7 +174,9 @@ export default function DiscoverPage() {
                 {/* Map HUD Overlay */}
                 <div className="absolute bottom-4 left-4 right-4 bg-surface/90 backdrop-blur-md p-3 rounded-lg flex items-center justify-between text-body-sm text-on-surface shadow-sm border border-line-200">
                   <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-primary text-[18px]">near_me</span>
+                    <span className="material-symbols-outlined text-primary text-[18px]">
+                      near_me
+                    </span>
                     <span className="font-medium">Interactive Cartography Layer</span>
                   </div>
                   <span className="text-primary text-label-sm font-semibold">Live GPS Active</span>
@@ -175,7 +207,8 @@ export default function DiscoverPage() {
                 </div>
                 <h3 className="font-heading-lg text-on-surface">Explore by Map</h3>
                 <p className="font-body-md text-on-surface-variant">
-                  Navigate through spatial clusters, terrain shifts, and hidden cultural points across the island with our high-fidelity interactive map.
+                  Navigate through spatial clusters, terrain shifts, and hidden cultural points
+                  across the island with our high-fidelity interactive map.
                 </p>
               </div>
               <div className="pt-8 flex items-center gap-2 text-primary font-label-sm tracking-wide font-semibold">
@@ -197,7 +230,8 @@ export default function DiscoverPage() {
                 </div>
                 <h3 className="font-heading-lg text-on-surface">Plan a Trip</h3>
                 <p className="font-body-md text-on-surface-variant">
-                  Craft custom day-by-day itineraries tailored to your pace, accommodation preferences, and must-see archaeological or natural wonders.
+                  Craft custom day-by-day itineraries tailored to your pace, accommodation
+                  preferences, and must-see archaeological or natural wonders.
                 </p>
               </div>
               <div className="pt-8 flex items-center gap-2 text-primary font-label-sm tracking-wide font-semibold">
@@ -219,7 +253,8 @@ export default function DiscoverPage() {
                 </div>
                 <h3 className="font-heading-lg text-on-surface">Ask AI Assistant</h3>
                 <p className="font-body-md text-on-surface-variant">
-                  Consult our intelligent travel companion for instant recommendations on local cuisine, train ticket bookings, and off-the-beaten-path advice.
+                  Consult our intelligent travel companion for instant recommendations on local
+                  cuisine, train ticket bookings, and off-the-beaten-path advice.
                 </p>
               </div>
               <div className="pt-8 flex items-center gap-2 text-primary font-label-sm tracking-wide font-semibold">
@@ -237,8 +272,12 @@ export default function DiscoverPage() {
           <div className="max-w-[1280px] mx-auto px-6 lg:px-12 w-full">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
               <div>
-                <span className="text-label-sm text-primary uppercase tracking-widest mb-2 font-semibold">Curated Collections</span>
-                <h2 className="font-display-lg text-on-background">Must-Visit Sri Lankan Landmarks</h2>
+                <span className="text-label-sm text-primary uppercase tracking-widest mb-2 font-semibold">
+                  Curated Collections
+                </span>
+                <h2 className="font-display-lg text-on-background">
+                  Must-Visit Sri Lankan Landmarks
+                </h2>
               </div>
               <Link
                 href="/map"
@@ -263,18 +302,24 @@ export default function DiscoverPage() {
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute top-3 right-3 bg-surface/90 backdrop-blur-md px-2.5 py-1 rounded-full text-label-sm font-semibold flex items-center gap-1 shadow-sm">
-                      <span className="material-symbols-outlined text-signal-amber-500 text-[14px]">star</span>
+                      <span className="material-symbols-outlined text-signal-amber-500 text-[14px]">
+                        star
+                      </span>
                       <span>{stop.rating}</span>
                     </div>
                   </div>
                   <div className="p-5 flex flex-col flex-1 justify-between gap-4">
                     <div>
-                      <span className="text-label-sm text-primary font-medium">{stop.category}</span>
+                      <span className="text-label-sm text-primary font-medium">
+                        {stop.category}
+                      </span>
                       <h3 className="font-heading-sm text-on-surface mt-1 group-hover:text-primary transition-colors">
                         {stop.title}
                       </h3>
                       <p className="text-body-sm text-on-surface-variant mt-1 flex items-center gap-1">
-                        <span className="material-symbols-outlined text-[14px] text-outline">location_on</span>
+                        <span className="material-symbols-outlined text-[14px] text-outline">
+                          location_on
+                        </span>
                         <span>{stop.region}</span>
                       </p>
                     </div>
@@ -300,9 +345,12 @@ export default function DiscoverPage() {
                 <span className="material-symbols-outlined text-[16px]">security</span>
                 <span>REAL-TIME SAFETY & ECO MONITORING</span>
               </div>
-              <h2 className="font-display-lg mb-4 text-white">Travel safely with live weather & hazard data</h2>
+              <h2 className="font-display-lg mb-4 text-white">
+                Travel safely with live weather & hazard data
+              </h2>
               <p className="font-body-lg text-on-primary-container">
-                Monitor coastal surf conditions, landslide risks in highland rail tracks, and eco-certified wildlife reserves in real time.
+                Monitor coastal surf conditions, landslide risks in highland rail tracks, and
+                eco-certified wildlife reserves in real time.
               </p>
             </div>
             <Link

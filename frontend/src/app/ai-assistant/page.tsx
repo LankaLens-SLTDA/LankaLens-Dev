@@ -95,11 +95,15 @@ export default function AIAssistantPage() {
             <div className="bg-surface/5 p-6 rounded-xl border border-white/10 flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <span className="font-heading-sm text-primary-fixed">Active Itinerary</span>
-                <span className="px-2.5 py-1 bg-surface/10 rounded text-label-sm text-sky-300 font-semibold">10 Days</span>
+                <span className="px-2.5 py-1 bg-surface/10 rounded text-label-sm text-sky-300 font-semibold">
+                  10 Days
+                </span>
               </div>
               <div>
                 <h2 className="font-heading-md text-surface">Ceylon Highlands & Coast</h2>
-                <p className="text-body-sm text-outline-variant mt-1">Kandy • Ella • Mirissa • Galle</p>
+                <p className="text-body-sm text-outline-variant mt-1">
+                  Kandy • Ella • Mirissa • Galle
+                </p>
               </div>
               <div className="flex flex-col gap-2 mt-2">
                 <div className="flex justify-between text-label-sm text-outline-variant">
@@ -117,7 +121,9 @@ export default function AIAssistantPage() {
               <span className="font-heading-sm text-surface">Assistant Capabilities</span>
               <div className="flex flex-col gap-2">
                 <button
-                  onClick={() => handleSend('Optimize my mountain train schedule from Kandy to Ella')}
+                  onClick={() =>
+                    handleSend('Optimize my mountain train schedule from Kandy to Ella')
+                  }
                   className="text-left p-3 rounded-lg bg-surface/5 hover:bg-surface/10 transition-colors text-body-sm text-outline-variant hover:text-surface flex items-center gap-3 cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-[18px] text-sky-300">train</span>
@@ -131,10 +137,16 @@ export default function AIAssistantPage() {
                   <span>Accommodation Curations</span>
                 </button>
                 <button
-                  onClick={() => handleSend('What are important cultural etiquette tips when visiting Kandy temple?')}
+                  onClick={() =>
+                    handleSend(
+                      'What are important cultural etiquette tips when visiting Kandy temple?'
+                    )
+                  }
                   className="text-left p-3 rounded-lg bg-surface/5 hover:bg-surface/10 transition-colors text-body-sm text-outline-variant hover:text-surface flex items-center gap-3 cursor-pointer"
                 >
-                  <span className="material-symbols-outlined text-[18px] text-sky-300">local_library</span>
+                  <span className="material-symbols-outlined text-[18px] text-sky-300">
+                    local_library
+                  </span>
                   <span>Cultural Insights</span>
                 </button>
               </div>
@@ -162,7 +174,9 @@ export default function AIAssistantPage() {
                     </span>
                   </div>
 
-                  <div className={`flex flex-col gap-3 max-w-2xl ${msg.sender === 'user' ? 'items-end' : ''}`}>
+                  <div
+                    className={`flex flex-col gap-3 max-w-2xl ${msg.sender === 'user' ? 'items-end' : ''}`}
+                  >
                     <div className="flex items-center gap-2">
                       <span className="font-heading-sm text-surface">
                         {msg.sender === 'ai' ? 'LankaLens AI' : 'You'}
@@ -184,18 +198,29 @@ export default function AIAssistantPage() {
                     {msg.hasCard && msg.cardData && (
                       <div className="bg-surface/10 rounded-xl overflow-hidden flex flex-col md:flex-row border border-white/10 mt-2">
                         <div className="w-full md:w-48 h-36 relative shrink-0">
-                          <Image src={msg.cardData.image} alt={msg.cardData.title} fill className="object-cover" />
+                          <Image
+                            src={msg.cardData.image}
+                            alt={msg.cardData.title}
+                            fill
+                            className="object-cover"
+                          />
                         </div>
                         <div className="p-4 flex flex-col justify-between flex-1 gap-2">
                           <div>
                             <div className="flex justify-between items-start">
                               <h4 className="font-heading-sm text-surface">{msg.cardData.title}</h4>
-                              <span className="text-label-sm text-sky-300 font-medium">{msg.cardData.type}</span>
+                              <span className="text-label-sm text-sky-300 font-medium">
+                                {msg.cardData.type}
+                              </span>
                             </div>
-                            <p className="text-body-sm text-outline-variant mt-1">{msg.cardData.desc}</p>
+                            <p className="text-body-sm text-outline-variant mt-1">
+                              {msg.cardData.desc}
+                            </p>
                           </div>
                           <div className="flex items-center justify-between pt-2 border-t border-white/10">
-                            <span className="text-label-sm text-surface/70">{msg.cardData.duration}</span>
+                            <span className="text-label-sm text-surface/70">
+                              {msg.cardData.duration}
+                            </span>
                             <Link
                               href="/planner"
                               className="px-3 py-1.5 bg-gradient-to-r from-deep-teal-600 to-sky-300 text-on-primary rounded-lg text-label-sm font-bold flex items-center gap-1 hover:opacity-90 transition-opacity"
@@ -218,7 +243,9 @@ export default function AIAssistantPage() {
                             className="px-3.5 py-1.5 rounded-full bg-surface/10 hover:bg-surface/20 text-body-sm text-surface transition-colors flex items-center gap-2 border border-white/10 cursor-pointer"
                           >
                             <span>{chip}</span>
-                            <span className="material-symbols-outlined text-[14px] text-sky-300">arrow_forward</span>
+                            <span className="material-symbols-outlined text-[14px] text-sky-300">
+                              arrow_forward
+                            </span>
                           </button>
                         ))}
                       </div>

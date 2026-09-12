@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @layer base {
   :root {
@@ -55,17 +55,17 @@
   --color-background: #faf9f5;
   --color-on-background: #1b1c1a;
   --color-surface-variant: #e3e2df;
-  --color-ink-950: #0E1512;
-  --color-ink-700: #2B3630;
-  --color-canvas-0: #FBFAF6;
-  --color-canvas-50: #F1EFE7;
-  --color-deep-teal-600: #0F5C56;
-  --color-deep-teal-800: #0A3F3B;
-  --color-signal-amber-500: #E08A2C;
-  --color-coral-500: #E2604A;
-  --color-sky-300: #8FD3D6;
-  --color-line-200: #DEDBD0;
-  --color-success-600: #1B7A4C;
+  --color-ink-950: #0e1512;
+  --color-ink-700: #2b3630;
+  --color-canvas-0: #fbfaf6;
+  --color-canvas-50: #f1efe7;
+  --color-deep-teal-600: #0f5c56;
+  --color-deep-teal-800: #0a3f3b;
+  --color-signal-amber-500: #e08a2c;
+  --color-coral-500: #e2604a;
+  --color-sky-300: #8fd3d6;
+  --color-line-200: #dedbd0;
+  --color-success-600: #1b7a4c;
 
   --font-display: 'Fraunces', serif;
   --font-body: 'Inter', sans-serif;
