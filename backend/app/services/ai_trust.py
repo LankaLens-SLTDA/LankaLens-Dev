@@ -233,9 +233,7 @@ class AiTrustEngine:
         for item in existing_contributions:
             existing_title = item.get("title", "")
             existing_desc = item.get("description", "")
-            title_sim = compute_text_jaccard_similarity(
-                payload.title, existing_title
-            )
+            title_sim = compute_text_jaccard_similarity(payload.title, existing_title)
             desc_sim = compute_text_jaccard_similarity(
                 payload.description, existing_desc
             )

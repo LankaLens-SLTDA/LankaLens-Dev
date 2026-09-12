@@ -162,9 +162,7 @@ def run_all_ai_trust_tests():
     )
     res5 = submit_contribution(dup_payload)
     print(f"   Contribution ID: {res5['id']}")
-    print(
-        f"   Duplicate Risk Score: {res5['ai_trust_audit']['duplicate_risk_score']}"
-    )
+    print(f"   Duplicate Risk Score: {res5['ai_trust_audit']['duplicate_risk_score']}")
     print(f"   Status: {res5['status']}")
     print(f"   Active Flags: {res5['ai_trust_audit']['flags']}")
     assert "DUPLICATE_CONTENT" in res5["ai_trust_audit"]["flags"]
@@ -219,7 +217,9 @@ def run_all_ai_trust_tests():
     # -------------------------------------------------------------
     # Test 8: Moderation Queue & Moderator Decisions
     # -------------------------------------------------------------
-    print("\n8. Testing GET /api/contribution/moderation-queue & Moderation Endpoint...")
+    print(
+        "\n8. Testing GET /api/contribution/moderation-queue & Moderation Endpoint..."
+    )
     queue_res = get_moderation_queue(flag_filter=None)
     print(f"   Total Pending Items in Queue: {queue_res.total_pending}")
     print(f"   Average Queue Trust Score: {queue_res.average_trust_score}")

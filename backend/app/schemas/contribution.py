@@ -232,7 +232,9 @@ class ModerationRequest(BaseModel):
         description="Moderation action: 'approve' or 'reject'",
         json_schema_extra={"example": "approve"},
     )
-    moderator_name: str | None = Field("Chief Moderator", description="Moderator identity")
+    moderator_name: str | None = Field(
+        "Chief Moderator", description="Moderator identity"
+    )
     feedback: str | None = Field(None, description="Moderator feedback note")
     rejection_category: str | None = Field(
         None, description="Category of rejection if action is 'reject'"
@@ -248,4 +250,3 @@ class ModerationQueueResponse(BaseModel):
     average_trust_score: float = Field(
         0.00, description="Average trust score in current queue"
     )
-

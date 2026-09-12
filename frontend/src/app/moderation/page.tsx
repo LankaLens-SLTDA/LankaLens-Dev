@@ -3,11 +3,7 @@
 import Navbar from '@/components/layout/Navbar';
 import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
-import {
-  ModerationQueueResponse,
-  getModerationQueue,
-  moderateContribution,
-} from '@/lib/api';
+import { ModerationQueueResponse, getModerationQueue, moderateContribution } from '@/lib/api';
 import {
   ShieldAlert,
   ShieldCheck,
@@ -151,16 +147,19 @@ export default function ModerationPage() {
   const [processingId, setProcessingId] = useState<number | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
 
-  const fetchQueue = useCallback(async (filterVal?: string) => {
-    setLoading(true);
-    const data = await getModerationQueue(filterVal !== undefined ? filterVal : selectedFilter);
-    if (data) {
-      setQueueData(data);
-    } else {
-      setQueueData(MOCK_FALLBACK_QUEUE);
-    }
-    setLoading(false);
-  }, [selectedFilter]);
+  const fetchQueue = useCallback(
+    async (filterVal?: string) => {
+      setLoading(true);
+      const data = await getModerationQueue(filterVal !== undefined ? filterVal : selectedFilter);
+      if (data) {
+        setQueueData(data);
+      } else {
+        setQueueData(MOCK_FALLBACK_QUEUE);
+      }
+      setLoading(false);
+    },
+    [selectedFilter]
+  );
 
   useEffect(() => {
     let isMounted = true;

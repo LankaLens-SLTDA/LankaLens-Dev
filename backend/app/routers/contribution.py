@@ -269,9 +269,7 @@ def get_moderation_queue(
 
     # Sort queue by trust score ascending (lowest trust score first)
     queue.sort(
-        key=lambda item: item.get("ai_trust_audit", {}).get(
-            "overall_trust_score", 0.50
-        )
+        key=lambda item: item.get("ai_trust_audit", {}).get("overall_trust_score", 0.50)
     )
 
     flagged_count = sum(1 for c in queue if c.get("status") == "flagged")
@@ -443,4 +441,3 @@ def moderate_contribution(id: int, payload: ModerationRequest):
             print(f"[LankaLens Supabase moderation update error] {e}")
 
     return target
-
