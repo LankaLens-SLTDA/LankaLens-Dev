@@ -461,3 +461,76 @@ export async function searchDestinations(params?: {
   const qStr = query.toString() ? `?${query.toString()}` : '';
   return fetchFromBackend<SearchQueryResponse>(`/destinations/search${qStr}`);
 }
+
+export interface MapCluster {
+  cluster_id: string;
+  latitude: number;
+  longitude: number;
+  point_count: number;
+  category_distribution: Record<string, number>;
+  destination_ids: number[];
+}
+
+export interface PartnerLocation {
+  id: number;
+  name: string;
+  type: string;
+  latitude: number;
+  longitude: number;
+  rating: number;
+  contact: string;
+  verified: boolean;
+  associated_destination_id?: number | null;
+}
+
+export interface MapDiscoveryResponse {
+  destinations: Destination[];
+  clusters: MapCluster[];
+  total_in_viewport: number;
+  recommended_alternatives: Destination[];
+  partner_locations: PartnerLocation[];
+  viewport_bounds: {
+    min_lat: number;
+    min_lng: number;
+    max_lat: number;
+    max_lng: number;
+  };
+  query_time_ms: number;
+}
+
+export async function getMapViewportDiscovery(params?: {
+  min_lat?: number;
+  min_lng?: number;
+  max_lat?: number;
+  max_lng?: number;
+  zoom?: number;
+  selected_dest_id?: number;
+  include_partners?: boolean;
+}): Promise<MapDiscoveryResponse | null> {
+  const query = new URLSearchParams();
+  if (params?.min_lat !== undefined) query.append('min_lat', params.min_lat.toString());
+  if (params?.min_lng !== undefined) query.append('min_lng', params.min_lng.toString());
+  if (params?.max_lat !== undefined) query.append('max_lat', params.max_lat.toString());
+  if (params?.max_lng !== undefined) query.append('max_lng', params.max_lng.toString());
+  if (params?.zoom !== undefined) query.append('zoom', params.zoom.toString());
+  if (params?.selected_dest_id !== undefined)
+    query.append('selected_dest_id', params.selected_dest_id.toString());
+  if (params?.include_partners !== undefined)
+    query.append('include_partners', params.include_partners ? 'true' : 'false');
+
+  const qStr = query.toString() ? `?${query.toString()}` : '';
+  return fetchFromBackend<MapDiscoveryResponse>(`/destinations/viewport${qStr}`);
+}
+
+export async function getDestinationAlternatives(
+  id: number,
+  limit = 3
+): Promise<DestinationListResponse | null> {
+  return fetchFromBackend<DestinationListResponse>(
+    `/destinations/${id}/alternatives?limit=${limit}`
+  );
+}
+
+export async function getDestinationPartners(id: number): Promise<PartnerLocation[] | null> {
+  return fetchFromBackend<PartnerLocation[]>(`/destinations/${id}/partners`);
+}

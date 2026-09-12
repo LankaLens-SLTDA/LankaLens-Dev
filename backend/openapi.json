@@ -656,6 +656,232 @@
         }
       }
     },
+    "/api/destinations/viewport": {
+      "get": {
+        "tags": [
+          "Destinations"
+        ],
+        "summary": "Interactive Mapbox Viewport & Marker Clustering Query",
+        "description": "Retrieves destinations, spatial marker clusters, recommended alternatives, and local partner business locations within active Mapbox geographic viewport bounds.",
+        "operationId": "get_viewport_discovery_api_destinations_viewport_get",
+        "parameters": [
+          {
+            "name": "min_lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "Minimum latitude bounding coordinate",
+              "default": 5.0,
+              "title": "Min Lat"
+            },
+            "description": "Minimum latitude bounding coordinate"
+          },
+          {
+            "name": "min_lng",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "Minimum longitude bounding coordinate",
+              "default": 79.0,
+              "title": "Min Lng"
+            },
+            "description": "Minimum longitude bounding coordinate"
+          },
+          {
+            "name": "max_lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "Maximum latitude bounding coordinate",
+              "default": 10.0,
+              "title": "Max Lat"
+            },
+            "description": "Maximum latitude bounding coordinate"
+          },
+          {
+            "name": "max_lng",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "Maximum longitude bounding coordinate",
+              "default": 82.0,
+              "title": "Max Lng"
+            },
+            "description": "Maximum longitude bounding coordinate"
+          },
+          {
+            "name": "zoom",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "Mapbox current zoom level",
+              "default": 7.5,
+              "title": "Zoom"
+            },
+            "description": "Mapbox current zoom level"
+          },
+          {
+            "name": "selected_dest_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Currently selected destination ID for alternatives surfacing",
+              "title": "Selected Dest Id"
+            },
+            "description": "Currently selected destination ID for alternatives surfacing"
+          },
+          {
+            "name": "include_partners",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Flag to include local verified ecosystem partner locations",
+              "default": true,
+              "title": "Include Partners"
+            },
+            "description": "Flag to include local verified ecosystem partner locations"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapDiscoveryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/destinations/{id}/alternatives": {
+      "get": {
+        "tags": [
+          "Destinations"
+        ],
+        "summary": "Get recommended alternative destinations",
+        "description": "Surfaces 3 recommended alternative destinations matching category, rating, or geographic proximity.",
+        "operationId": "get_destination_alternatives_api_destinations__id__alternatives_get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "Maximum number of alternative recommendations",
+              "default": 3,
+              "title": "Limit"
+            },
+            "description": "Maximum number of alternative recommendations"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DestinationListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/destinations/{id}/partners": {
+      "get": {
+        "tags": [
+          "Destinations"
+        ],
+        "summary": "Get verified local ecosystem partners near destination",
+        "description": "Surfaces verified local partner co-ops, eco-guides, homestays, and gear rentals for a destination.",
+        "operationId": "get_destination_partners_api_destinations__id__partners_get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PartnerLocation"
+                  },
+                  "title": "Response Get Destination Partners Api Destinations  Id  Partners Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/destinations/{id}": {
       "get": {
         "tags": [
@@ -3483,6 +3709,112 @@
         ],
         "title": "LeaderboardContributor"
       },
+      "MapCluster": {
+        "properties": {
+          "cluster_id": {
+            "type": "string",
+            "title": "Cluster Id",
+            "description": "Unique spatial cluster identifier"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude",
+            "description": "Cluster centroid latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude",
+            "description": "Cluster centroid longitude"
+          },
+          "point_count": {
+            "type": "integer",
+            "title": "Point Count",
+            "description": "Total destination points inside cluster"
+          },
+          "category_distribution": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Category Distribution",
+            "description": "Distribution count per destination category"
+          },
+          "destination_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Destination Ids",
+            "description": "IDs of destinations aggregated in cluster"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cluster_id",
+          "latitude",
+          "longitude",
+          "point_count"
+        ],
+        "title": "MapCluster"
+      },
+      "MapDiscoveryResponse": {
+        "properties": {
+          "destinations": {
+            "items": {
+              "$ref": "#/components/schemas/Destination"
+            },
+            "type": "array",
+            "title": "Destinations",
+            "description": "Destinations matching viewport query"
+          },
+          "clusters": {
+            "items": {
+              "$ref": "#/components/schemas/MapCluster"
+            },
+            "type": "array",
+            "title": "Clusters",
+            "description": "Aggregated map marker clusters"
+          },
+          "total_in_viewport": {
+            "type": "integer",
+            "title": "Total In Viewport",
+            "description": "Total destination count in active viewport",
+            "default": 0
+          },
+          "recommended_alternatives": {
+            "items": {
+              "$ref": "#/components/schemas/Destination"
+            },
+            "type": "array",
+            "title": "Recommended Alternatives",
+            "description": "Recommended alternative destinations near active target"
+          },
+          "partner_locations": {
+            "items": {
+              "$ref": "#/components/schemas/PartnerLocation"
+            },
+            "type": "array",
+            "title": "Partner Locations",
+            "description": "Verified ecosystem partner locations"
+          },
+          "viewport_bounds": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Viewport Bounds",
+            "description": "Viewport boundary coordinates (min_lat, min_lng, max_lat, max_lng)"
+          },
+          "query_time_ms": {
+            "type": "number",
+            "title": "Query Time Ms",
+            "description": "Execution duration in milliseconds",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "title": "MapDiscoveryResponse"
+      },
       "ModerationQueueResponse": {
         "properties": {
           "queue": {
@@ -3607,6 +3939,74 @@
         },
         "type": "object",
         "title": "PartnerInfo"
+      },
+      "PartnerLocation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Unique partner location ID"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Partner business or cooperative name"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "Partner category (Transport Co-op, Eco-Guide, Homestay, Authentic Dining, Certified Gear)"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude",
+            "description": "Partner GPS latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude",
+            "description": "Partner GPS longitude"
+          },
+          "rating": {
+            "type": "number",
+            "title": "Rating",
+            "description": "Community partner rating",
+            "default": 4.9
+          },
+          "contact": {
+            "type": "string",
+            "title": "Contact",
+            "description": "Contact phone or link",
+            "default": "+94 77 123 4567"
+          },
+          "verified": {
+            "type": "boolean",
+            "title": "Verified",
+            "description": "Verification badge status",
+            "default": true
+          },
+          "associated_destination_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Associated Destination Id",
+            "description": "Nearby associated destination ID if applicable"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "type",
+          "latitude",
+          "longitude"
+        ],
+        "title": "PartnerLocation"
       },
       "PlannerOverview": {
         "properties": {
