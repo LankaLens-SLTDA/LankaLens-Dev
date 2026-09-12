@@ -45,7 +45,9 @@ def compute_token_overlap(query_text: str, target_text: str) -> float:
     for q_tok in q_tokens:
         if q_tok in t_tokens:
             matched_count += 1.0
-        elif any(q_tok in t_tok or t_tok in q_tok for t_tok in t_tokens if len(q_tok) >= 3):
+        elif any(
+            q_tok in t_tok or t_tok in q_tok for t_tok in t_tokens if len(q_tok) >= 3
+        ):
             matched_count += 0.8
 
     return matched_count / len(q_tokens)
@@ -174,7 +176,9 @@ class SearchService:
 
             try:
                 item_pop = (
-                    float(item["popularity"]) if item.get("popularity") is not None else 4.5
+                    float(item["popularity"])
+                    if item.get("popularity") is not None
+                    else 4.5
                 )
             except (ValueError, TypeError):
                 item_pop = 4.5

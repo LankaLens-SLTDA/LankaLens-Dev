@@ -55,10 +55,10 @@ def run_all_reputation_tests():
             {
                 "id": i + 10,
                 "author_name": "Dinuka Silva",
-                "title": f"Verified Discovery #{i+1}",
+                "title": f"Verified Discovery #{i + 1}",
                 "category": "Nature",
                 "destination_id": 2,
-                "description": f"Authentic discovery item #{i+1}",
+                "description": f"Authentic discovery item #{i + 1}",
                 "image_url": "/stitch_images/discover.png",
                 "alt_text": "Misty tea estate vista.",
                 "rating": 5.0,
@@ -210,7 +210,7 @@ def run_all_reputation_tests():
     print(f"   Total Leaderboard Profiles: {len(leaderboard)}")
     for idx, p in enumerate(leaderboard[:3]):
         print(
-            f"   Rank #{idx+1}: {p.author_name} — {p.rank} ({p.eco_points} Pts, Rep Score {p.reputation_score})"
+            f"   Rank #{idx + 1}: {p.author_name} — {p.rank} ({p.eco_points} Pts, Rep Score {p.reputation_score})"
         )
     assert len(leaderboard) >= 3
     assert leaderboard[0].reputation_score >= leaderboard[1].reputation_score

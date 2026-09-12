@@ -77,11 +77,41 @@ export default function PlannerPage() {
           per_day_budget: Math.round(total / durationDays),
           currency: 'USD',
           breakdown: [
-            { category: 'Accommodation', amount: acc, percentage: 37.5, color: '#0F5C56', description: 'Mid-range stay' },
-            { category: 'Transport', amount: trans, percentage: 28.7, color: '#8FD3D6', description: 'Private Car' },
-            { category: 'Food & Dining', amount: food, percentage: 15.4, color: '#5E2E19', description: 'Mid-tier dining' },
-            { category: 'Activities & Experiences', amount: act, percentage: 11.0, color: '#E08A2C', description: 'Cultural sites' },
-            { category: 'Miscellaneous & Emergency', amount: Math.round(misc), percentage: 7.4, color: '#6C757D', description: 'Emergency buffer' },
+            {
+              category: 'Accommodation',
+              amount: acc,
+              percentage: 37.5,
+              color: '#0F5C56',
+              description: 'Mid-range stay',
+            },
+            {
+              category: 'Transport',
+              amount: trans,
+              percentage: 28.7,
+              color: '#8FD3D6',
+              description: 'Private Car',
+            },
+            {
+              category: 'Food & Dining',
+              amount: food,
+              percentage: 15.4,
+              color: '#5E2E19',
+              description: 'Mid-tier dining',
+            },
+            {
+              category: 'Activities & Experiences',
+              amount: act,
+              percentage: 11.0,
+              color: '#E08A2C',
+              description: 'Cultural sites',
+            },
+            {
+              category: 'Miscellaneous & Emergency',
+              amount: Math.round(misc),
+              percentage: 7.4,
+              color: '#6C757D',
+              description: 'Emergency buffer',
+            },
           ],
           travel_style_tier: 'Mid-Range Explorer',
           calculation_model: 'Fallback Estimator',
@@ -100,7 +130,14 @@ export default function PlannerPage() {
     return () => {
       isSubscribed = false;
     };
-  }, [travellersCount, durationDays, accommodationStyle, transportMode, foodPreference, activityLevel]);
+  }, [
+    travellersCount,
+    durationDays,
+    accommodationStyle,
+    transportMode,
+    foodPreference,
+    activityLevel,
+  ]);
 
   const chartData = budgetResponse?.breakdown.map((b) => ({
     name: b.category.split(' ')[0],
@@ -130,7 +167,9 @@ export default function PlannerPage() {
                 <span className="text-line-200">/</span>
                 <span className="text-label-sm text-on-surface-variant">Ceylon Odyssey</span>
               </div>
-              <h1 className="font-display-lg text-on-surface">Curate Your Journey & Estimate Costs</h1>
+              <h1 className="font-display-lg text-on-surface">
+                Curate Your Journey & Estimate Costs
+              </h1>
             </div>
             <div className="flex items-center gap-3">
               <button className="px-4 py-2 bg-canvas-50 text-on-surface hover:bg-surface-container rounded-lg text-body-sm font-medium transition-colors flex items-center gap-2 border border-line-200">
@@ -425,7 +464,8 @@ export default function PlannerPage() {
                   <div>
                     <h3 className="font-heading-md text-on-surface">Calculated Budget</h3>
                     <p className="text-label-sm text-on-surface-variant mt-0.5">
-                      ${budgetResponse?.per_person_budget || 0} / person • ${budgetResponse?.per_day_budget || 0} / day
+                      ${budgetResponse?.per_person_budget || 0} / person • $
+                      {budgetResponse?.per_day_budget || 0} / day
                     </p>
                   </div>
                   <span className="text-label-sm bg-surface-container px-3 py-1 rounded-full font-bold text-primary">
@@ -470,7 +510,9 @@ export default function PlannerPage() {
                           ${b.amount} ({b.percentage}%)
                         </strong>
                       </div>
-                      <p className="text-label-sm text-outline pl-4 line-clamp-1">{b.description}</p>
+                      <p className="text-label-sm text-outline pl-4 line-clamp-1">
+                        {b.description}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -481,7 +523,9 @@ export default function PlannerPage() {
                 <div className="bg-canvas-50 p-6 rounded-2xl border border-line-200 shadow-sm">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-heading-sm text-on-surface flex items-center gap-2">
-                      <span className="material-symbols-outlined text-primary text-[20px]">explore</span>
+                      <span className="material-symbols-outlined text-primary text-[20px]">
+                        explore
+                      </span>
                       <span>Budget-Fitted Places</span>
                     </h4>
                     <span className="text-label-sm text-primary font-semibold">
@@ -529,9 +573,7 @@ export default function PlannerPage() {
                   <span>Sri Lanka Travel Savings Tips</span>
                 </div>
                 <ul className="text-body-sm text-on-primary-container space-y-2 list-disc pl-4 leading-relaxed">
-                  {budgetResponse?.savings_tips.map((tip, idx) => (
-                    <li key={idx}>{tip}</li>
-                  )) || (
+                  {budgetResponse?.savings_tips.map((tip, idx) => <li key={idx}>{tip}</li>) || (
                     <>
                       <li>Book Sri Lanka Railways Observation Car 30 days in advance.</li>
                       <li>Hire SLTDA-certified local guides directly at site entrances.</li>

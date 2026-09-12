@@ -93,9 +93,9 @@ def run_all_search_tests():
     print(f"   Matches Found: {res6['total']}")
     scores = [d["relevance_score"] for d in res6["destinations"]]
     print(f"   Relevance Scores: {scores}")
-    assert scores == sorted(
-        scores, reverse=True
-    ), "Expected items sorted by relevance score descending"
+    assert scores == sorted(scores, reverse=True), (
+        "Expected items sorted by relevance score descending"
+    )
 
     # -------------------------------------------------------------
     # Test 7: Search Pagination (Limit & Offset)

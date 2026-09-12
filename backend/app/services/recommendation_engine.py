@@ -288,7 +288,7 @@ class MLPipelineAdapter(BaseRecommender):
         # Fallback to DeterministicRecommender while ML model weights initialize
         deterministic_engine = DeterministicRecommender()
         res = deterministic_engine.recommend(request, dataset)
-        res["engine_metadata"][
-            "model_name"
-        ] = "LankaLens ML Pipeline Adapter (Hybrid Fallback)"
+        res["engine_metadata"]["model_name"] = (
+            "LankaLens ML Pipeline Adapter (Hybrid Fallback)"
+        )
         return res

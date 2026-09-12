@@ -38,9 +38,9 @@ def run_recommendation_tests():
     print(
         f"   Heritage Request Top Match: {top_h['title']} (Match: {recs_h[0]['match_percentage']}%)"
     )
-    assert (
-        "temple" in top_h["category"] or "heritage" in top_h["category"]
-    ), "Heritage request should prioritize cultural/heritage sites"
+    assert "temple" in top_h["category"] or "heritage" in top_h["category"], (
+        "Heritage request should prioritize cultural/heritage sites"
+    )
 
     req_beach = UserRecommendationRequest(
         interests=["Surfing", "Whale Watching"],
@@ -54,9 +54,9 @@ def run_recommendation_tests():
     print(
         f"   Surfing Request Top Match: {top_b['title']} (Match: {recs_b[0]['match_percentage']}%)"
     )
-    assert (
-        "beach" in top_b["category"] or "nature" in top_b["category"]
-    ), "Beach/surfing request should prioritize coastal sites"
+    assert "beach" in top_b["category"] or "nature" in top_b["category"], (
+        "Beach/surfing request should prioritize coastal sites"
+    )
 
     # ------------------------------------------------------------------
     # 2. Test Budget Constraint Influence ($10 vs $100/day)
@@ -72,9 +72,9 @@ def run_recommendation_tests():
     print(
         f"   $5 Budget Top Match: {top_low['destination']['title']} (Cost: ${top_low['destination']['baseline_cost']})"
     )
-    assert (
-        top_low["destination"]["baseline_cost"] <= 10.0
-    ), "Low budget should favor free or low entry fee destinations"
+    assert top_low["destination"]["baseline_cost"] <= 10.0, (
+        "Low budget should favor free or low entry fee destinations"
+    )
 
     # ------------------------------------------------------------------
     # 3. Test Crowd Tolerance Alignment ("low" vs "high")
@@ -123,9 +123,9 @@ def run_recommendation_tests():
     # ------------------------------------------------------------------
     print("\n6. Testing BaseRecommender & MLPipelineAdapter Interface...")
     adapter = MLPipelineAdapter()
-    assert isinstance(
-        adapter, BaseRecommender
-    ), "MLPipelineAdapter must implement BaseRecommender"
+    assert isinstance(adapter, BaseRecommender), (
+        "MLPipelineAdapter must implement BaseRecommender"
+    )
     raw_dataset = [format_destination_record(d) for d in IN_MEMORY_DESTINATIONS]
     ml_res = adapter.recommend(req_heritage.model_dump(), raw_dataset)
     print(f"   ML Adapter Response Model: {ml_res['engine_metadata']['model_name']}")

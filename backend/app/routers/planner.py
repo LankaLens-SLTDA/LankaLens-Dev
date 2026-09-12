@@ -7,7 +7,10 @@ from app.schemas.planner import (
     BudgetRecommendationResponse,
     PlannerOverview,
 )
-from app.services.budget_service import DeterministicBudgetEstimator, MLBudgetPricingAdapter
+from app.services.budget_service import (
+    DeterministicBudgetEstimator,
+    MLBudgetPricingAdapter,
+)
 
 router = APIRouter(prefix="/api/planner", tags=["Planner"])
 

@@ -10,9 +10,16 @@ Tests all 6 acceptance criteria:
 """
 
 from app.openapi_export import export_openapi_schema
-from app.routers.planner import calculate_trip_budget, get_budget_recommendations, get_planner_data
+from app.routers.planner import (
+    calculate_trip_budget,
+    get_budget_recommendations,
+    get_planner_data,
+)
 from app.schemas.planner import BudgetCalculationRequest, BudgetRecommendationRequest
-from app.services.budget_service import DeterministicBudgetEstimator, MLBudgetPricingAdapter
+from app.services.budget_service import (
+    DeterministicBudgetEstimator,
+    MLBudgetPricingAdapter,
+)
 
 
 def run_all_budget_planner_tests():
@@ -27,7 +34,9 @@ def run_all_budget_planner_tests():
     overview = get_planner_data()
     print(f"   Total Days: {len(overview['days'])}")
     print(f"   Calculated Baseline Total Budget: ${overview['totalBudget']}")
-    print(f"   Breakdown Categories: {[b['name'] for b in overview['budgetBreakdown']]}")
+    print(
+        f"   Breakdown Categories: {[b['name'] for b in overview['budgetBreakdown']]}"
+    )
     assert len(overview["days"]) == 5
     assert overview["totalBudget"] > 0
     assert len(overview["budgetBreakdown"]) == 5
@@ -51,7 +60,9 @@ def run_all_budget_planner_tests():
     print(f"   Travel Style Tier: {res1.travel_style_tier}")
     print(f"   Itemized Categories ({len(res1.breakdown)}):")
     for item in res1.breakdown:
-        print(f"   - {item.category}: ${item.amount} ({item.percentage}%) -> {item.description}")
+        print(
+            f"   - {item.category}: ${item.amount} ({item.percentage}%) -> {item.description}"
+        )
 
     assert res1.total_budget > 0
     assert res1.per_person_budget == res1.total_budget
@@ -60,13 +71,21 @@ def run_all_budget_planner_tests():
 
     # Check 5 categories present
     cats = {item.category for item in res1.breakdown}
-    expected_cats = {"Accommodation", "Transport", "Food & Dining", "Activities & Experiences", "Miscellaneous & Emergency"}
+    expected_cats = {
+        "Accommodation",
+        "Transport",
+        "Food & Dining",
+        "Activities & Experiences",
+        "Miscellaneous & Emergency",
+    }
     assert expected_cats.issubset(cats)
 
     # -------------------------------------------------------------
     # Test 3: Group Size & Travel Tier Multipliers (4 Travelers, 10 Days, Luxury)
     # -------------------------------------------------------------
-    print("\n3. Testing Group & Travel Tier Multipliers (4 Travelers, 10 Days, Luxury)...")
+    print(
+        "\n3. Testing Group & Travel Tier Multipliers (4 Travelers, 10 Days, Luxury)..."
+    )
     req2 = BudgetCalculationRequest(
         travellers_count=4,
         duration_days=10,

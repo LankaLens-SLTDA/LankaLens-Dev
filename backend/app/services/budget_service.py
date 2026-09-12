@@ -79,9 +79,7 @@ class DeterministicBudgetEstimator(BaseBudgetEstimator):
         total_transport = round(daily_transport_rate * days, 2)
 
         # 3. Food Calculation
-        daily_food_rate = self.FOOD_RATES.get(
-            req.food_preference.lower(), 35.0
-        )
+        daily_food_rate = self.FOOD_RATES.get(req.food_preference.lower(), 35.0)
         total_food = round(daily_food_rate * days * travellers, 2)
 
         # 4. Activities Calculation
@@ -96,11 +94,11 @@ class DeterministicBudgetEstimator(BaseBudgetEstimator):
                     except (ValueError, TypeError):
                         pass
 
-        daily_act_rate = self.ACTIVITY_RATES.get(
-            req.activity_level.lower(), 25.0
-        )
+        daily_act_rate = self.ACTIVITY_RATES.get(req.activity_level.lower(), 25.0)
         base_act_cost = daily_act_rate * days * travellers
-        total_activities = round(base_act_cost + (destination_ticket_sum * travellers), 2)
+        total_activities = round(
+            base_act_cost + (destination_ticket_sum * travellers), 2
+        )
 
         # 5. Miscellaneous Buffer (8% of subtotal)
         subtotal = total_acc + total_transport + total_food + total_activities
@@ -180,7 +178,9 @@ class DeterministicBudgetEstimator(BaseBudgetEstimator):
         )
 
     def get_budget_recommendations(
-        self, req: BudgetRecommendationRequest, dataset: list[dict[str, Any]] | None = None
+        self,
+        req: BudgetRecommendationRequest,
+        dataset: list[dict[str, Any]] | None = None,
     ) -> BudgetRecommendationResponse:
         destinations = dataset if dataset is not None else SEED_DATASETS
 
@@ -195,7 +195,9 @@ class DeterministicBudgetEstimator(BaseBudgetEstimator):
 
             # Calculate total visit cost including baseline fee + daily activity estimate
             est_visit_cost = c_val * req.travellers_count
-            if est_visit_cost <= (req.max_budget * 0.4):  # Destination cost fits budget share
+            if est_visit_cost <= (
+                req.max_budget * 0.4
+            ):  # Destination cost fits budget share
                 filtered.append(d)
 
         # Sort recommended destinations by rating / popularity
@@ -208,8 +210,13 @@ class DeterministicBudgetEstimator(BaseBudgetEstimator):
         )
 
         top_destinations = filtered[:5]
-        dest_costs = sum([float(d.get("baseline_cost") or 0.0) for d in top_destinations]) * req.travellers_count
-        est_total = round(dest_costs + (req.duration_days * 50.0 * req.travellers_count), 2)
+        dest_costs = (
+            sum([float(d.get("baseline_cost") or 0.0) for d in top_destinations])
+            * req.travellers_count
+        )
+        est_total = round(
+            dest_costs + (req.duration_days * 50.0 * req.travellers_count), 2
+        )
 
         if est_total <= req.max_budget * 0.9:
             fit_status = "Under Budget"
@@ -241,7 +248,9 @@ class MLBudgetPricingAdapter(BaseBudgetEstimator):
             # Placeholder interface for dynamic ML model (e.g. XGBoost / Dynamic Pricing API)
             # In production without ML weights, delegate cleanly to baseline deterministic engine
             res = self.fallback.calculate_trip_budget(req)
-            res.calculation_model = "LankaLens ML Dynamic Pricing Adapter (Hybrid Baseline)"
+            res.calculation_model = (
+                "LankaLens ML Dynamic Pricing Adapter (Hybrid Baseline)"
+            )
             return res
         except Exception:
             return self.fallback.calculate_trip_budget(req)
