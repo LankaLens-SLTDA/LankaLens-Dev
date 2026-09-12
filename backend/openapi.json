@@ -1955,6 +1955,170 @@
         }
       }
     },
+    "/api/recommendations/personalized": {
+      "post": {
+        "tags": [
+          "Recommendations"
+        ],
+        "summary": "Personalized, Budget-Aware & Sustainability Recommendation Engine",
+        "description": "Executes LankaLens explainable deterministic recommendation algorithm. Calculates ranked match percentages, itemized sub-score breakdowns, and human-readable reasoning based on user interests, travel style, daily budget, crowd tolerance, trust verification, visitor ratings, and spatial proximity.",
+        "operationId": "get_personalized_recommendations_api_recommendations_personalized_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRecommendationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recommendations/quick": {
+      "get": {
+        "tags": [
+          "Recommendations"
+        ],
+        "summary": "Quick GET Recommendation Query",
+        "description": "Lightweight query-parameter endpoint for fast recommendation widgets.",
+        "operationId": "get_quick_recommendations_api_recommendations_quick_get",
+        "parameters": [
+          {
+            "name": "interests",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma separated user interests",
+              "default": "Heritage,Hiking",
+              "title": "Interests"
+            },
+            "description": "Comma separated user interests"
+          },
+          {
+            "name": "travel_style",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Travel style persona",
+              "default": "Eco-Tourist",
+              "title": "Travel Style"
+            },
+            "description": "Travel style persona"
+          },
+          {
+            "name": "max_budget",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Maximum daily budget USD",
+              "default": 50.0,
+              "title": "Max Budget"
+            },
+            "description": "Maximum daily budget USD"
+          },
+          {
+            "name": "crowd_tolerance",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Crowd tolerance ('low', 'medium', 'high')",
+              "default": "medium",
+              "title": "Crowd Tolerance"
+            },
+            "description": "Crowd tolerance ('low', 'medium', 'high')"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "Maximum number of recommendations to return",
+              "default": 6,
+              "title": "Limit"
+            },
+            "description": "Maximum number of recommendations to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/health": {
       "get": {
         "tags": [
@@ -3560,6 +3724,38 @@
         "type": "object",
         "title": "DestinationUpdate"
       },
+      "EngineMetadata": {
+        "properties": {
+          "model_name": {
+            "type": "string",
+            "title": "Model Name",
+            "description": "Algorithm engine identifier",
+            "default": "LankaLens Explainable Deterministic Recommender v1.0"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version",
+            "description": "Engine version string",
+            "default": "1.0.0"
+          },
+          "supports_ml_pipeline": {
+            "type": "boolean",
+            "title": "Supports Ml Pipeline",
+            "description": "Abstract interface flag for ML model replacement",
+            "default": true
+          },
+          "ranking_weights": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Ranking Weights",
+            "description": "Active feature weight configuration"
+          }
+        },
+        "type": "object",
+        "title": "EngineMetadata"
+      },
       "ExifMetadata": {
         "properties": {
           "camera": {
@@ -4527,6 +4723,94 @@
         ],
         "title": "PostCreate"
       },
+      "RecommendationExplanation": {
+        "properties": {
+          "match_percentage": {
+            "type": "integer",
+            "title": "Match Percentage",
+            "description": "Overall calculated match percentage (0-100%)"
+          },
+          "score_breakdown": {
+            "$ref": "#/components/schemas/ScoreBreakdown",
+            "description": "Itemized sub-score metrics"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons",
+            "description": "Human-readable explainability reasoning list"
+          }
+        },
+        "type": "object",
+        "required": [
+          "match_percentage",
+          "score_breakdown"
+        ],
+        "title": "RecommendationExplanation"
+      },
+      "RecommendationResponse": {
+        "properties": {
+          "recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/RecommendedDestination"
+            },
+            "type": "array",
+            "title": "Recommendations",
+            "description": "Ranked list of recommended destinations"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total count of recommendations returned",
+            "default": 0
+          },
+          "query_params": {
+            "$ref": "#/components/schemas/UserRecommendationRequest",
+            "description": "Parameters used for recommendation calculation"
+          },
+          "engine_metadata": {
+            "$ref": "#/components/schemas/EngineMetadata",
+            "description": "Engine architectural metadata"
+          },
+          "query_time_ms": {
+            "type": "number",
+            "title": "Query Time Ms",
+            "description": "Execution duration in milliseconds",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "query_params"
+        ],
+        "title": "RecommendationResponse"
+      },
+      "RecommendedDestination": {
+        "properties": {
+          "destination": {
+            "$ref": "#/components/schemas/Destination",
+            "description": "Full recommended destination object"
+          },
+          "match_percentage": {
+            "type": "integer",
+            "title": "Match Percentage",
+            "description": "Overall match percentage (0-100%)"
+          },
+          "explanation": {
+            "$ref": "#/components/schemas/RecommendationExplanation",
+            "description": "Transparent scoring breakdown & human-readable reasoning"
+          }
+        },
+        "type": "object",
+        "required": [
+          "destination",
+          "match_percentage",
+          "explanation"
+        ],
+        "title": "RecommendedDestination"
+      },
       "ReportRequest": {
         "properties": {
           "target_type": {
@@ -4602,6 +4886,56 @@
         ],
         "title": "ReportResponse"
       },
+      "ScoreBreakdown": {
+        "properties": {
+          "interest_score": {
+            "type": "number",
+            "title": "Interest Score",
+            "description": "Interest alignment sub-score (0-1)"
+          },
+          "budget_score": {
+            "type": "number",
+            "title": "Budget Score",
+            "description": "Budget suitability sub-score (0-1)"
+          },
+          "crowd_score": {
+            "type": "number",
+            "title": "Crowd Score",
+            "description": "Crowd tolerance alignment sub-score (0-1)"
+          },
+          "trust_score": {
+            "type": "number",
+            "title": "Trust Score",
+            "description": "AI Trust verification sub-score (0-1)"
+          },
+          "distance_score": {
+            "type": "number",
+            "title": "Distance Score",
+            "description": "Proximity alignment sub-score (0-1)"
+          },
+          "rating_score": {
+            "type": "number",
+            "title": "Rating Score",
+            "description": "Visitor rating sub-score (0-1)"
+          },
+          "total_score": {
+            "type": "number",
+            "title": "Total Score",
+            "description": "Final combined weighted score (0-1)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "interest_score",
+          "budget_score",
+          "crowd_score",
+          "trust_score",
+          "distance_score",
+          "rating_score",
+          "total_score"
+        ],
+        "title": "ScoreBreakdown"
+      },
       "SearchQueryResponse": {
         "properties": {
           "destinations": {
@@ -4645,6 +4979,105 @@
         },
         "type": "object",
         "title": "SearchQueryResponse"
+      },
+      "UserRecommendationRequest": {
+        "properties": {
+          "interests": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Interests",
+            "description": "List of user travel interests",
+            "example": [
+              "Heritage",
+              "Hiking",
+              "Tea Tasting"
+            ]
+          },
+          "travel_style": {
+            "type": "string",
+            "title": "Travel Style",
+            "description": "Travel style: 'Eco-Tourist', 'Cultural Explorer', 'Adventure Seeker', 'Budget Backpacker', 'Luxury Relaxer'",
+            "default": "Eco-Tourist",
+            "example": "Eco-Tourist"
+          },
+          "max_budget_per_day": {
+            "type": "number",
+            "title": "Max Budget Per Day",
+            "description": "Maximum daily budget in USD",
+            "default": 50.0,
+            "example": 50.0
+          },
+          "group_size": {
+            "type": "integer",
+            "title": "Group Size",
+            "description": "Number of travelers in party",
+            "default": 2,
+            "example": 2
+          },
+          "trip_duration_days": {
+            "type": "integer",
+            "title": "Trip Duration Days",
+            "description": "Estimated trip duration in days",
+            "default": 3,
+            "example": 5
+          },
+          "lat": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lat",
+            "description": "Origin latitude coordinate for spatial proximity weighting",
+            "example": 6.9271
+          },
+          "lng": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lng",
+            "description": "Origin longitude coordinate for spatial proximity weighting",
+            "example": 79.8612
+          },
+          "crowd_tolerance": {
+            "type": "string",
+            "title": "Crowd Tolerance",
+            "description": "Crowd tolerance preference: 'low', 'medium', 'high'",
+            "default": "medium",
+            "example": "low"
+          },
+          "preferred_activities": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Preferred Activities",
+            "description": "Explicit activity preferences",
+            "example": [
+              "Rock Climbing",
+              "Photography"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit",
+            "description": "Maximum recommendations to return",
+            "default": 10,
+            "example": 10
+          }
+        },
+        "type": "object",
+        "title": "UserRecommendationRequest"
       },
       "UserReputationProfile": {
         "properties": {
