@@ -8,6 +8,7 @@ from app.routers import (
     contribution,
     destinations,
     planner,
+    reputation,
     sustainability,
 )
 
@@ -40,6 +41,10 @@ tags_metadata = [
         "name": "Contribution Pipeline & Moderation",
         "description": "Photo submission pipeline, EXIF metadata extraction, AI validation guard, and content moderation.",
     },
+    {
+        "name": "Trust, Reputation & Gamification",
+        "description": "Contributor recognition ladder, badges, reputation score analytics, and guide marketplace onboarding.",
+    },
 ]
 
 app = FastAPI(
@@ -62,14 +67,12 @@ app = FastAPI(
     },
 )
 
-# Configure CORS dynamically from settings
+# Set CORS middleware
 origins = (
     settings.CORS_ORIGINS
     if isinstance(settings.CORS_ORIGINS, list)
     else [settings.CORS_ORIGINS]
 )
-if "*" not in origins and "http://localhost:3000" not in origins:
-    origins.append("http://localhost:3000")
 
 app.add_middleware(
     CORSMiddleware,
@@ -86,6 +89,7 @@ app.include_router(ai_assistant.router)
 app.include_router(sustainability.router)
 app.include_router(community.router)
 app.include_router(contribution.router)
+app.include_router(reputation.router)
 
 
 @app.get(

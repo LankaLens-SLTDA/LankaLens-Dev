@@ -31,6 +31,7 @@ export default function Sidebar() {
     { name: 'Sustainability', href: '/sustainability', icon: 'security', badge: 'Live' },
     { name: 'Contribute', href: '/contribution', icon: 'add_location_alt', badge: null },
     { name: 'AI Trust Hub', href: '/moderation', icon: 'verified_user', badge: 'Shield' },
+    { name: 'Profile & Rank', href: '/profile', icon: 'account_circle', badge: 'Rank' },
   ];
 
   const expanded = !isCollapsed || isHovered;
