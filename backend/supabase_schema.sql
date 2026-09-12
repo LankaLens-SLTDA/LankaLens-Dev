@@ -248,13 +248,48 @@ CREATE TABLE IF NOT EXISTS public.moderation_history (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+-- 8. USER REPUTATION PROFILES TABLE
+CREATE TABLE IF NOT EXISTS public.user_profiles (
+    id BIGSERIAL PRIMARY KEY,
+    author_name VARCHAR(100) NOT NULL UNIQUE,
+    rank VARCHAR(50) DEFAULT 'New Contributor', -- 'New Contributor', 'Verified Local', 'Trusted Guide'
+    eco_points INTEGER DEFAULT 0,
+    reputation_score NUMERIC(5, 2) DEFAULT 0.00,
+    ai_pass_rate NUMERIC(5, 1) DEFAULT 100.0,
+    approved_count INTEGER DEFAULT 0,
+    rejected_count INTEGER DEFAULT 0,
+    badges JSONB DEFAULT '[]'::jsonb,
+    is_guide_eligible BOOLEAN DEFAULT false,
+    guide_upgrade_status VARCHAR(50) DEFAULT 'none', -- 'none', 'eligible', 'applied', 'certified'
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 9. GUIDE MARKETPLACE APPLICATIONS TABLE
+CREATE TABLE IF NOT EXISTS public.guide_applications (
+    id BIGSERIAL PRIMARY KEY,
+    author_name VARCHAR(100) NOT NULL,
+    contact_number VARCHAR(50) NOT NULL,
+    sltda_license_number VARCHAR(100),
+    niche_specialization VARCHAR(100) NOT NULL,
+    bio_summary TEXT NOT NULL,
+    portfolio_links TEXT[] DEFAULT '{}',
+    status VARCHAR(50) DEFAULT 'pending_verification', -- 'pending_verification', 'certified', 'rejected'
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
 ALTER TABLE public.contributions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reports ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.moderation_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.guide_applications ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Public contributions are viewable by everyone" ON public.contributions FOR SELECT USING (status = 'approved' OR true);
 CREATE POLICY "Users can create contributions" ON public.contributions FOR INSERT WITH CHECK (true);
 CREATE POLICY "Users can create reports" ON public.reports FOR INSERT WITH CHECK (true);
 CREATE POLICY "Moderators can view and create moderation history" ON public.moderation_history FOR ALL USING (true);
+CREATE POLICY "Public profiles are viewable by everyone" ON public.user_profiles FOR SELECT USING (true);
+CREATE POLICY "Users can manage guide applications" ON public.guide_applications FOR ALL USING (true);
+
 
 

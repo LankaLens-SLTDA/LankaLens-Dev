@@ -356,3 +356,63 @@ export async function moderateContribution(
     body: JSON.stringify(payload),
   });
 }
+
+export interface Badge {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  unlocked_at?: string;
+}
+
+export interface UserReputationProfile {
+  author_name: string;
+  rank: 'New Contributor' | 'Verified Local' | 'Trusted Guide' | string;
+  eco_points: number;
+  reputation_score: number;
+  ai_pass_rate: number;
+  approved_count: number;
+  rejected_count: number;
+  total_submissions: number;
+  total_likes_received: number;
+  total_comments_received: number;
+  badges: Badge[];
+  is_guide_eligible: boolean;
+  guide_upgrade_status: 'none' | 'eligible' | 'applied' | 'certified' | string;
+  daily_points_accrued: number;
+}
+
+export interface GuideApplicationPayload {
+  author_name: string;
+  contact_number: string;
+  sltda_license_number?: string;
+  niche_specialization: string;
+  bio_summary: string;
+  portfolio_links?: string[];
+}
+
+export interface GuideApplicationResponse {
+  application_id: number;
+  status: string;
+  message: string;
+}
+
+export async function getUserReputationProfile(
+  authorName: string
+): Promise<UserReputationProfile | null> {
+  const encodedName = encodeURIComponent(authorName);
+  return fetchFromBackend<UserReputationProfile>(`/reputation/profile/${encodedName}`);
+}
+
+export async function getReputationLeaderboard(): Promise<UserReputationProfile[] | null> {
+  return fetchFromBackend<UserReputationProfile[]>('/reputation/leaderboard');
+}
+
+export async function submitGuideApplication(
+  payload: GuideApplicationPayload
+): Promise<GuideApplicationResponse | null> {
+  return fetchFromBackend<GuideApplicationResponse>('/reputation/guide-upgrade', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}

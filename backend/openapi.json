@@ -1301,6 +1301,117 @@
         }
       }
     },
+    "/api/reputation/profile/{author_name}": {
+      "get": {
+        "tags": [
+          "Trust, Reputation & Gamification"
+        ],
+        "summary": "Get contributor reputation profile",
+        "description": "Retrieve contributor recognition ladder rank, badges, AI pass rate, eco-points, and guide upgrade eligibility.",
+        "operationId": "get_user_reputation_profile_api_reputation_profile__author_name__get",
+        "parameters": [
+          {
+            "name": "author_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Author Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserReputationProfile"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reputation/leaderboard": {
+      "get": {
+        "tags": [
+          "Trust, Reputation & Gamification"
+        ],
+        "summary": "Get community contributor leaderboard",
+        "description": "Retrieve real-time leaderboard ranking top local guides and explorers by reputation score and eco-points.",
+        "operationId": "get_reputation_leaderboard_api_reputation_leaderboard_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UserReputationProfile"
+                  },
+                  "type": "array",
+                  "title": "Response Get Reputation Leaderboard Api Reputation Leaderboard Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reputation/guide-upgrade": {
+      "post": {
+        "tags": [
+          "Trust, Reputation & Gamification"
+        ],
+        "summary": "Apply for SLTDA Guide Marketplace Onboarding",
+        "description": "Allows Trusted Guide eligible contributors to apply for certified guide marketplace onboarding.",
+        "operationId": "apply_for_guide_upgrade_api_reputation_guide_upgrade_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuideApplicationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuideApplicationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/health": {
       "get": {
         "tags": [
@@ -1452,6 +1563,54 @@
         },
         "type": "object",
         "title": "AiValidationResult"
+      },
+      "Badge": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Badge unique ID",
+            "example": "verified_local"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Badge title",
+            "example": "Verified Local Guide"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Badge description",
+            "example": "Achieved >= 80% AI pass rate and 250+ Eco-Points."
+          },
+          "icon": {
+            "type": "string",
+            "title": "Icon",
+            "description": "Badge icon identifier",
+            "default": "shield",
+            "example": "shield_check"
+          },
+          "unlocked_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unlocked At",
+            "description": "Unlock timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "description"
+        ],
+        "title": "Badge"
       },
       "BudgetItem": {
         "properties": {
@@ -2822,6 +2981,89 @@
         "type": "object",
         "title": "ExifMetadata"
       },
+      "GuideApplicationRequest": {
+        "properties": {
+          "author_name": {
+            "type": "string",
+            "title": "Author Name",
+            "description": "Applicant author name",
+            "example": "Chaminda Perera"
+          },
+          "contact_number": {
+            "type": "string",
+            "title": "Contact Number",
+            "description": "Phone/WhatsApp contact",
+            "example": "+94 77 123 4567"
+          },
+          "sltda_license_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sltda License Number",
+            "description": "Optional SLTDA guide license number",
+            "example": "SLTDA/NTG/2026/0892"
+          },
+          "niche_specialization": {
+            "type": "string",
+            "title": "Niche Specialization",
+            "description": "Specialization (e.g. Cultural, Wildlife, Trekking, Food)",
+            "default": "Heritage & Trekking",
+            "example": "Wildlife & Cultural Heritage"
+          },
+          "bio_summary": {
+            "type": "string",
+            "title": "Bio Summary",
+            "description": "Guide bio and experience summary",
+            "example": "Licensed local guide in Central Province with 8 years of experience."
+          },
+          "portfolio_links": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Portfolio Links",
+            "description": "Optional social/website portfolio links"
+          }
+        },
+        "type": "object",
+        "required": [
+          "author_name",
+          "contact_number",
+          "bio_summary"
+        ],
+        "title": "GuideApplicationRequest"
+      },
+      "GuideApplicationResponse": {
+        "properties": {
+          "application_id": {
+            "type": "integer",
+            "title": "Application Id",
+            "description": "Unique application ID"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Status: 'pending_verification', 'certified'",
+            "default": "pending_verification"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Status message",
+            "default": "Application submitted successfully for SLTDA Guide Marketplace onboarding."
+          }
+        },
+        "type": "object",
+        "required": [
+          "application_id"
+        ],
+        "title": "GuideApplicationResponse"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -3471,6 +3713,101 @@
         ],
         "title": "ReportResponse"
       },
+      "UserReputationProfile": {
+        "properties": {
+          "author_name": {
+            "type": "string",
+            "title": "Author Name",
+            "description": "Contributor name",
+            "example": "Chaminda Perera"
+          },
+          "rank": {
+            "type": "string",
+            "title": "Rank",
+            "description": "Rank: 'New Contributor', 'Verified Local', 'Trusted Guide'",
+            "default": "New Contributor"
+          },
+          "eco_points": {
+            "type": "integer",
+            "title": "Eco Points",
+            "description": "Total Eco-Points accumulated",
+            "default": 0
+          },
+          "reputation_score": {
+            "type": "number",
+            "title": "Reputation Score",
+            "description": "Calculated reputation score out of 100.00",
+            "default": 0.0
+          },
+          "ai_pass_rate": {
+            "type": "number",
+            "title": "Ai Pass Rate",
+            "description": "Percentage of submitted contributions passing AI verification",
+            "default": 100.0
+          },
+          "approved_count": {
+            "type": "integer",
+            "title": "Approved Count",
+            "description": "Total approved contributions",
+            "default": 0
+          },
+          "rejected_count": {
+            "type": "integer",
+            "title": "Rejected Count",
+            "description": "Total rejected contributions",
+            "default": 0
+          },
+          "total_submissions": {
+            "type": "integer",
+            "title": "Total Submissions",
+            "description": "Total contribution submissions",
+            "default": 0
+          },
+          "total_likes_received": {
+            "type": "integer",
+            "title": "Total Likes Received",
+            "description": "Community likes received",
+            "default": 0
+          },
+          "total_comments_received": {
+            "type": "integer",
+            "title": "Total Comments Received",
+            "description": "Community comments received",
+            "default": 0
+          },
+          "badges": {
+            "items": {
+              "$ref": "#/components/schemas/Badge"
+            },
+            "type": "array",
+            "title": "Badges",
+            "description": "Unlocked contributor badges"
+          },
+          "is_guide_eligible": {
+            "type": "boolean",
+            "title": "Is Guide Eligible",
+            "description": "Flag indicating eligibility for SLTDA Guide Marketplace onboarding",
+            "default": false
+          },
+          "guide_upgrade_status": {
+            "type": "string",
+            "title": "Guide Upgrade Status",
+            "description": "Guide status: 'none', 'eligible', 'applied', 'certified'",
+            "default": "none"
+          },
+          "daily_points_accrued": {
+            "type": "integer",
+            "title": "Daily Points Accrued",
+            "description": "Points earned in current 24-hour window",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "author_name"
+        ],
+        "title": "UserReputationProfile"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -3541,6 +3878,10 @@
     {
       "name": "Contribution Pipeline & Moderation",
       "description": "Photo submission pipeline, EXIF metadata extraction, AI validation guard, and content moderation."
+    },
+    {
+      "name": "Trust, Reputation & Gamification",
+      "description": "Contributor recognition ladder, badges, reputation score analytics, and guide marketplace onboarding."
     }
   ]
 }
