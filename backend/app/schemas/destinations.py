@@ -286,3 +286,16 @@ class DestinationResponse(BaseModel):
         description="Status message",
         json_schema_extra={"example": "Destination retrieved successfully"},
     )
+
+
+class SearchQueryResponse(BaseModel):
+    destinations: list[Destination] = Field(
+        default_factory=list, description="Ranked list of matching destination records"
+    )
+    total: int = Field(0, description="Total count of matching destinations")
+    page: int = Field(1, description="Current page number")
+    limit: int = Field(20, description="Items limit per page")
+    cached: bool = Field(False, description="Flag indicating if query hit cache")
+    query_time_ms: float = Field(
+        0.0, description="Query execution time in milliseconds"
+    )

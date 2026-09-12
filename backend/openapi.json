@@ -271,6 +271,280 @@
         }
       }
     },
+    "/api/destinations/search": {
+      "get": {
+        "tags": [
+          "Destinations"
+        ],
+        "summary": "Fast destination search & geographic discovery",
+        "description": "Advanced multi-attribute destination search with activity filters, crowd level density, max budget, PostGIS geographic radius proximity search, weighted relevance ranking, query caching, and pagination.",
+        "operationId": "search_destinations_api_api_destinations_search_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Free text search query (matches title, name, activities, description)",
+              "title": "Q"
+            },
+            "description": "Free text search query (matches title, name, activities, description)"
+          },
+          {
+            "name": "activity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Activity tag filter (e.g. 'Hiking', 'Photography', 'Train Spotting')",
+              "title": "Activity"
+            },
+            "description": "Activity tag filter (e.g. 'Hiking', 'Photography', 'Train Spotting')"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Category filter (e.g. heritage, nature, beach, adventure, wildlife)",
+              "title": "Category"
+            },
+            "description": "Category filter (e.g. heritage, nature, beach, adventure, wildlife)"
+          },
+          {
+            "name": "district",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "District filter (e.g. Matale, Badulla, Galle)",
+              "title": "District"
+            },
+            "description": "District filter (e.g. Matale, Badulla, Galle)"
+          },
+          {
+            "name": "province",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Province filter (e.g. Central, Uva, Southern)",
+              "title": "Province"
+            },
+            "description": "Province filter (e.g. Central, Uva, Southern)"
+          },
+          {
+            "name": "crowd_level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Crowd density filter ('Low', 'Moderate', 'High')",
+              "title": "Crowd Level"
+            },
+            "description": "Crowd density filter ('Low', 'Moderate', 'High')"
+          },
+          {
+            "name": "max_cost",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Maximum baseline visit cost USD",
+              "title": "Max Cost"
+            },
+            "description": "Maximum baseline visit cost USD"
+          },
+          {
+            "name": "min_cost",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Minimum baseline visit cost USD",
+              "title": "Min Cost"
+            },
+            "description": "Minimum baseline visit cost USD"
+          },
+          {
+            "name": "min_rating",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Minimum rating score",
+              "title": "Min Rating"
+            },
+            "description": "Minimum rating score"
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "GPS Latitude coordinate for spatial proximity search",
+              "title": "Lat"
+            },
+            "description": "GPS Latitude coordinate for spatial proximity search"
+          },
+          {
+            "name": "lng",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "GPS Longitude coordinate for spatial proximity search",
+              "title": "Lng"
+            },
+            "description": "GPS Longitude coordinate for spatial proximity search"
+          },
+          {
+            "name": "radius_km",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Maximum proximity radius in kilometers",
+              "title": "Radius Km"
+            },
+            "description": "Maximum proximity radius in kilometers"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "Items limit per page",
+              "default": 20,
+              "title": "Limit"
+            },
+            "description": "Items limit per page"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "Items offset for pagination",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Items offset for pagination"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchQueryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/destinations/nearby": {
       "get": {
         "tags": [
@@ -3712,6 +3986,50 @@
           "id"
         ],
         "title": "ReportResponse"
+      },
+      "SearchQueryResponse": {
+        "properties": {
+          "destinations": {
+            "items": {
+              "$ref": "#/components/schemas/Destination"
+            },
+            "type": "array",
+            "title": "Destinations",
+            "description": "Ranked list of matching destination records"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total count of matching destinations",
+            "default": 0
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page",
+            "description": "Current page number",
+            "default": 1
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit",
+            "description": "Items limit per page",
+            "default": 20
+          },
+          "cached": {
+            "type": "boolean",
+            "title": "Cached",
+            "description": "Flag indicating if query hit cache",
+            "default": false
+          },
+          "query_time_ms": {
+            "type": "number",
+            "title": "Query Time Ms",
+            "description": "Query execution time in milliseconds",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "title": "SearchQueryResponse"
       },
       "UserReputationProfile": {
         "properties": {

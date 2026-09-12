@@ -416,3 +416,48 @@ export async function submitGuideApplication(
     body: JSON.stringify(payload),
   });
 }
+
+export interface SearchQueryResponse {
+  destinations: Destination[];
+  total: number;
+  page: number;
+  limit: number;
+  cached: boolean;
+  query_time_ms: number;
+}
+
+export async function searchDestinations(params?: {
+  q?: string;
+  activity?: string;
+  category?: string;
+  district?: string;
+  province?: string;
+  crowd_level?: string;
+  max_cost?: number;
+  min_cost?: number;
+  min_rating?: number;
+  lat?: number;
+  lng?: number;
+  radius_km?: number;
+  limit?: number;
+  offset?: number;
+}): Promise<SearchQueryResponse | null> {
+  const query = new URLSearchParams();
+  if (params?.q) query.append('q', params.q);
+  if (params?.activity) query.append('activity', params.activity);
+  if (params?.category) query.append('category', params.category);
+  if (params?.district) query.append('district', params.district);
+  if (params?.province) query.append('province', params.province);
+  if (params?.crowd_level) query.append('crowd_level', params.crowd_level);
+  if (params?.max_cost !== undefined) query.append('max_cost', params.max_cost.toString());
+  if (params?.min_cost !== undefined) query.append('min_cost', params.min_cost.toString());
+  if (params?.min_rating !== undefined) query.append('min_rating', params.min_rating.toString());
+  if (params?.lat !== undefined) query.append('lat', params.lat.toString());
+  if (params?.lng !== undefined) query.append('lng', params.lng.toString());
+  if (params?.radius_km !== undefined) query.append('radius_km', params.radius_km.toString());
+  if (params?.limit !== undefined) query.append('limit', params.limit.toString());
+  if (params?.offset !== undefined) query.append('offset', params.offset.toString());
+
+  const qStr = query.toString() ? `?${query.toString()}` : '';
+  return fetchFromBackend<SearchQueryResponse>(`/destinations/search${qStr}`);
+}
