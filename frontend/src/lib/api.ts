@@ -11,6 +11,14 @@ export interface CommunityStats {
   save_count: number;
 }
 
+export interface PartnerInfo {
+  name: string;
+  type: string;
+  contact: string;
+  rating: number;
+  verified: boolean;
+}
+
 export interface Destination {
   id: number;
   name: string;
@@ -33,7 +41,9 @@ export interface Destination {
   publication_status: string;
   is_verified: boolean;
   crowd_info: CrowdInfo;
+  partner_info?: PartnerInfo;
   community_stats: CommunityStats;
+  nearby_attractions?: string[];
   images: string[];
   image_url: string;
   image: string;
