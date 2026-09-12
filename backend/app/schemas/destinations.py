@@ -299,3 +299,57 @@ class SearchQueryResponse(BaseModel):
     query_time_ms: float = Field(
         0.0, description="Query execution time in milliseconds"
     )
+
+
+class MapCluster(BaseModel):
+    cluster_id: str = Field(..., description="Unique spatial cluster identifier")
+    latitude: float = Field(..., description="Cluster centroid latitude")
+    longitude: float = Field(..., description="Cluster centroid longitude")
+    point_count: int = Field(..., description="Total destination points inside cluster")
+    category_distribution: dict[str, int] = Field(
+        default_factory=dict, description="Distribution count per destination category"
+    )
+    destination_ids: list[int] = Field(
+        default_factory=list, description="IDs of destinations aggregated in cluster"
+    )
+
+
+class PartnerLocation(BaseModel):
+    id: int = Field(..., description="Unique partner location ID")
+    name: str = Field(..., description="Partner business or cooperative name")
+    type: str = Field(
+        ...,
+        description="Partner category (Transport Co-op, Eco-Guide, Homestay, Authentic Dining, Certified Gear)",
+    )
+    latitude: float = Field(..., description="Partner GPS latitude")
+    longitude: float = Field(..., description="Partner GPS longitude")
+    rating: float = Field(4.9, description="Community partner rating")
+    contact: str = Field("+94 77 123 4567", description="Contact phone or link")
+    verified: bool = Field(True, description="Verification badge status")
+    associated_destination_id: int | None = Field(
+        None, description="Nearby associated destination ID if applicable"
+    )
+
+
+class MapDiscoveryResponse(BaseModel):
+    destinations: list[Destination] = Field(
+        default_factory=list, description="Destinations matching viewport query"
+    )
+    clusters: list[MapCluster] = Field(
+        default_factory=list, description="Aggregated map marker clusters"
+    )
+    total_in_viewport: int = Field(
+        0, description="Total destination count in active viewport"
+    )
+    recommended_alternatives: list[Destination] = Field(
+        default_factory=list,
+        description="Recommended alternative destinations near active target",
+    )
+    partner_locations: list[PartnerLocation] = Field(
+        default_factory=list, description="Verified ecosystem partner locations"
+    )
+    viewport_bounds: dict[str, float] = Field(
+        default_factory=dict,
+        description="Viewport boundary coordinates (min_lat, min_lng, max_lat, max_lng)",
+    )
+    query_time_ms: float = Field(0.0, description="Execution duration in milliseconds")

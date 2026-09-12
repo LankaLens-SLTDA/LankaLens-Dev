@@ -7,9 +7,12 @@ from app.schemas.destinations import (
     DestinationListResponse,
     DestinationResponse,
     DestinationUpdate,
+    MapDiscoveryResponse,
+    PartnerLocation,
     SearchQueryResponse,
 )
 from app.seed_destinations import SEED_DATASETS
+from app.services.map_discovery_service import MapDiscoveryService
 from app.services.search_service import SearchService
 from app.supabase_client import supabase
 
@@ -370,6 +373,84 @@ def get_nearby_destinations(
         nearby_results = [d for d in nearby_results if d["is_verified"] is True]
 
     return {"destinations": nearby_results, "total": len(nearby_results)}
+
+
+@router.get(
+    "/viewport",
+    response_model=MapDiscoveryResponse,
+    summary="Interactive Mapbox Viewport & Marker Clustering Query",
+    description=(
+        "Retrieves destinations, spatial marker clusters, recommended alternatives, "
+        "and local partner business locations within active Mapbox geographic viewport bounds."
+    ),
+)
+def get_viewport_discovery(
+    min_lat: float = Query(5.0, description="Minimum latitude bounding coordinate"),
+    min_lng: float = Query(79.0, description="Minimum longitude bounding coordinate"),
+    max_lat: float = Query(10.0, description="Maximum latitude bounding coordinate"),
+    max_lng: float = Query(82.0, description="Maximum longitude bounding coordinate"),
+    zoom: float = Query(7.5, description="Mapbox current zoom level"),
+    selected_dest_id: int | None = Query(
+        None, description="Currently selected destination ID for alternatives surfacing"
+    ),
+    include_partners: bool = Query(
+        True, description="Flag to include local verified ecosystem partner locations"
+    ),
+):
+    """Execute spatial viewport query with clustering & ecosystem partner layer."""
+    min_lat = min_lat if isinstance(min_lat, (int, float)) else 5.0
+    min_lng = min_lng if isinstance(min_lng, (int, float)) else 79.0
+    max_lat = max_lat if isinstance(max_lat, (int, float)) else 10.0
+    max_lng = max_lng if isinstance(max_lng, (int, float)) else 82.0
+    zoom = zoom if isinstance(zoom, (int, float)) else 7.5
+    selected_dest_id = selected_dest_id if isinstance(selected_dest_id, int) else None
+    include_partners = include_partners if isinstance(include_partners, bool) else True
+
+    dataset = [format_destination_record(d) for d in IN_MEMORY_DESTINATIONS]
+
+    res = MapDiscoveryService.get_viewport_discovery(
+        min_lat=min_lat,
+        min_lng=min_lng,
+        max_lat=max_lat,
+        max_lng=max_lng,
+        zoom=zoom,
+        selected_dest_id=selected_dest_id,
+        include_partners=include_partners,
+        dataset=dataset,
+    )
+    return res
+
+
+@router.get(
+    "/{id}/alternatives",
+    response_model=DestinationListResponse,
+    summary="Get recommended alternative destinations",
+    description="Surfaces 3 recommended alternative destinations matching category, rating, or geographic proximity.",
+)
+def get_destination_alternatives(
+    id: int,
+    limit: int = Query(3, description="Maximum number of alternative recommendations"),
+):
+    """Get recommended alternative destinations."""
+    limit = limit if isinstance(limit, int) else 3
+    dataset = [format_destination_record(d) for d in IN_MEMORY_DESTINATIONS]
+    alternatives = MapDiscoveryService.get_destination_alternatives(
+        dest_id=id, dataset=dataset, limit=limit
+    )
+    return {"destinations": alternatives, "total": len(alternatives)}
+
+
+@router.get(
+    "/{id}/partners",
+    response_model=list[PartnerLocation],
+    summary="Get verified local ecosystem partners near destination",
+    description="Surfaces verified local partner co-ops, eco-guides, homestays, and gear rentals for a destination.",
+)
+def get_destination_partners(id: int):
+    """Get verified local partners near target destination."""
+    dataset = [format_destination_record(d) for d in IN_MEMORY_DESTINATIONS]
+    partners = MapDiscoveryService.get_destination_partners(dest_id=id, dataset=dataset)
+    return partners
 
 
 @router.get(
