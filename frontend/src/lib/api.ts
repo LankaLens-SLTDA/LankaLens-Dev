@@ -905,3 +905,95 @@ export async function submitHazardReport(payload: {
 export async function getHazardReports(): Promise<EnvironmentalReportRecord[] | null> {
   return fetchFromBackend<EnvironmentalReportRecord[]>('/sustainability/reports');
 }
+
+export interface AlternativeMatchSubScores {
+  proximity_score: number;
+  category_similarity_score: number;
+  activity_overlap_score: number;
+  budget_fit_score: number;
+  crowd_advantage_score: number;
+  trust_score: number;
+  rating_score: number;
+  travel_time_score: number;
+}
+
+export interface AlternativeMatchExplanation {
+  overall_match_score: number;
+  match_percentage: number;
+  crowd_reduction_pct: number;
+  estimated_drive_time_minutes: number;
+  drive_time_formatted: string;
+  distance_km: number;
+  sub_scores: AlternativeMatchSubScores;
+  key_reasons: string[];
+}
+
+export interface AlternativeMatchResult {
+  original_destination_id: number;
+  original_destination_name: string;
+  original_crowd_status: string;
+  alternative_destination: Destination;
+  explanation: AlternativeMatchExplanation;
+}
+
+export interface AlternativeMatchRequest {
+  destination_id: number;
+  max_distance_km?: number;
+  max_budget?: number;
+  preferred_categories?: string[];
+  min_rating?: number;
+  min_trust_score?: number;
+  max_crowd_level?: string;
+  limit?: number;
+}
+
+export interface AlternativeMatchResponse {
+  original_destination: Destination;
+  alternatives: AlternativeMatchResult[];
+  total_found: number;
+  query_time_ms: number;
+}
+
+export interface FeatureDifference {
+  attribute: string;
+  original_value: string;
+  alternative_value: string;
+  advantage: 'alternative' | 'original' | 'neutral' | string;
+  note: string;
+}
+
+export interface SideBySideComparisonResponse {
+  original_destination: Destination;
+  alternative_destination: Destination;
+  explanation: AlternativeMatchExplanation;
+  feature_differences: FeatureDifference[];
+  recommendation_summary: string;
+}
+
+export async function getAlternativeMatches(
+  payload: AlternativeMatchRequest
+): Promise<AlternativeMatchResponse | null> {
+  return fetchFromBackend<AlternativeMatchResponse>('/alternatives/match', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getAlternativeDestinationList(
+  destinationId: number,
+  limit = 5,
+  maxDistanceKm = 120.0
+): Promise<AlternativeMatchResponse | null> {
+  return fetchFromBackend<AlternativeMatchResponse>(
+    `/alternatives/destination/${destinationId}?limit=${limit}&max_distance_km=${maxDistanceKm}`
+  );
+}
+
+export async function compareAlternatives(
+  originalId: number,
+  alternativeId: number
+): Promise<SideBySideComparisonResponse | null> {
+  return fetchFromBackend<SideBySideComparisonResponse>(
+    `/alternatives/compare/${originalId}/${alternativeId}`
+  );
+}

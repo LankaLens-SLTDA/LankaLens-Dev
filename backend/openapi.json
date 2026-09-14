@@ -2744,6 +2744,183 @@
         }
       }
     },
+    "/api/alternatives/match": {
+      "post": {
+        "tags": [
+          "Alternative Destination Engine"
+        ],
+        "summary": "Match explainable alternatives for an overcrowded destination",
+        "description": "Executes multi-criteria matching across distance, category, activities, budget, crowd level reduction, rating, and AI trust score to return ranked, explainable alternatives.",
+        "operationId": "match_alternative_destinations_api_alternatives_match_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlternativeMatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlternativeMatchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alternatives/destination/{destination_id}": {
+      "get": {
+        "tags": [
+          "Alternative Destination Engine"
+        ],
+        "summary": "Get explainable alternative recommendations for a destination ID",
+        "description": "Returns top explainable alternatives for a given destination ID.",
+        "operationId": "get_alternatives_for_destination_api_alternatives_destination__destination_id__get",
+        "parameters": [
+          {
+            "name": "destination_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Destination Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 20,
+              "minimum": 1,
+              "description": "Max number of alternatives to return",
+              "default": 5,
+              "title": "Limit"
+            },
+            "description": "Max number of alternatives to return"
+          },
+          {
+            "name": "max_distance_km",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 500.0,
+              "minimum": 1.0,
+              "description": "Search radius in km",
+              "default": 120.0,
+              "title": "Max Distance Km"
+            },
+            "description": "Search radius in km"
+          },
+          {
+            "name": "max_crowd_level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Max crowd status ('Low' or 'Moderate')",
+              "default": "Moderate",
+              "title": "Max Crowd Level"
+            },
+            "description": "Max crowd status ('Low' or 'Moderate')"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlternativeMatchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alternatives/compare/{original_id}/{alternative_id}": {
+      "get": {
+        "tags": [
+          "Alternative Destination Engine"
+        ],
+        "summary": "Get side-by-side comparison between original and alternative destination",
+        "description": "Generates detailed side-by-side comparison matrix with match explanations.",
+        "operationId": "compare_destinations_side_by_side_api_alternatives_compare__original_id___alternative_id__get",
+        "parameters": [
+          {
+            "name": "original_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Original Id"
+            }
+          },
+          {
+            "name": "alternative_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Alternative Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SideBySideComparisonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/health": {
       "get": {
         "tags": [
@@ -3016,6 +3193,279 @@
           "recommendation_reason"
         ],
         "title": "AlternativeDestinationSuggestion"
+      },
+      "AlternativeMatchExplanation": {
+        "properties": {
+          "overall_match_score": {
+            "type": "number",
+            "title": "Overall Match Score",
+            "description": "Composite match score (0.0 to 1.0)"
+          },
+          "match_percentage": {
+            "type": "number",
+            "title": "Match Percentage",
+            "description": "User-facing match percentage (0 to 100)"
+          },
+          "crowd_reduction_pct": {
+            "type": "number",
+            "title": "Crowd Reduction Pct",
+            "description": "Percentage crowd reduction vs original site"
+          },
+          "estimated_drive_time_minutes": {
+            "type": "integer",
+            "title": "Estimated Drive Time Minutes",
+            "description": "Estimated drive duration in minutes"
+          },
+          "drive_time_formatted": {
+            "type": "string",
+            "title": "Drive Time Formatted",
+            "description": "Formatted drive duration string (e.g. '15 mins')"
+          },
+          "distance_km": {
+            "type": "number",
+            "title": "Distance Km",
+            "description": "Geographic distance in kilometers"
+          },
+          "sub_scores": {
+            "$ref": "#/components/schemas/AlternativeMatchSubScores"
+          },
+          "key_reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Key Reasons",
+            "description": "Human-readable bullet points explaining the match rationale"
+          }
+        },
+        "type": "object",
+        "required": [
+          "overall_match_score",
+          "match_percentage",
+          "crowd_reduction_pct",
+          "estimated_drive_time_minutes",
+          "drive_time_formatted",
+          "distance_km",
+          "sub_scores",
+          "key_reasons"
+        ],
+        "title": "AlternativeMatchExplanation",
+        "description": "Explainable rationale detailing why an alternative is recommended over an overcrowded site."
+      },
+      "AlternativeMatchRequest": {
+        "properties": {
+          "destination_id": {
+            "type": "integer",
+            "title": "Destination Id",
+            "description": "ID of the original/overcrowded destination"
+          },
+          "max_distance_km": {
+            "type": "number",
+            "title": "Max Distance Km",
+            "description": "Maximum search radius in kilometers",
+            "default": 120.0
+          },
+          "max_budget": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Budget",
+            "description": "Optional maximum baseline cost per visit"
+          },
+          "preferred_categories": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Categories",
+            "description": "Filter for specific preferred categories"
+          },
+          "min_rating": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Rating",
+            "description": "Minimum acceptable destination rating"
+          },
+          "min_trust_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Trust Score",
+            "description": "Minimum trust score threshold"
+          },
+          "max_crowd_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Crowd Level",
+            "description": "Maximum allowed crowd status ('Low' or 'Moderate')",
+            "default": "Moderate"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit",
+            "description": "Maximum number of alternatives to return",
+            "default": 5
+          }
+        },
+        "type": "object",
+        "required": [
+          "destination_id"
+        ],
+        "title": "AlternativeMatchRequest",
+        "description": "Request payload for dedicated alternative destination matching engine."
+      },
+      "AlternativeMatchResponse": {
+        "properties": {
+          "original_destination": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Original Destination"
+          },
+          "alternatives": {
+            "items": {
+              "$ref": "#/components/schemas/AlternativeMatchResult"
+            },
+            "type": "array",
+            "title": "Alternatives"
+          },
+          "total_found": {
+            "type": "integer",
+            "title": "Total Found"
+          },
+          "query_time_ms": {
+            "type": "number",
+            "title": "Query Time Ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "original_destination",
+          "alternatives",
+          "total_found",
+          "query_time_ms"
+        ],
+        "title": "AlternativeMatchResponse",
+        "description": "Response payload containing explainable alternative destination recommendations."
+      },
+      "AlternativeMatchResult": {
+        "properties": {
+          "original_destination_id": {
+            "type": "integer",
+            "title": "Original Destination Id"
+          },
+          "original_destination_name": {
+            "type": "string",
+            "title": "Original Destination Name"
+          },
+          "original_crowd_status": {
+            "type": "string",
+            "title": "Original Crowd Status"
+          },
+          "alternative_destination": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Alternative Destination"
+          },
+          "explanation": {
+            "$ref": "#/components/schemas/AlternativeMatchExplanation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "original_destination_id",
+          "original_destination_name",
+          "original_crowd_status",
+          "alternative_destination",
+          "explanation"
+        ],
+        "title": "AlternativeMatchResult",
+        "description": "Single alternative match result with full destination metadata and match explanation."
+      },
+      "AlternativeMatchSubScores": {
+        "properties": {
+          "proximity_score": {
+            "type": "number",
+            "title": "Proximity Score",
+            "description": "Score based on geographic distance"
+          },
+          "category_similarity_score": {
+            "type": "number",
+            "title": "Category Similarity Score",
+            "description": "Score based on category alignment"
+          },
+          "activity_overlap_score": {
+            "type": "number",
+            "title": "Activity Overlap Score",
+            "description": "Score based on activity overlap"
+          },
+          "budget_fit_score": {
+            "type": "number",
+            "title": "Budget Fit Score",
+            "description": "Score based on cost compatibility"
+          },
+          "crowd_advantage_score": {
+            "type": "number",
+            "title": "Crowd Advantage Score",
+            "description": "Score based on lower crowd pressure"
+          },
+          "trust_score": {
+            "type": "number",
+            "title": "Trust Score",
+            "description": "Destination trust & verification score"
+          },
+          "rating_score": {
+            "type": "number",
+            "title": "Rating Score",
+            "description": "Community rating score"
+          },
+          "travel_time_score": {
+            "type": "number",
+            "title": "Travel Time Score",
+            "description": "Estimated travel time convenience score"
+          }
+        },
+        "type": "object",
+        "required": [
+          "proximity_score",
+          "category_similarity_score",
+          "activity_overlap_score",
+          "budget_fit_score",
+          "crowd_advantage_score",
+          "trust_score",
+          "rating_score",
+          "travel_time_score"
+        ],
+        "title": "AlternativeMatchSubScores",
+        "description": "Sub-scores breakdown for multi-criteria alternative matching (0.0 to 1.0)."
       },
       "Badge": {
         "properties": {
@@ -4971,6 +5421,40 @@
         "type": "object",
         "title": "ExifMetadata"
       },
+      "FeatureDifference": {
+        "properties": {
+          "attribute": {
+            "type": "string",
+            "title": "Attribute"
+          },
+          "original_value": {
+            "type": "string",
+            "title": "Original Value"
+          },
+          "alternative_value": {
+            "type": "string",
+            "title": "Alternative Value"
+          },
+          "advantage": {
+            "type": "string",
+            "title": "Advantage"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "attribute",
+          "original_value",
+          "alternative_value",
+          "advantage",
+          "note"
+        ],
+        "title": "FeatureDifference",
+        "description": "Individual feature comparison between original and alternative destination."
+      },
       "GuideApplicationRequest": {
         "properties": {
           "author_name": {
@@ -6134,6 +6618,44 @@
         },
         "type": "object",
         "title": "SearchQueryResponse"
+      },
+      "SideBySideComparisonResponse": {
+        "properties": {
+          "original_destination": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Original Destination"
+          },
+          "alternative_destination": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Alternative Destination"
+          },
+          "explanation": {
+            "$ref": "#/components/schemas/AlternativeMatchExplanation"
+          },
+          "feature_differences": {
+            "items": {
+              "$ref": "#/components/schemas/FeatureDifference"
+            },
+            "type": "array",
+            "title": "Feature Differences"
+          },
+          "recommendation_summary": {
+            "type": "string",
+            "title": "Recommendation Summary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "original_destination",
+          "alternative_destination",
+          "explanation",
+          "feature_differences",
+          "recommendation_summary"
+        ],
+        "title": "SideBySideComparisonResponse",
+        "description": "Detailed side-by-side comparison response between original and alternative destination."
       },
       "TripCreatePayload": {
         "properties": {

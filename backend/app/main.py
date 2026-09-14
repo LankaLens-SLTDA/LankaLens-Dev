@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routers import (
     ai_assistant,
+    alternatives,
     community,
     contribution,
     destinations,
@@ -92,6 +93,7 @@ app.include_router(community.router)
 app.include_router(contribution.router)
 app.include_router(reputation.router)
 app.include_router(recommendations.router)
+app.include_router(alternatives.router)
 
 
 @app.get(
