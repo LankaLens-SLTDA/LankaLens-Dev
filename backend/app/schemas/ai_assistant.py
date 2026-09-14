@@ -1,60 +1,132 @@
+"""Pydantic schemas for EPIC 18 — AI Travel Assistant (Grounded Multilingual Intelligence)."""
+
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
-class ChatRequest(BaseModel):
-    message: str = Field(
-        ...,
-        description="User prompt or query sent to the AI travel assistant",
-        json_schema_extra={"example": "Tell me about tea tasting in Kandy and Ella"},
+class GroundingEntity(BaseModel):
+    """Authoritative platform destination or partner entity retrieved for grounding."""
+
+    id: int = Field(..., description="Destination or entity ID")
+    name: str = Field(..., description="Canonical destination name")
+    category: str = Field(..., description="Destination category")
+    verified_cost: float = Field(
+        ..., description="Authoritative baseline cost per visit"
+    )
+    trust_score: float = Field(..., description="Platform AI trust score")
+    crowd_status: str = Field(
+        ..., description="Current visitor crowd status ('Low', 'Moderate', 'High')"
+    )
+
+
+class GroundingMetadata(BaseModel):
+    """Audit metadata proving factual retrieval and hallucination validation."""
+
+    is_grounded: bool = Field(
+        True, description="Whether response is grounded in LankaLens data"
+    )
+    entities_found: list[GroundingEntity] = Field(
+        default_factory=list, description="Authoritative entities retrieved"
+    )
+    hallucination_check_passed: bool = Field(
+        True,
+        description="Whether hallucination guardrail validated generated numbers/names",
+    )
+    retrieval_confidence: float = Field(
+        0.95, description="Confidence rating of grounded context retrieval (0.0 to 1.0)"
+    )
+    sources_used: list[str] = Field(
+        default_factory=list,
+        description="Platform database tables/modules used as grounding sources",
     )
 
 
 class CardData(BaseModel):
+    """Structured UI card recommendation for destination, activity, or partner."""
+
+    id: int = Field(1, description="Destination ID")
     title: str = Field(
-        ...,
-        description="Card title for recommended destination or activity",
-        json_schema_extra={"example": "Damro Labookellie High Tea Estate"},
+        ..., description="Card title for recommended landmark or activity"
     )
-    type: str = Field(
-        ...,
-        description="Category or activity type",
-        json_schema_extra={"example": "Cultural Tea Estate"},
-    )
-    desc: str = Field(
-        ...,
-        description="Brief description of the recommendation",
-        json_schema_extra={
-            "example": "Experience high-altitude Ceylon tea picking and factory tours."
-        },
-    )
+    type: str = Field(..., description="Category or activity type")
+    desc: str = Field(..., description="Brief summary description of recommendation")
     image: str = Field(
-        ...,
-        description="Relative image URL path",
-        json_schema_extra={"example": "/stitch_images/planner.png"},
+        "/stitch_images/planner.png", description="Relative image URL path"
     )
     duration: str = Field(
+        "Recommended: 2.5 hrs", description="Estimated visit duration"
+    )
+    cost: float = Field(0.0, description="Authoritative baseline entry fee in USD")
+    rating: float = Field(4.5, description="Community visitor rating")
+    crowd_status: str = Field("Low", description="Current crowd status")
+
+
+class ChatRequest(BaseModel):
+    """Request payload sent to the AI Travel Assistant."""
+
+    message: str = Field(
         ...,
-        description="Recommended duration",
-        json_schema_extra={"example": "Recommended: 3.5 hrs"},
+        description="User prompt or query sent to the AI travel assistant",
+        json_schema_extra={
+            "example": "What are the best low-crowd tea plantations near Nuwara Eliya under $40?"
+        },
+    )
+    language: str = Field(
+        "en",
+        description="Preferred response language ('en', 'si', 'ta', 'fr', 'de', 'ja')",
+    )
+    context: dict[str, Any] | None = Field(
+        None,
+        description="Optional conversation context (e.g. current itinerary, location, budget)",
     )
 
 
 class ChatResponse(BaseModel):
+    """Response payload returned by the AI Travel Assistant."""
+
     reply: str = Field(
-        ...,
-        description="AI generated textual response",
-        json_schema_extra={
-            "example": "The journey from Kandy to Ella passes through tea country..."
-        },
+        ..., description="AI generated textual response grounded in LankaLens database"
     )
     hasCard: bool = Field(
-        False,
-        description="Flag indicating if a structured UI card recommendation is attached",
+        False, description="Flag indicating if a structured UI card is attached"
     )
     cardData: CardData | None = Field(
-        None, description="Optional structured card data recommendation"
+        None, description="Optional structured card recommendation"
     )
     followUps: list[str] = Field(
         default_factory=list,
         description="Suggested quick action or follow-up prompt options",
+    )
+    detected_intent: str = Field(
+        "destination_inquiry",
+        description="Recognized intent ('destination_inquiry', 'budget_question', 'itinerary_request', 'crowd_query', 'partner_query')",
+    )
+    language: str = Field("en", description="Response language code")
+    grounding_metadata: GroundingMetadata = Field(
+        ..., description="Data grounding and hallucination guardrail audit"
+    )
+
+
+class HallucinationValidationRequest(BaseModel):
+    """Request payload for standalone hallucination validation guardrail."""
+
+    generated_text: str = Field(..., description="Text generated by AI model")
+    mentioned_destination_ids: list[int] = Field(
+        default_factory=list, description="Destination IDs to validate against"
+    )
+
+
+class HallucinationValidationResponse(BaseModel):
+    """Response payload from hallucination validation guardrail."""
+
+    passed: bool = Field(
+        ..., description="Whether generated text passed hallucination checks"
+    )
+    corrected_text: str = Field(
+        ...,
+        description="Text with hallucinated prices/names corrected to authoritative data",
+    )
+    hallucinations_detected: list[str] = Field(
+        default_factory=list, description="List of detected anomalies"
     )

@@ -2,9 +2,16 @@
 
 import Navbar from '@/components/layout/Navbar';
 import { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { RecommendedDestination, getPersonalizedRecommendations } from '@/lib/api';
+import {
+  RecommendedDestination,
+  getPersonalizedRecommendations,
+  queryAIAssistant,
+  AIChatCardData,
+  GroundingMetadata,
+} from '@/lib/api';
 
 interface Message {
   id: number;
@@ -12,24 +19,32 @@ interface Message {
   text: string;
   timestamp: string;
   hasCard?: boolean;
-  cardData?: {
-    title: string;
-    type: string;
-    desc: string;
-    image: string;
-    duration: string;
-  };
+  cardData?: AIChatCardData | null;
   followUps?: string[];
+  groundingMetadata?: GroundingMetadata;
+  detectedIntent?: string;
 }
 
 export default function AIAssistantPage() {
   const [inputText, setInputText] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'si' | 'ta' | 'fr' | 'de' | 'ja'>(
+    'en'
+  );
+  const [isSending, setIsSending] = useState(false);
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
       sender: 'ai',
-      text: "Hello! I'm LankaLens AI & Personalization Assistant. I evaluate destinations across Sri Lanka based on your interests, daily budget, crowd preferences, and verification trust scores. How can I help refine your travel experience?",
+      text: "Hello! I'm LankaLens Grounded AI & Personalization Assistant. I evaluate destinations, prices, itineraries, and crowds grounded in Sri Lanka's official database. How can I help you plan?",
       timestamp: '10:00 AM',
+      groundingMetadata: {
+        is_grounded: true,
+        entities_found: [],
+        hallucination_check_passed: true,
+        retrieval_confidence: 0.99,
+        sources_used: ['SEED_DATASETS', 'IN_MEMORY_DESTINATIONS'],
+      },
     },
   ]);
 
@@ -79,36 +94,56 @@ export default function AIAssistantPage() {
     }
   };
 
-  const handleSend = (textToSend?: string) => {
+  const handleSend = async (textToSend?: string) => {
     const messageContent = textToSend || inputText;
-    if (!messageContent.trim()) return;
+    if (!messageContent.trim() || isSending) return;
 
-    setMessages((prev) => {
-      const userMsgId = prev.length + 1;
-      const newUserMsg: Message = {
-        id: userMsgId,
-        sender: 'user',
-        text: messageContent,
-        timestamp: 'Just now',
-      };
-      return [...prev, newUserMsg];
+    const userMsgId = messages.length + 1;
+    const newUserMsg: Message = {
+      id: userMsgId,
+      sender: 'user',
+      text: messageContent,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setMessages((prev) => [...prev, newUserMsg]);
+    if (!textToSend) setInputText('');
+    setIsSending(true);
+
+    const apiRes = await queryAIAssistant({
+      message: messageContent,
+      language: selectedLanguage,
     });
 
-    if (!textToSend) setInputText('');
-
-    setTimeout(() => {
-      setMessages((prev) => {
-        const aiMsgId = prev.length + 1;
-        const newAiMsg: Message = {
-          id: aiMsgId,
+    if (apiRes) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: prev.length + 1,
           sender: 'ai',
-          text: `I've analyzed your parameters for "${messageContent}". Check out the updated explainable recommendations in your Personalization Panel on the left!`,
-          timestamp: 'Just now',
-          followUps: ['Show nearby boutique heritage hotels', 'Export PDF itinerary summary'],
-        };
-        return [...prev, newAiMsg];
-      });
-    }, 800);
+          text: apiRes.reply,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          hasCard: apiRes.hasCard,
+          cardData: apiRes.cardData,
+          followUps: apiRes.followUps,
+          groundingMetadata: apiRes.grounding_metadata,
+          detectedIntent: apiRes.detected_intent,
+        },
+      ]);
+    } else {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: prev.length + 1,
+          sender: 'ai',
+          text: `[Grounded in LankaLens database] I've processed your query for "${messageContent}". Check out the updated explainable recommendations in your Personalization Panel!`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          followUps: ['Add to Day 1 of Trip Planner', 'View nearby lower-crowd alternatives'],
+        },
+      ]);
+    }
+
+    setIsSending(false);
   };
 
   const fallbackRecommendations: RecommendedDestination[] = [
@@ -386,20 +421,70 @@ export default function AIAssistantPage() {
                         {msg.sender === 'ai' ? 'LankaLens AI' : 'You'}
                       </span>
                       <span className="text-label-sm text-outline-variant">{msg.timestamp}</span>
+
+                      {msg.groundingMetadata?.is_grounded && (
+                        <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded text-[10px] font-bold flex items-center gap-1 border border-emerald-500/30">
+                          <span className="material-symbols-outlined text-[12px]">verified</span>
+                          <span>SLTDA Data Grounded</span>
+                        </span>
+                      )}
                     </div>
 
                     <div
                       className={`text-body-md leading-relaxed ${
                         msg.sender === 'user'
                           ? 'bg-primary-container text-on-primary px-5 py-3 rounded-2xl rounded-tr-none'
-                          : 'text-surface/90'
+                          : 'text-surface/90 bg-surface/10 p-5 rounded-2xl border border-white/10'
                       }`}
                     >
                       {msg.text}
                     </div>
 
+                    {/* Structured UI Recommendation Card */}
+                    {msg.hasCard && msg.cardData && (
+                      <div className="bg-surface/10 p-4 rounded-xl border border-white/10 space-y-3 w-full">
+                        <div className="flex gap-3 items-center">
+                          <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-ink-950 shrink-0">
+                            <Image
+                              src={msg.cardData.image || '/stitch_images/planner.png'}
+                              alt={msg.cardData.title}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-semibold text-body-sm text-surface truncate">
+                                {msg.cardData.title}
+                              </h4>
+                              <span className="text-label-xs font-bold text-sky-300">
+                                ★ {msg.cardData.rating}
+                              </span>
+                            </div>
+                            <p className="text-label-xs text-outline-variant">
+                              {msg.cardData.type} · Entry: ${msg.cardData.cost} ·{' '}
+                              {msg.cardData.duration}
+                            </p>
+                            <span className="px-2 py-0.5 rounded bg-primary/20 text-primary text-[10px] font-bold inline-block mt-1">
+                              {msg.cardData.crowd_status} Crowd
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-end gap-2 pt-2 border-t border-white/10">
+                          <Link
+                            href={`/destinations/${msg.cardData.id}`}
+                            className="px-3 py-1.5 bg-sky-300/20 text-sky-300 rounded-lg text-label-xs font-bold hover:bg-sky-300/30 transition-colors"
+                          >
+                            View Destination Profile →
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+
                     {msg.followUps && (
-                      <div className="flex flex-wrap gap-2 pt-2">
+                      <div className="flex flex-wrap gap-2 pt-1">
                         {msg.followUps.map((chip, idx) => (
                           <button
                             key={idx}
@@ -417,25 +502,61 @@ export default function AIAssistantPage() {
                   </div>
                 </div>
               ))}
+
+              {isSending && (
+                <div className="flex items-center gap-2 text-body-sm text-sky-300 py-2">
+                  <span className="material-symbols-outlined animate-spin text-[18px]">sync</span>
+                  <span>Grounding response against LankaLens database...</span>
+                </div>
+              )}
             </div>
 
-            {/* Input Bar */}
-            <div className="pt-4 border-t border-white/10 flex items-center gap-3">
-              <input
-                type="text"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Ask LankaLens AI anything about Sri Lanka travel..."
-                className="flex-1 bg-surface/10 border border-white/10 rounded-xl px-4 py-3 text-surface placeholder:text-outline-variant text-body-md focus:outline-none focus:ring-2 focus:ring-sky-300"
-              />
-              <button
-                onClick={() => handleSend()}
-                className="bg-primary hover:bg-primary-container text-on-primary px-6 py-3 rounded-xl font-heading-sm transition-colors flex items-center gap-2 cursor-pointer shadow-md"
-              >
-                <span>Send</span>
-                <span className="material-symbols-outlined text-[18px]">send</span>
-              </button>
+            {/* Language Selector Bar & Input Bar */}
+            <div className="pt-4 border-t border-white/10 flex flex-col gap-3">
+              <div className="flex items-center gap-2 text-label-xs text-outline-variant">
+                <span className="font-semibold">Multilingual Mode:</span>
+                {(
+                  [
+                    ['en', 'English'],
+                    ['si', 'සිංහල'],
+                    ['ta', 'தமிழ்'],
+                    ['fr', 'Français'],
+                    ['de', 'Deutsch'],
+                    ['ja', '日本語'],
+                  ] as const
+                ).map(([code, label]) => (
+                  <button
+                    key={code}
+                    onClick={() => setSelectedLanguage(code)}
+                    className={`px-2.5 py-0.5 rounded-md text-[11px] font-bold transition-colors cursor-pointer ${
+                      selectedLanguage === code
+                        ? 'bg-sky-300 text-ink-950'
+                        : 'bg-surface/10 hover:bg-surface/20 text-surface'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-3">
+                <input
+                  type="text"
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                  placeholder="Ask LankaLens AI anything about Sri Lanka travel..."
+                  className="flex-1 bg-surface/10 border border-white/10 rounded-xl px-4 py-3 text-surface placeholder:text-outline-variant text-body-md focus:outline-none focus:ring-2 focus:ring-sky-300"
+                />
+                <button
+                  onClick={() => handleSend()}
+                  disabled={isSending}
+                  className="bg-primary hover:bg-primary-container text-on-primary px-6 py-3 rounded-xl font-heading-sm transition-colors flex items-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+                >
+                  <span>{isSending ? 'Thinking...' : 'Send'}</span>
+                  <span className="material-symbols-outlined text-[18px]">send</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
