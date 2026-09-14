@@ -148,6 +148,7 @@ CREATE TABLE IF NOT EXISTS public.itineraries (
 CREATE TABLE IF NOT EXISTS public.hazard_reports (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     reporter_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    destination_id BIGINT REFERENCES public.destinations(id) ON DELETE SET NULL,
     location_name VARCHAR(255) NOT NULL,
     hazard_category VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
@@ -155,6 +156,8 @@ CREATE TABLE IF NOT EXISTS public.hazard_reports (
     reward_points INTEGER DEFAULT 50,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+ALTER TABLE public.hazard_reports ADD COLUMN IF NOT EXISTS destination_id BIGINT REFERENCES public.destinations(id) ON DELETE SET NULL;
 
 -- 4. COMMUNITY POSTS TABLE
 CREATE TABLE IF NOT EXISTS public.community_posts (
@@ -179,6 +182,8 @@ CREATE TABLE IF NOT EXISTS public.community_posts (
     publication_status VARCHAR(50) DEFAULT 'published',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+ALTER TABLE public.community_posts ADD COLUMN IF NOT EXISTS destination_id BIGINT REFERENCES public.destinations(id) ON DELETE SET NULL;
 
 CREATE INDEX IF NOT EXISTS idx_community_posts_destination ON public.community_posts (destination_id);
 CREATE INDEX IF NOT EXISTS idx_community_posts_created ON public.community_posts (created_at DESC);
@@ -224,6 +229,8 @@ CREATE TABLE IF NOT EXISTS public.contributions (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+ALTER TABLE public.contributions ADD COLUMN IF NOT EXISTS destination_id BIGINT REFERENCES public.destinations(id) ON DELETE SET NULL;
 
 -- 6. COMMUNITY REPORTS & FLAGGING TABLE
 CREATE TABLE IF NOT EXISTS public.reports (
