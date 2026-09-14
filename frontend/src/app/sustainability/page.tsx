@@ -56,13 +56,17 @@ export default function SustainabilityPage() {
       } else {
         setCrowdStatus({
           destination_id: selectedDestId,
-          destination_name: FEATURED_DESTINATIONS.find((d) => d.id === selectedDestId)?.name || 'Selected Landmark',
+          destination_name:
+            FEATURED_DESTINATIONS.find((d) => d.id === selectedDestId)?.name || 'Selected Landmark',
           crowd_score: selectedDestId === 1 ? 0.92 : 0.45,
           crowd_status: selectedDestId === 1 ? 'High' : 'Moderate',
           is_overcrowded: selectedDestId === 1,
           current_capacity_pct: selectedDestId === 1 ? 92 : 45,
           peak_hours: '10:00 - 14:00',
-          warning_message: selectedDestId === 1 ? 'High visitor density detected! High queue times expected.' : null,
+          warning_message:
+            selectedDestId === 1
+              ? 'High visitor density detected! High queue times expected.'
+              : null,
         });
       }
 
@@ -71,7 +75,8 @@ export default function SustainabilityPage() {
       } else {
         setVisitorLoad({
           destination_id: selectedDestId,
-          destination_name: FEATURED_DESTINATIONS.find((d) => d.id === selectedDestId)?.name || 'Selected Landmark',
+          destination_name:
+            FEATURED_DESTINATIONS.find((d) => d.id === selectedDestId)?.name || 'Selected Landmark',
           hourly_curve: [
             { hour: '06:00', density: 120 },
             { hour: '08:00', density: 450 },
@@ -121,7 +126,8 @@ export default function SustainabilityPage() {
           {
             id: 1,
             location: 'Pidurangala North Access Trail',
-            description: 'Fallen timber blocking path at marker 4B. Minor soil erosion on steep pitch.',
+            description:
+              'Fallen timber blocking path at marker 4B. Minor soil erosion on steep pitch.',
             reporter_name: 'Amara P.',
             status: 'Verified',
             reward_points_awarded: 50,
@@ -130,7 +136,8 @@ export default function SustainabilityPage() {
           {
             id: 2,
             location: 'Ella Rock South Summit Trail',
-            description: 'Heavy overcrowding near steep ridge section. Trail maintenance suggested.',
+            description:
+              'Heavy overcrowding near steep ridge section. Trail maintenance suggested.',
             reporter_name: 'Kasun D.',
             status: 'Under Review',
             reward_points_awarded: 50,
@@ -180,12 +187,24 @@ export default function SustainabilityPage() {
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
       case 'high':
-        return <span className="px-2.5 py-1 rounded bg-coral-500/10 text-coral-500 text-label-sm font-bold">High Crowd Level</span>;
+        return (
+          <span className="px-2.5 py-1 rounded bg-coral-500/10 text-coral-500 text-label-sm font-bold">
+            High Crowd Level
+          </span>
+        );
       case 'moderate':
-        return <span className="px-2.5 py-1 rounded bg-signal-amber-500/10 text-signal-amber-500 text-label-sm font-bold">Moderate Level</span>;
+        return (
+          <span className="px-2.5 py-1 rounded bg-signal-amber-500/10 text-signal-amber-500 text-label-sm font-bold">
+            Moderate Level
+          </span>
+        );
       case 'low':
       default:
-        return <span className="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-600 text-label-sm font-bold">Low Crowd Level</span>;
+        return (
+          <span className="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-600 text-label-sm font-bold">
+            Low Crowd Level
+          </span>
+        );
     }
   };
 
@@ -208,7 +227,8 @@ export default function SustainabilityPage() {
                 Sustainability & Crowd Management
               </h1>
               <p className="font-body-lg text-on-primary-container">
-                Monitor real-time crowd density thresholds, explore lower-crowd nearby alternatives, and contribute crowdsourced trail hazard reports for Eco-Rewards.
+                Monitor real-time crowd density thresholds, explore lower-crowd nearby alternatives,
+                and contribute crowdsourced trail hazard reports for Eco-Rewards.
               </p>
             </div>
 
@@ -269,11 +289,14 @@ export default function SustainabilityPage() {
               {/* Overcrowding Warning Banner */}
               {crowdStatus?.is_overcrowded && (
                 <div className="mb-6 p-4 rounded-xl bg-coral-500/10 border border-coral-500/30 flex items-start gap-3">
-                  <span className="material-symbols-outlined text-coral-500 text-[24px]">warning</span>
+                  <span className="material-symbols-outlined text-coral-500 text-[24px]">
+                    warning
+                  </span>
                   <div>
                     <h4 className="font-heading-sm text-coral-500">Overcrowding Warning Active</h4>
                     <p className="text-body-sm text-on-surface-variant mt-0.5">
-                      {crowdStatus.warning_message || 'High visitor density detected. Queue times exceed 45 mins.'}
+                      {crowdStatus.warning_message ||
+                        'High visitor density detected. Queue times exceed 45 mins.'}
                     </p>
                   </div>
                 </div>
@@ -283,7 +306,9 @@ export default function SustainabilityPage() {
               <div className="mb-6 bg-surface rounded-xl p-4 border border-line-200">
                 <div className="flex justify-between items-center text-body-sm mb-2">
                   <span className="font-semibold text-on-surface">Current Capacity Load</span>
-                  <span className="font-bold text-primary">{crowdStatus?.current_capacity_pct ?? 0}%</span>
+                  <span className="font-bold text-primary">
+                    {crowdStatus?.current_capacity_pct ?? 0}%
+                  </span>
                 </div>
                 <div className="w-full bg-canvas-100 h-3 rounded-full overflow-hidden">
                   <div
@@ -291,8 +316,8 @@ export default function SustainabilityPage() {
                       (crowdStatus?.current_capacity_pct ?? 0) > 75
                         ? 'bg-coral-500'
                         : (crowdStatus?.current_capacity_pct ?? 0) > 40
-                        ? 'bg-signal-amber-500'
-                        : 'bg-emerald-500'
+                          ? 'bg-signal-amber-500'
+                          : 'bg-emerald-500'
                     }`}
                     style={{ width: `${crowdStatus?.current_capacity_pct ?? 0}%` }}
                   />
@@ -358,7 +383,8 @@ export default function SustainabilityPage() {
                   <h2 className="font-heading-md text-on-surface">Submit Field Hazard Report</h2>
                 </div>
                 <p className="text-body-sm text-on-surface-variant">
-                  Help protect fragile ecosystems & keep trails safe. Verified reports earn <strong>+50 Eco-Reward Points</strong>.
+                  Help protect fragile ecosystems & keep trails safe. Verified reports earn{' '}
+                  <strong>+50 Eco-Reward Points</strong>.
                 </p>
               </div>
 
@@ -369,7 +395,8 @@ export default function SustainabilityPage() {
                   </span>
                   <h3 className="font-heading-sm text-primary">Report Successfully Transmitted</h3>
                   <p className="text-body-sm text-on-surface-variant mt-1">
-                    Logged with LankaLens Ranger Network. You earned <strong>+{awardedPoints} Eco-Reward Points</strong>!
+                    Logged with LankaLens Ranger Network. You earned{' '}
+                    <strong>+{awardedPoints} Eco-Reward Points</strong>!
                   </p>
                   <button
                     onClick={() => {
@@ -451,7 +478,10 @@ export default function SustainabilityPage() {
 
               <div className="flex flex-col gap-4">
                 {alternatives.map((alt) => (
-                  <div key={alt.destination_id} className="bg-surface p-4 rounded-xl border border-line-200 shadow-xs">
+                  <div
+                    key={alt.destination_id}
+                    className="bg-surface p-4 rounded-xl border border-line-200 shadow-xs"
+                  >
                     <div className="flex justify-between items-start mb-1">
                       <h4 className="font-heading-sm text-on-surface">{alt.name}</h4>
                       <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 text-label-sm font-bold">
@@ -485,7 +515,10 @@ export default function SustainabilityPage() {
 
               <div className="flex flex-col gap-3 max-h-[360px] overflow-y-auto pr-1">
                 {hazardReports.map((report) => (
-                  <div key={report.id} className="bg-surface p-3.5 rounded-xl border border-line-200">
+                  <div
+                    key={report.id}
+                    className="bg-surface p-3.5 rounded-xl border border-line-200"
+                  >
                     <div className="flex justify-between items-start mb-1">
                       <span className="font-heading-sm text-on-surface text-body-sm">
                         {report.location}
@@ -500,10 +533,14 @@ export default function SustainabilityPage() {
                         {report.status}
                       </span>
                     </div>
-                    <p className="text-body-sm text-on-surface-variant mb-2">{report.description}</p>
+                    <p className="text-body-sm text-on-surface-variant mb-2">
+                      {report.description}
+                    </p>
                     <div className="flex justify-between items-center text-[11px] text-outline">
                       <span>Reported by {report.reporter_name}</span>
-                      <span className="text-primary font-bold">+{report.reward_points_awarded} pts</span>
+                      <span className="text-primary font-bold">
+                        +{report.reward_points_awarded} pts
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -515,4 +552,3 @@ export default function SustainabilityPage() {
     </div>
   );
 }
-

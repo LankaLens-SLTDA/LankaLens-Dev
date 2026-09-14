@@ -883,7 +883,9 @@ export async function getCrowdAlternatives(
 export async function getVisitorLoadCurve(
   destinationId: number
 ): Promise<VisitorLoadCurveResponse | null> {
-  return fetchFromBackend<VisitorLoadCurveResponse>(`/sustainability/visitor-load/${destinationId}`);
+  return fetchFromBackend<VisitorLoadCurveResponse>(
+    `/sustainability/visitor-load/${destinationId}`
+  );
 }
 
 export async function submitHazardReport(payload: {
