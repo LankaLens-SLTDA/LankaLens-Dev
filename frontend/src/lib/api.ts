@@ -1112,6 +1112,11 @@ export interface PartnerProfile {
   associated_destination_ids: number[];
   image_url: string;
   distance_km?: number;
+  contributor_author_name?: string;
+  contributor_eco_points?: number;
+  contributor_rank?: string;
+  preferential_commission_pct?: number;
+  hidden_gem_badge?: boolean;
   created_at?: string;
 }
 
@@ -1276,4 +1281,73 @@ export async function getReferralStatus(
   referralCode: string
 ): Promise<ReferralInquiryRecord | null> {
   return fetchFromBackend<ReferralInquiryRecord>(`/arrangements/referrals/${referralCode}`);
+}
+
+export interface EligibilityCriterionItem {
+  metric: string;
+  required_value: string;
+  actual_value: string;
+  passed: boolean;
+}
+
+export interface EligibilityCheckResponse {
+  author_name: string;
+  is_eligible: boolean;
+  rank: string;
+  guide_level: string;
+  criteria_breakdown: EligibilityCriterionItem[];
+  preferential_commission_pct: number;
+  matching_boost_pct: number;
+  message: string;
+}
+
+export interface GuideUpgradePayload {
+  author_name: string;
+  contact_number: string;
+  district: string;
+  province: string;
+  sltda_license_number?: string;
+  niche_specialization: string;
+  baseline_rate: number;
+  services?: string[];
+  associated_destination_ids?: number[];
+  custom_title?: string;
+}
+
+export interface ConvertedPartnerGuideResponse {
+  partner_id: number;
+  author_name: string;
+  business_name: string;
+  partner_type: string;
+  district: string;
+  province: string;
+  verification_state: string;
+  is_verified: boolean;
+  is_featured: boolean;
+  featured_tier: string;
+  reputation_score: number;
+  contributor_eco_points: number;
+  contributor_rank: string;
+  approved_contributions_count: number;
+  preferential_commission_pct: number;
+  matching_boost_pct: number;
+  hidden_gem_badge: boolean;
+  message: string;
+}
+
+export async function checkGuideEligibility(
+  authorName: string
+): Promise<EligibilityCheckResponse | null> {
+  return fetchFromBackend<EligibilityCheckResponse>(
+    `/reputation/eligibility/${encodeURIComponent(authorName)}`
+  );
+}
+
+export async function upgradeContributorToPartner(
+  payload: GuideUpgradePayload
+): Promise<ConvertedPartnerGuideResponse | null> {
+  return fetchFromBackend<ConvertedPartnerGuideResponse>('/reputation/upgrade-to-partner', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
 }

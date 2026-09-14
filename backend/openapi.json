@@ -2622,6 +2622,91 @@
         }
       }
     },
+    "/api/reputation/eligibility/{author_name}": {
+      "get": {
+        "tags": [
+          "Trust, Reputation & Gamification"
+        ],
+        "summary": "Check automatic guide marketplace eligibility for contributor",
+        "description": "Evaluates contributor Eco-Points, AI pass rate, approved contributions, and reputation score to compute itemized guide eligibility.",
+        "operationId": "check_guide_eligibility_api_reputation_eligibility__author_name__get",
+        "parameters": [
+          {
+            "name": "author_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Author Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EligibilityCheckResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reputation/upgrade-to-partner": {
+      "post": {
+        "tags": [
+          "Trust, Reputation & Gamification"
+        ],
+        "summary": "Upgrade high-trust contributor to listed Local Partner Guide",
+        "description": "Converts eligible community contributor into a listed Local Partner Network guide with retained reputation history & 5% preferential fee tier.",
+        "operationId": "upgrade_contributor_to_partner_api_reputation_upgrade_to_partner_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuideUpgradePayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConvertedPartnerGuideResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/recommendations/personalized": {
       "post": {
         "tags": [
@@ -4968,6 +5053,112 @@
         ],
         "title": "ContributionCreate"
       },
+      "ConvertedPartnerGuideResponse": {
+        "properties": {
+          "partner_id": {
+            "type": "integer",
+            "title": "Partner Id",
+            "description": "Created Partner Profile ID"
+          },
+          "author_name": {
+            "type": "string",
+            "title": "Author Name",
+            "description": "Contributor author name"
+          },
+          "business_name": {
+            "type": "string",
+            "title": "Business Name",
+            "description": "Listed guide title"
+          },
+          "partner_type": {
+            "type": "string",
+            "title": "Partner Type",
+            "description": "Partner type ('guide')",
+            "default": "guide"
+          },
+          "district": {
+            "type": "string",
+            "title": "District"
+          },
+          "province": {
+            "type": "string",
+            "title": "Province"
+          },
+          "verification_state": {
+            "type": "string",
+            "title": "Verification State",
+            "description": "SLTDA or Community verified status",
+            "default": "verified"
+          },
+          "is_verified": {
+            "type": "boolean",
+            "title": "Is Verified",
+            "default": true
+          },
+          "is_featured": {
+            "type": "boolean",
+            "title": "Is Featured",
+            "default": true
+          },
+          "featured_tier": {
+            "type": "string",
+            "title": "Featured Tier",
+            "description": "'gold' or 'silver'",
+            "default": "gold"
+          },
+          "reputation_score": {
+            "type": "number",
+            "title": "Reputation Score"
+          },
+          "contributor_eco_points": {
+            "type": "integer",
+            "title": "Contributor Eco Points"
+          },
+          "contributor_rank": {
+            "type": "string",
+            "title": "Contributor Rank"
+          },
+          "approved_contributions_count": {
+            "type": "integer",
+            "title": "Approved Contributions Count"
+          },
+          "preferential_commission_pct": {
+            "type": "number",
+            "title": "Preferential Commission Pct",
+            "default": 5.0
+          },
+          "matching_boost_pct": {
+            "type": "number",
+            "title": "Matching Boost Pct",
+            "default": 10.0
+          },
+          "hidden_gem_badge": {
+            "type": "boolean",
+            "title": "Hidden Gem Badge",
+            "default": true
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Confirmation outcome message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "partner_id",
+          "author_name",
+          "business_name",
+          "district",
+          "province",
+          "reputation_score",
+          "contributor_eco_points",
+          "contributor_rank",
+          "approved_contributions_count",
+          "message"
+        ],
+        "title": "ConvertedPartnerGuideResponse",
+        "description": "Confirmed partner profile created from community contributor upgrade."
+      },
       "Coords": {
         "properties": {
           "x": {
@@ -6010,6 +6201,97 @@
         "type": "object",
         "title": "DestinationUpdate"
       },
+      "EligibilityCheckResponse": {
+        "properties": {
+          "author_name": {
+            "type": "string",
+            "title": "Author Name"
+          },
+          "is_eligible": {
+            "type": "boolean",
+            "title": "Is Eligible",
+            "description": "Overall guide upgrade eligibility flag"
+          },
+          "rank": {
+            "type": "string",
+            "title": "Rank",
+            "description": "Current recognition ladder rank"
+          },
+          "guide_level": {
+            "type": "string",
+            "title": "Guide Level",
+            "description": "Eligible tier ('certified_trusted_guide', 'community_local_guide', 'not_eligible')"
+          },
+          "criteria_breakdown": {
+            "items": {
+              "$ref": "#/components/schemas/EligibilityCriterionItem"
+            },
+            "type": "array",
+            "title": "Criteria Breakdown",
+            "description": "Itemized multi-factor criteria checklist"
+          },
+          "preferential_commission_pct": {
+            "type": "number",
+            "title": "Preferential Commission Pct",
+            "description": "Incentivized platform fee (5.0% for trusted guides vs 15.0% standard)",
+            "default": 5.0
+          },
+          "matching_boost_pct": {
+            "type": "number",
+            "title": "Matching Boost Pct",
+            "description": "Matching score bonus in Trip Arrangement Broker",
+            "default": 10.0
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Status summary message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "author_name",
+          "is_eligible",
+          "rank",
+          "guide_level",
+          "message"
+        ],
+        "title": "EligibilityCheckResponse",
+        "description": "Response detailing automatic guide upgrade eligibility breakdown."
+      },
+      "EligibilityCriterionItem": {
+        "properties": {
+          "metric": {
+            "type": "string",
+            "title": "Metric",
+            "description": "Metric name (e.g. Eco-Points, AI Pass Rate)"
+          },
+          "required_value": {
+            "type": "string",
+            "title": "Required Value",
+            "description": "Required threshold value"
+          },
+          "actual_value": {
+            "type": "string",
+            "title": "Actual Value",
+            "description": "Contributor's actual metric value"
+          },
+          "passed": {
+            "type": "boolean",
+            "title": "Passed",
+            "description": "Whether contributor met threshold"
+          }
+        },
+        "type": "object",
+        "required": [
+          "metric",
+          "required_value",
+          "actual_value",
+          "passed"
+        ],
+        "title": "EligibilityCriterionItem",
+        "description": "Specific metric criterion evaluated during guide eligibility calculation."
+      },
       "EngineMetadata": {
         "properties": {
           "model_name": {
@@ -6375,6 +6657,98 @@
           "application_id"
         ],
         "title": "GuideApplicationResponse"
+      },
+      "GuideUpgradePayload": {
+        "properties": {
+          "author_name": {
+            "type": "string",
+            "title": "Author Name",
+            "description": "Contributor name",
+            "example": "Chaminda Perera"
+          },
+          "contact_number": {
+            "type": "string",
+            "title": "Contact Number",
+            "description": "Contact phone or WhatsApp",
+            "example": "+94771234567"
+          },
+          "district": {
+            "type": "string",
+            "title": "District",
+            "description": "Primary operating district",
+            "default": "Matale",
+            "example": "Matale"
+          },
+          "province": {
+            "type": "string",
+            "title": "Province",
+            "description": "Primary operating province",
+            "default": "Central",
+            "example": "Central"
+          },
+          "sltda_license_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sltda License Number",
+            "description": "Optional SLTDA guide license number",
+            "example": "SLTDA/NTG/8821"
+          },
+          "niche_specialization": {
+            "type": "string",
+            "title": "Niche Specialization",
+            "description": "Specialization tag",
+            "default": "Heritage & Eco Trekking",
+            "example": "Heritage & Eco Trekking"
+          },
+          "baseline_rate": {
+            "type": "number",
+            "title": "Baseline Rate",
+            "description": "Baseline rate per day in USD",
+            "default": 35.0,
+            "example": 35.0
+          },
+          "services": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Services",
+            "description": "Offered guide services"
+          },
+          "associated_destination_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Associated Destination Ids",
+            "description": "Target destination IDs covered"
+          },
+          "custom_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Title",
+            "description": "Custom business title for partner listing"
+          }
+        },
+        "type": "object",
+        "required": [
+          "author_name",
+          "contact_number"
+        ],
+        "title": "GuideUpgradePayload",
+        "description": "Payload to upgrade a high-trust contributor into a listed Local Partner guide."
       },
       "HTTPValidationError": {
         "properties": {
@@ -7301,6 +7675,54 @@
             ],
             "title": "Distance Km",
             "description": "Distance from requested search coordinate in km"
+          },
+          "contributor_author_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contributor Author Name",
+            "description": "Author name if partner was upgraded from community contributor"
+          },
+          "contributor_eco_points": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contributor Eco Points",
+            "description": "Eco-Points accumulated as a community contributor"
+          },
+          "contributor_rank": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contributor Rank",
+            "description": "Recognition ladder rank at upgrade time"
+          },
+          "preferential_commission_pct": {
+            "type": "number",
+            "title": "Preferential Commission Pct",
+            "description": "Platform commission percentage (5% preferential vs 15% standard)",
+            "default": 15.0
+          },
+          "hidden_gem_badge": {
+            "type": "boolean",
+            "title": "Hidden Gem Badge",
+            "description": "Flag indicating special hidden-gem trip guide status",
+            "default": false
           },
           "created_at": {
             "anyOf": [

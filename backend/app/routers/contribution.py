@@ -20,7 +20,45 @@ router = APIRouter(
 )
 
 # In-memory stores for contributions, reports, and moderation audit trail
-IN_MEMORY_CONTRIBUTIONS: list[dict] = []
+IN_MEMORY_CONTRIBUTIONS: list[dict] = [
+    {
+        "id": i + 1,
+        "author_name": "Chaminda Perera",
+        "title": f"Sigiriya & Cultural Discovery #{i+1}",
+        "category": "Nature" if i % 2 == 0 else "Cultural",
+        "destination_id": 1 if i % 2 == 0 else 101,
+        "description": f"Verified local guide observation and cartographic trail notes for stop #{i+1}.",
+        "alt_text": "Ancient rock fortress and green jungle canopy at sunrise.",
+        "tags": ["#Sigiriya", "#CulturalTriangle", "#EcoTourism"],
+        "rating": 4.9,
+        "latitude": 7.957 + (i * 0.001),
+        "longitude": 80.760 + (i * 0.001),
+        "image_url": "/stitch_images/discover.png",
+        "status": "approved",
+        "eco_points": 50,
+        "created_at": "2026-09-10",
+    }
+    for i in range(15)
+] + [
+    {
+        "id": 100 + j,
+        "author_name": "Clara Dupont",
+        "title": f"Galle Heritage Walk #{j+1}",
+        "category": "Cultural",
+        "destination_id": 5,
+        "description": f"Colonial ramparts exploration notes #{j+1}.",
+        "alt_text": "Historic Dutch Fort lighthouse overlooking Indian Ocean.",
+        "tags": ["#GalleFort", "#Heritage"],
+        "rating": 4.8,
+        "latitude": 6.03,
+        "longitude": 80.21,
+        "image_url": "/stitch_images/discover.png",
+        "status": "approved",
+        "eco_points": 50,
+        "created_at": "2026-09-11",
+    }
+    for j in range(6)
+]
 IN_MEMORY_REPORTS: list[dict] = []
 IN_MEMORY_MODERATION_LOGS: list[dict] = []
 

@@ -93,6 +93,23 @@ class PartnerProfile(BaseModel):
     distance_km: float | None = Field(
         None, description="Distance from requested search coordinate in km"
     )
+    contributor_author_name: str | None = Field(
+        None,
+        description="Author name if partner was upgraded from community contributor",
+    )
+    contributor_eco_points: int | None = Field(
+        None, description="Eco-Points accumulated as a community contributor"
+    )
+    contributor_rank: str | None = Field(
+        None, description="Recognition ladder rank at upgrade time"
+    )
+    preferential_commission_pct: float = Field(
+        15.00,
+        description="Platform commission percentage (5% preferential vs 15% standard)",
+    )
+    hidden_gem_badge: bool = Field(
+        False, description="Flag indicating special hidden-gem trip guide status"
+    )
     created_at: str | None = None
 
 

@@ -163,11 +163,17 @@ class LocalArrangementService(BaseArrangementService):
             elif p.get("featured_tier") == "silver":
                 base_score += 5.0
 
-            final_score = round(min(base_score, 98.5), 1)
+            # EPIC 21: High-Trust Contributor Guide Matching Boost & Hidden-Gem Incentive
+            if p.get("contributor_author_name") or p.get("hidden_gem_badge"):
+                base_score += 10.0
+
+            final_score = round(min(base_score, 99.5), 1)
 
             # Generate contextual relevance explanation
             if request.mode == ArrangementModeEnum.GUIDED:
-                if overlap_names:
+                if p.get("contributor_author_name"):
+                    reason = f"High-trust community contributor ({p.get('contributor_rank')}) with {p.get('contributor_eco_points')} Eco-Points covering your route."
+                elif overlap_names:
                     reason = f"Certified tour partner covering scheduled visits to {', '.join(overlap_names[:2])}."
                 else:
                     reason = f"Licensed guide operating across {p.get('district')} & {p.get('province')} Province."
