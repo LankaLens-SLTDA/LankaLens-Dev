@@ -1,6 +1,7 @@
 import datetime
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 from app.schemas.analytics import (
     AnalyticsCategory,
     AnalyticsDashboardMetrics,
@@ -12,7 +13,7 @@ from app.schemas.analytics import (
 from app.supabase_client import supabase
 
 # In-memory storage fallback when Supabase table is absent in local dev/testing environments
-_IN_MEMORY_EVENTS: List[Dict[str, Any]] = [
+_IN_MEMORY_EVENTS: list[dict[str, Any]] = [
     {
         "id": 1,
         "session_id": "sess_exp_99120",
@@ -144,7 +145,7 @@ _PII_PATTERNS = [
 _PII_KEYS = {"email", "phone", "password", "ssn", "secret", "credit_card", "address"}
 
 
-def sanitize_properties(props: Dict[str, Any]) -> Dict[str, Any]:
+def sanitize_properties(props: dict[str, Any]) -> dict[str, Any]:
     """Strips PII keys and values matching sensitive formats."""
     sanitized = {}
     for key, val in props.items():
@@ -161,7 +162,7 @@ class AnalyticsService:
     @staticmethod
     def track_event(payload: AnalyticsEventCreate) -> AnalyticsEventResponse:
         sanitized_props = sanitize_properties(payload.properties)
-        now_str = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        now_str = datetime.datetime.now(datetime.UTC).isoformat()
 
         event_dict = {
             "session_id": payload.session_id,
@@ -194,7 +195,7 @@ class AnalyticsService:
         return AnalyticsEventResponse(**record)
 
     @staticmethod
-    def get_all_events() -> List[Dict[str, Any]]:
+    def get_all_events() -> list[dict[str, Any]]:
         try:
             res = (
                 supabase.table("analytics_events")
@@ -210,8 +211,8 @@ class AnalyticsService:
 
     @staticmethod
     def get_recent_events(
-        category: Optional[str] = None, limit: int = 50
-    ) -> List[AnalyticsEventResponse]:
+        category: str | None = None, limit: int = 50
+    ) -> list[AnalyticsEventResponse]:
         events = AnalyticsService.get_all_events()
         if category and category != "all":
             events = [e for e in events if e.get("category") == category]
@@ -221,7 +222,7 @@ class AnalyticsService:
         return [AnalyticsEventResponse(**e) for e in sorted_events]
 
     @staticmethod
-    def get_funnels() -> List[FunnelAnalysis]:
+    def get_funnels() -> list[FunnelAnalysis]:
         events = AnalyticsService.get_all_events()
 
         # 1. Sustainability / Alternative Destination Funnel

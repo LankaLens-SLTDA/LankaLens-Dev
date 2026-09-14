@@ -16,7 +16,7 @@ export interface TrackEventOptions {
 /**
  * Returns or generates an anonymous session ID stored in browser localStorage.
  */
-export function getOrCreateSessionId(): str {
+export function getOrCreateSessionId(): string {
   if (typeof window === 'undefined') {
     return 'sess_ssr_anonymous';
   }
@@ -55,8 +55,7 @@ export async function trackEvent({
         entity_type: entityType,
         entity_id: entityId,
         properties,
-        device_type:
-          typeof window !== 'undefined' && window.innerWidth < 768 ? 'mobile' : 'desktop',
+        device_type: typeof window !== 'undefined' && window.innerWidth < 768 ? 'mobile' : 'desktop',
       }),
     });
   } catch (err) {
@@ -76,14 +75,14 @@ export const analytics = {
       properties: { destination_name: name, crowd_level: crowdLevel || 'Moderate' },
     }),
 
-  trackSearch: (query: str, resultsCount: number) =>
+  trackSearch: (query: string, resultsCount: number) =>
     trackEvent({
       category: 'discovery',
       eventName: 'search_executed',
       properties: { query, results_count: resultsCount },
     }),
 
-  trackHighCrowdWarning: (destinationId: string | number, destinationName: str) =>
+  trackHighCrowdWarning: (destinationId: string | number, destinationName: string) =>
     trackEvent({
       category: 'sustainability',
       eventName: 'high_crowd_warning_viewed',
@@ -92,7 +91,7 @@ export const analytics = {
       properties: { destination_name: destinationName, crowd_density: 'High' },
     }),
 
-  trackAlternativeClick: (originalId: string | number, altId: string | number, altName: str) =>
+  trackAlternativeClick: (originalId: string | number, altId: string | number, altName: string) =>
     trackEvent({
       category: 'sustainability',
       eventName: 'alternative_accepted',
@@ -108,7 +107,7 @@ export const analytics = {
       properties: { days_count: days, total_budget: budget },
     }),
 
-  trackMarketplaceView: (partnerId: string | number, partnerName: str, type: str) =>
+  trackMarketplaceView: (partnerId: string | number, partnerName: string, type: string) =>
     trackEvent({
       category: 'marketplace',
       eventName: 'partner_profile_viewed',
@@ -117,7 +116,7 @@ export const analytics = {
       properties: { partner_name: partnerName, partner_type: type },
     }),
 
-  trackArrangementInquiry: (partnerId: string | number, referralCode: str, mode: str) =>
+  trackArrangementInquiry: (partnerId: string | number, referralCode: string, mode: string) =>
     trackEvent({
       category: 'marketplace',
       eventName: 'arrangement_inquiry_submitted',

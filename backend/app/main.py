@@ -5,8 +5,8 @@ from app.config import settings
 from app.routers import (
     admin,
     ai_assistant,
-    analytics,
     alternatives,
+    analytics,
     arrangements,
     community,
     contribution,

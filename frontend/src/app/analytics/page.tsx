@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import {
   getAnalyticsDashboard,
   getAnalyticsEvents,
@@ -432,8 +431,6 @@ export default function AnalyticsDashboardPage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

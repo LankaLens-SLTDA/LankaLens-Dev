@@ -1,9 +1,10 @@
-from enum import Enum
-from typing import Any, Dict, List, Optional
+from enum import StrEnum
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
-class AnalyticsCategory(str, Enum):
+class AnalyticsCategory(StrEnum):
     DISCOVERY = "discovery"
     PLANNING = "planning"
     COMMUNITY = "community"
@@ -13,28 +14,28 @@ class AnalyticsCategory(str, Enum):
 
 class AnalyticsEventCreate(BaseModel):
     session_id: str = Field(..., description="Anonymous browser session identifier")
-    user_id: Optional[str] = Field(None, description="Anonymized user identifier")
+    user_id: str | None = Field(None, description="Anonymized user identifier")
     category: AnalyticsCategory = Field(..., description="Telemetry event category")
     event_name: str = Field(..., description="Name of the tracked action")
-    entity_type: Optional[str] = Field(
+    entity_type: str | None = Field(
         None, description="Optional target entity type (e.g. destination, partner)"
     )
-    entity_id: Optional[str] = Field(None, description="Optional target entity ID")
-    properties: Dict[str, Any] = Field(
+    entity_id: str | None = Field(None, description="Optional target entity ID")
+    properties: dict[str, Any] = Field(
         default_factory=dict, description="Non-PII event metadata properties"
     )
-    device_type: Optional[str] = Field("desktop", description="Client device category")
+    device_type: str | None = Field("desktop", description="Client device category")
 
 
 class AnalyticsEventResponse(BaseModel):
     id: int
     session_id: str
-    user_id: Optional[str] = None
+    user_id: str | None = None
     category: str
     event_name: str
-    entity_type: Optional[str] = None
-    entity_id: Optional[str] = None
-    properties: Dict[str, Any] = {}
+    entity_type: str | None = None
+    entity_id: str | None = None
+    properties: dict[str, Any] = {}
     device_type: str = "desktop"
     created_at: str
 
@@ -49,7 +50,7 @@ class FunnelStageMetric(BaseModel):
 
 class FunnelAnalysis(BaseModel):
     funnel_name: str
-    stages: List[FunnelStageMetric]
+    stages: list[FunnelStageMetric]
     overall_conversion_rate: float = Field(
         ..., description="Percentage converting from first to final stage"
     )
@@ -67,6 +68,6 @@ class AnalyticsDashboardMetrics(BaseModel):
         description="Percentage of partner profile viewers who submitted an arrangement request",
     )
     sustainable_traffic_diversions: int
-    category_breakdown: Dict[str, int]
-    funnels: List[FunnelAnalysis]
-    recent_events: List[AnalyticsEventResponse]
+    category_breakdown: dict[str, int]
+    funnels: list[FunnelAnalysis]
+    recent_events: list[AnalyticsEventResponse]

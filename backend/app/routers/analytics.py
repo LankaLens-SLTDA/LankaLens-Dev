@@ -1,4 +1,3 @@
-from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Query, status
 
 from app.schemas.analytics import (
@@ -29,7 +28,7 @@ def track_event(payload: AnalyticsEventCreate) -> AnalyticsEventResponse:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to record telemetry event: {str(err)}",
-        )
+        ) from err
 
 
 @router.get(
@@ -44,25 +43,25 @@ def get_dashboard() -> AnalyticsDashboardMetrics:
 
 @router.get(
     "/funnels",
-    response_model=List[FunnelAnalysis],
+    response_model=list[FunnelAnalysis],
     summary="Get Key Conversion Funnels",
     description="Returns multi-stage conversion funnels for Sustainability (Crowd Redirection), Marketplace (Guide Referral), and Discovery to Planning.",
 )
-def get_funnels() -> List[FunnelAnalysis]:
+def get_funnels() -> list[FunnelAnalysis]:
     return AnalyticsService.get_funnels()
 
 
 @router.get(
     "/events",
-    response_model=List[AnalyticsEventResponse],
+    response_model=list[AnalyticsEventResponse],
     summary="Query Anonymized Telemetry Events",
     description="Returns recent anonymized telemetry events with optional category filter.",
 )
 def get_events(
-    category: Optional[str] = Query(
+    category: str | None = Query(
         "all",
         description="Category filter ('discovery', 'planning', 'community', 'sustainability', 'marketplace')",
     ),
     limit: int = Query(50, ge=1, le=200, description="Max event logs to return"),
-) -> List[AnalyticsEventResponse]:
+) -> list[AnalyticsEventResponse]:
     return AnalyticsService.get_recent_events(category=category, limit=limit)
