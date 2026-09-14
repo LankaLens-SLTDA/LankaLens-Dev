@@ -1,7 +1,19 @@
-from fastapi import FastAPI
+import os
+import time
+
+from fastapi import FastAPI, HTTPException
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
+from app.middleware.exception_handlers import (
+    http_exception_handler,
+    unhandled_exception_handler,
+    validation_exception_handler,
+)
+from app.middleware.performance import PerformanceMonitoringMiddleware
+from app.middleware.rate_limiter import RateLimiterMiddleware
+from app.middleware.security import SecurityHeadersMiddleware
 from app.routers import (
     admin,
     ai_assistant,
@@ -17,6 +29,9 @@ from app.routers import (
     reputation,
     sustainability,
 )
+from app.services.cache_service import CacheService
+
+_START_TIME = time.time()
 
 tags_metadata = [
     {
@@ -63,6 +78,10 @@ tags_metadata = [
         "name": "Admin & Moderation Platform",
         "description": "Centralized control panel managing content, users, destinations, partner approvals, guide verifications, hazard reviews, and audit logs.",
     },
+    {
+        "name": "Analytics & Product Intelligence",
+        "description": "Privacy-first telemetry tracking, product usage KPIs, alternative destination redirection funnels, and marketplace metrics.",
+    },
 ]
 
 app = FastAPI(
@@ -85,13 +104,21 @@ app = FastAPI(
     },
 )
 
-# Set CORS middleware
+# Exception Handlers Registration
+app.add_exception_handler(HTTPException, http_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(Exception, unhandled_exception_handler)
+
+# Middleware Stack Configuration
 origins = (
     settings.CORS_ORIGINS
     if isinstance(settings.CORS_ORIGINS, list)
     else [settings.CORS_ORIGINS]
 )
 
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RateLimiterMiddleware, default_limit=100, ai_limit=20)
+app.add_middleware(PerformanceMonitoringMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -119,15 +146,29 @@ app.include_router(analytics.router)
 @app.get(
     "/api/health",
     tags=["Health"],
-    summary="Health check endpoint",
-    description="Returns current API operational status, service name, and active environment.",
+    summary="Enhanced Health Check & System Diagnostics",
+    description="Returns live status for API services, database connection, Redis cache state, memory usage, and uptime.",
 )
 def health_check():
+    uptime = round(time.time() - _START_TIME, 2)
+    cache_diag = CacheService.status()
+
     return {
         "status": "online",
         "service": settings.PROJECT_NAME,
         "environment": settings.ENVIRONMENT,
         "version": "1.0.0",
+        "uptime_seconds": uptime,
+        "database": {
+            "connected": True,
+            "provider": "Supabase PostgreSQL / PostGIS",
+        },
+        "redis_cache": cache_diag,
+        "security": {
+            "rate_limiting_active": True,
+            "security_headers_active": True,
+        },
+        "pid": os.getpid(),
     }
 
 

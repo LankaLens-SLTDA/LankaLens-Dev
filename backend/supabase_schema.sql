@@ -520,6 +520,16 @@ ALTER TABLE public.analytics_events ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Analytics events viewable by everyone" ON public.analytics_events FOR SELECT USING (true);
 CREATE POLICY "Analytics events insertable by everyone" ON public.analytics_events FOR INSERT WITH CHECK (true);
 
+-- =========================================================
+-- EPIC 24 — PERFORMANCE, SECURITY & RELIABILITY INDEXES
+-- =========================================================
+
+CREATE INDEX IF NOT EXISTS idx_destinations_category_rating ON public.destinations(category, rating DESC);
+CREATE INDEX IF NOT EXISTS idx_destinations_district_category ON public.destinations(district, category);
+CREATE INDEX IF NOT EXISTS idx_partners_type_featured ON public.partners(partner_type, is_featured DESC);
+CREATE INDEX IF NOT EXISTS idx_community_posts_status_created ON public.community_posts(publication_status, created_at DESC);
+
+
 
 
 

@@ -13,6 +13,7 @@ from app.schemas.destinations import (
     SearchQueryResponse,
 )
 from app.seed_destinations import SEED_DATASETS
+from app.services.cache_service import cache_response
 from app.services.map_discovery_service import MapDiscoveryService
 from app.services.search_service import SearchService
 from app.supabase_client import supabase
@@ -122,6 +123,7 @@ def format_destination_record(raw: dict) -> dict:
         "verification state, publication status, cost, rating, and search query."
     ),
 )
+@cache_response(ttl_seconds=300)
 def get_destinations(
     category: str | None = Query(
         None,
