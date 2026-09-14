@@ -3613,6 +3613,723 @@
         }
       }
     },
+    "/api/admin/metrics": {
+      "get": {
+        "tags": [
+          "Admin & Moderation Platform"
+        ],
+        "summary": "Get centralized platform operations analytics",
+        "description": "Rolls up total users, active destinations, pending queue count, partner count, booking referrals, and system health.",
+        "operationId": "get_admin_metrics_api_admin_metrics_get",
+        "parameters": [
+          {
+            "name": "x-admin-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Admin-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminDashboardMetrics"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/moderation/queue": {
+      "get": {
+        "tags": [
+          "Admin & Moderation Platform"
+        ],
+        "summary": "Get AI-flagged content moderation queue",
+        "description": "Retrieves contributions and discoveries pending human moderator review.",
+        "operationId": "get_moderation_queue_api_admin_moderation_queue_get",
+        "parameters": [
+          {
+            "name": "x-admin-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Admin-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModerationQueueResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/moderation/action/{contribution_id}": {
+      "post": {
+        "tags": [
+          "Admin & Moderation Platform"
+        ],
+        "summary": "Moderate content submission (Approve or Reject)",
+        "description": "Moderates a pending/flagged submission and records audit log entry.",
+        "operationId": "moderate_contribution_api_admin_moderation_action__contribution_id__post",
+        "parameters": [
+          {
+            "name": "contribution_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Contribution Id"
+            }
+          },
+          {
+            "name": "x-admin-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Admin-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModerationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Moderate Contribution Api Admin Moderation Action  Contribution Id  Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/reports": {
+      "get": {
+        "tags": [
+          "Admin & Moderation Platform"
+        ],
+        "summary": "Get all crowdsourced user reports & environmental alerts",
+        "description": "Lists user reports and hazard flags.",
+        "operationId": "get_admin_reports_api_admin_reports_get",
+        "parameters": [
+          {
+            "name": "x-admin-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Admin-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response Get Admin Reports Api Admin Reports Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/reports/{report_id}/resolve": {
+      "post": {
+        "tags": [
+          "Admin & Moderation Platform"
+        ],
+        "summary": "Resolve or dismiss user report",
+        "description": "Resolves a user report.",
+        "operationId": "resolve_report_api_admin_reports__report_id__resolve_post",
+        "parameters": [
+          {
+            "name": "report_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Report Id"
+            }
+          },
+          {
+            "name": "admin_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Admin name",
+              "default": "Admin",
+              "title": "Admin Name"
+            },
+            "description": "Admin name"
+          },
+          {
+            "name": "notes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Resolution notes",
+              "title": "Notes"
+            },
+            "description": "Resolution notes"
+          },
+          {
+            "name": "x-admin-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Admin-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Resolve Report Api Admin Reports  Report Id  Resolve Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/destinations/{destination_id}": {
+      "put": {
+        "tags": [
+          "Admin & Moderation Platform"
+        ],
+        "summary": "Edit destination details & crowd status",
+        "description": "Edits destination attributes.",
+        "operationId": "update_destination_api_admin_destinations__destination_id__put",
+        "parameters": [
+          {
+            "name": "destination_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Destination Id"
+            }
+          },
+          {
+            "name": "admin_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Editor name",
+              "default": "Admin Editor",
+              "title": "Admin Name"
+            },
+            "description": "Editor name"
+          },
+          {
+            "name": "x-admin-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Admin-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DestinationUpdatePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Update Destination Api Admin Destinations  Destination Id  Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/partners/{partner_id}/approval": {
+      "post": {
+        "tags": [
+          "Admin & Moderation Platform"
+        ],
+        "summary": "Approve partner listing & set featured tier",
+        "description": "Approves partner listing.",
+        "operationId": "approve_partner_listing_api_admin_partners__partner_id__approval_post",
+        "parameters": [
+          {
+            "name": "partner_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Partner Id"
+            }
+          },
+          {
+            "name": "admin_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Manager name",
+              "default": "Partner Manager",
+              "title": "Admin Name"
+            },
+            "description": "Manager name"
+          },
+          {
+            "name": "x-admin-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Admin-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PartnerApprovalPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Approve Partner Listing Api Admin Partners  Partner Id  Approval Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/guides/{application_id}/verification": {
+      "post": {
+        "tags": [
+          "Admin & Moderation Platform"
+        ],
+        "summary": "Verify/certify guide marketplace application",
+        "description": "Verifies guide application status.",
+        "operationId": "verify_guide_application_api_admin_guides__application_id__verification_post",
+        "parameters": [
+          {
+            "name": "application_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Application Id"
+            }
+          },
+          {
+            "name": "admin_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Certifier name",
+              "default": "Guide Certifier",
+              "title": "Admin Name"
+            },
+            "description": "Certifier name"
+          },
+          {
+            "name": "x-admin-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Admin-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuideVerificationPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Verify Guide Application Api Admin Guides  Application Id  Verification Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/hazards/{hazard_id}/verify": {
+      "post": {
+        "tags": [
+          "Admin & Moderation Platform"
+        ],
+        "summary": "Verify environmental hazard report",
+        "description": "Verifies or resolves environmental hazard alert.",
+        "operationId": "verify_environmental_hazard_api_admin_hazards__hazard_id__verify_post",
+        "parameters": [
+          {
+            "name": "hazard_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Hazard Id"
+            }
+          },
+          {
+            "name": "admin_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Inspector name",
+              "default": "Environmental Inspector",
+              "title": "Admin Name"
+            },
+            "description": "Inspector name"
+          },
+          {
+            "name": "x-admin-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Admin-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HazardVerificationPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Verify Environmental Hazard Api Admin Hazards  Hazard Id  Verify Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/audit-logs": {
+      "get": {
+        "tags": [
+          "Admin & Moderation Platform"
+        ],
+        "summary": "Get administrative audit trail logs",
+        "description": "Retrieves complete history of moderator and administrative actions.",
+        "operationId": "get_admin_audit_logs_api_admin_audit_logs_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "description": "Max logs to retrieve",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "Max logs to retrieve"
+          },
+          {
+            "name": "x-admin-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Admin-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdminAuditLogRecord"
+                  },
+                  "title": "Response Get Admin Audit Logs Api Admin Audit Logs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/health": {
       "get": {
         "tags": [
@@ -3678,6 +4395,130 @@
           "destination_id"
         ],
         "title": "AddDestinationToTripPayload"
+      },
+      "AdminAuditLogRecord": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Unique audit log ID"
+          },
+          "admin_name": {
+            "type": "string",
+            "title": "Admin Name",
+            "description": "Admin or moderator name"
+          },
+          "admin_role": {
+            "$ref": "#/components/schemas/AdminRoleEnum",
+            "description": "Role tier"
+          },
+          "action_type": {
+            "type": "string",
+            "title": "Action Type",
+            "description": "Action executed (e.g. approve_contribution, update_destination)"
+          },
+          "target_type": {
+            "type": "string",
+            "title": "Target Type",
+            "description": "Target entity type (e.g. contribution, partner, destination)"
+          },
+          "target_id": {
+            "type": "string",
+            "title": "Target Id",
+            "description": "Target entity ID or code"
+          },
+          "details": {
+            "type": "string",
+            "title": "Details",
+            "description": "Audit details and rationale notes"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At",
+            "description": "ISO timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "admin_name",
+          "admin_role",
+          "action_type",
+          "target_type",
+          "target_id",
+          "details",
+          "created_at"
+        ],
+        "title": "AdminAuditLogRecord",
+        "description": "Administrative action audit trail log entry."
+      },
+      "AdminDashboardMetrics": {
+        "properties": {
+          "total_users": {
+            "type": "integer",
+            "title": "Total Users",
+            "description": "Total registered community explorers"
+          },
+          "total_destinations": {
+            "type": "integer",
+            "title": "Total Destinations",
+            "description": "Active published tourism destinations"
+          },
+          "pending_moderation_count": {
+            "type": "integer",
+            "title": "Pending Moderation Count",
+            "description": "Content items pending AI/human moderation"
+          },
+          "active_partners_count": {
+            "type": "integer",
+            "title": "Active Partners Count",
+            "description": "Listed local tourism partner providers"
+          },
+          "total_referrals_count": {
+            "type": "integer",
+            "title": "Total Referrals Count",
+            "description": "Total booking referral inquiries tracked"
+          },
+          "platform_health_score": {
+            "type": "number",
+            "title": "Platform Health Score",
+            "description": "Platform operational health score (0-100%)"
+          },
+          "flagged_hazards_count": {
+            "type": "integer",
+            "title": "Flagged Hazards Count",
+            "description": "Active unverified hazard reports"
+          },
+          "system_status": {
+            "type": "string",
+            "title": "System Status",
+            "description": "System operational status",
+            "default": "operational"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_users",
+          "total_destinations",
+          "pending_moderation_count",
+          "active_partners_count",
+          "total_referrals_count",
+          "platform_health_score",
+          "flagged_hazards_count"
+        ],
+        "title": "AdminDashboardMetrics",
+        "description": "Platform operations summary metrics."
+      },
+      "AdminRoleEnum": {
+        "type": "string",
+        "enum": [
+          "super_admin",
+          "moderator",
+          "partner_manager",
+          "content_editor"
+        ],
+        "title": "AdminRoleEnum",
+        "description": "Admin and moderator authorization roles."
       },
       "AiTrustAudit": {
         "properties": {
@@ -6201,6 +7042,97 @@
         "type": "object",
         "title": "DestinationUpdate"
       },
+      "DestinationUpdatePayload": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "Destination title"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category",
+            "description": "Category tag (Cultural, Nature, Beach, etc.)"
+          },
+          "district": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "District",
+            "description": "District location"
+          },
+          "province": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Province",
+            "description": "Province location"
+          },
+          "baseline_cost": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Cost",
+            "description": "Baseline entry ticket cost in USD"
+          },
+          "crowd_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crowd Status",
+            "description": "Crowd density status ('Low', 'Moderate', 'High')"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Destination overview text"
+          }
+        },
+        "type": "object",
+        "title": "DestinationUpdatePayload",
+        "description": "Payload to update an existing destination record."
+      },
       "EligibilityCheckResponse": {
         "properties": {
           "author_name": {
@@ -6750,6 +7682,39 @@
         "title": "GuideUpgradePayload",
         "description": "Payload to upgrade a high-trust contributor into a listed Local Partner guide."
       },
+      "GuideVerificationPayload": {
+        "properties": {
+          "application_id": {
+            "type": "integer",
+            "title": "Application Id",
+            "description": "Target guide application ID"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'certified' or 'rejected'",
+            "default": "certified"
+          },
+          "admin_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Admin Notes",
+            "description": "Verification review notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "application_id"
+        ],
+        "title": "GuideVerificationPayload",
+        "description": "Payload to verify or certify a guide marketplace upgrade application."
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -6879,6 +7844,39 @@
           "rewardPoints"
         ],
         "title": "HazardReportResponse"
+      },
+      "HazardVerificationPayload": {
+        "properties": {
+          "hazard_id": {
+            "type": "integer",
+            "title": "Hazard Id",
+            "description": "Hazard report ID"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'verified', 'resolved', 'false_alarm'",
+            "default": "verified"
+          },
+          "admin_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Admin Notes",
+            "description": "Inspector verification feedback"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hazard_id"
+        ],
+        "title": "HazardVerificationPayload",
+        "description": "Payload to verify or resolve crowdsourced environmental hazard reports."
       },
       "InteractionRequest": {
         "properties": {
@@ -7212,6 +8210,57 @@
           "action"
         ],
         "title": "ModerationRequest"
+      },
+      "PartnerApprovalPayload": {
+        "properties": {
+          "partner_id": {
+            "type": "integer",
+            "title": "Partner Id",
+            "description": "Target partner ID"
+          },
+          "is_verified": {
+            "type": "boolean",
+            "title": "Is Verified",
+            "description": "SLTDA or platform verification status",
+            "default": true
+          },
+          "verification_state": {
+            "type": "string",
+            "title": "Verification State",
+            "description": "'verified', 'pending_verification', 'unverified'",
+            "default": "verified"
+          },
+          "is_featured": {
+            "type": "boolean",
+            "title": "Is Featured",
+            "description": "Featured listing status",
+            "default": true
+          },
+          "featured_tier": {
+            "type": "string",
+            "title": "Featured Tier",
+            "description": "'gold', 'silver', 'standard'",
+            "default": "gold"
+          },
+          "admin_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Admin Notes",
+            "description": "Approval rationale or review feedback"
+          }
+        },
+        "type": "object",
+        "required": [
+          "partner_id"
+        ],
+        "title": "PartnerApprovalPayload",
+        "description": "Payload to review and approve a local partner listing."
       },
       "PartnerInfo": {
         "properties": {
@@ -9493,6 +10542,10 @@
     {
       "name": "Trip Arrangement Broker",
       "description": "Matches trip itineraries against verified local guides, agencies, hotels, vehicle rentals, and transport services."
+    },
+    {
+      "name": "Admin & Moderation Platform",
+      "description": "Centralized control panel managing content, users, destinations, partner approvals, guide verifications, hazard reviews, and audit logs."
     }
   ]
 }

@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.routers import (
+    admin,
     ai_assistant,
     alternatives,
     arrangements,
@@ -57,6 +58,10 @@ tags_metadata = [
         "name": "Trip Arrangement Broker",
         "description": "Matches trip itineraries against verified local guides, agencies, hotels, vehicle rentals, and transport services.",
     },
+    {
+        "name": "Admin & Moderation Platform",
+        "description": "Centralized control panel managing content, users, destinations, partner approvals, guide verifications, hazard reviews, and audit logs.",
+    },
 ]
 
 app = FastAPI(
@@ -106,6 +111,7 @@ app.include_router(recommendations.router)
 app.include_router(alternatives.router)
 app.include_router(partners.router)
 app.include_router(arrangements.router)
+app.include_router(admin.router)
 
 
 @app.get(
