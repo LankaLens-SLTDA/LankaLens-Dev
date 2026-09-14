@@ -1537,8 +1537,8 @@
         "tags": [
           "AI Assistant"
         ],
-        "summary": "Query AI Travel Assistant",
-        "description": "Submit user prompt to receive intelligent itinerary recommendations, context cards, and interactive follow-ups.",
+        "summary": "Query Grounded Multilingual AI Travel Assistant",
+        "description": "Processes natural language travel questions across destination, budget, itinerary, crowd, and partner queries. Retrieves authoritative LankaLens database facts and enforces hallucination safeguards.",
         "operationId": "query_ai_assistant_api_ai_assistant_query_post",
         "requestBody": {
           "content": {
@@ -1557,6 +1557,48 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ChatResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai-assistant/validate": {
+      "post": {
+        "tags": [
+          "AI Assistant"
+        ],
+        "summary": "Validate AI text against hallucination guardrails",
+        "description": "Inspects generated travel text and corrects any hallucinated prices or destination names to official SLTDA data.",
+        "operationId": "validate_hallucination_guardrail_api_ai_assistant_validate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HallucinationValidationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HallucinationValidationResponse"
                 }
               }
             }
@@ -3807,46 +3849,66 @@
       },
       "CardData": {
         "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Destination ID",
+            "default": 1
+          },
           "title": {
             "type": "string",
             "title": "Title",
-            "description": "Card title for recommended destination or activity",
-            "example": "Damro Labookellie High Tea Estate"
+            "description": "Card title for recommended landmark or activity"
           },
           "type": {
             "type": "string",
             "title": "Type",
-            "description": "Category or activity type",
-            "example": "Cultural Tea Estate"
+            "description": "Category or activity type"
           },
           "desc": {
             "type": "string",
             "title": "Desc",
-            "description": "Brief description of the recommendation",
-            "example": "Experience high-altitude Ceylon tea picking and factory tours."
+            "description": "Brief summary description of recommendation"
           },
           "image": {
             "type": "string",
             "title": "Image",
             "description": "Relative image URL path",
-            "example": "/stitch_images/planner.png"
+            "default": "/stitch_images/planner.png"
           },
           "duration": {
             "type": "string",
             "title": "Duration",
-            "description": "Recommended duration",
-            "example": "Recommended: 3.5 hrs"
+            "description": "Estimated visit duration",
+            "default": "Recommended: 2.5 hrs"
+          },
+          "cost": {
+            "type": "number",
+            "title": "Cost",
+            "description": "Authoritative baseline entry fee in USD",
+            "default": 0.0
+          },
+          "rating": {
+            "type": "number",
+            "title": "Rating",
+            "description": "Community visitor rating",
+            "default": 4.5
+          },
+          "crowd_status": {
+            "type": "string",
+            "title": "Crowd Status",
+            "description": "Current crowd status",
+            "default": "Low"
           }
         },
         "type": "object",
         "required": [
           "title",
           "type",
-          "desc",
-          "image",
-          "duration"
+          "desc"
         ],
-        "title": "CardData"
+        "title": "CardData",
+        "description": "Structured UI card recommendation for destination, activity, or partner."
       },
       "ChatRequest": {
         "properties": {
@@ -3854,27 +3916,46 @@
             "type": "string",
             "title": "Message",
             "description": "User prompt or query sent to the AI travel assistant",
-            "example": "Tell me about tea tasting in Kandy and Ella"
+            "example": "What are the best low-crowd tea plantations near Nuwara Eliya under $40?"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language",
+            "description": "Preferred response language ('en', 'si', 'ta', 'fr', 'de', 'ja')",
+            "default": "en"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context",
+            "description": "Optional conversation context (e.g. current itinerary, location, budget)"
           }
         },
         "type": "object",
         "required": [
           "message"
         ],
-        "title": "ChatRequest"
+        "title": "ChatRequest",
+        "description": "Request payload sent to the AI Travel Assistant."
       },
       "ChatResponse": {
         "properties": {
           "reply": {
             "type": "string",
             "title": "Reply",
-            "description": "AI generated textual response",
-            "example": "The journey from Kandy to Ella passes through tea country..."
+            "description": "AI generated textual response grounded in LankaLens database"
           },
           "hasCard": {
             "type": "boolean",
             "title": "Hascard",
-            "description": "Flag indicating if a structured UI card recommendation is attached",
+            "description": "Flag indicating if a structured UI card is attached",
             "default": false
           },
           "cardData": {
@@ -3886,7 +3967,7 @@
                 "type": "null"
               }
             ],
-            "description": "Optional structured card data recommendation"
+            "description": "Optional structured card recommendation"
           },
           "followUps": {
             "items": {
@@ -3895,13 +3976,31 @@
             "type": "array",
             "title": "Followups",
             "description": "Suggested quick action or follow-up prompt options"
+          },
+          "detected_intent": {
+            "type": "string",
+            "title": "Detected Intent",
+            "description": "Recognized intent ('destination_inquiry', 'budget_question', 'itinerary_request', 'crowd_query', 'partner_query')",
+            "default": "destination_inquiry"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language",
+            "description": "Response language code",
+            "default": "en"
+          },
+          "grounding_metadata": {
+            "$ref": "#/components/schemas/GroundingMetadata",
+            "description": "Data grounding and hallucination guardrail audit"
           }
         },
         "type": "object",
         "required": [
-          "reply"
+          "reply",
+          "grounding_metadata"
         ],
-        "title": "ChatResponse"
+        "title": "ChatResponse",
+        "description": "Response payload returned by the AI Travel Assistant."
       },
       "CommentItem": {
         "properties": {
@@ -5455,6 +5554,92 @@
         "title": "FeatureDifference",
         "description": "Individual feature comparison between original and alternative destination."
       },
+      "GroundingEntity": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Destination or entity ID"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Canonical destination name"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "Destination category"
+          },
+          "verified_cost": {
+            "type": "number",
+            "title": "Verified Cost",
+            "description": "Authoritative baseline cost per visit"
+          },
+          "trust_score": {
+            "type": "number",
+            "title": "Trust Score",
+            "description": "Platform AI trust score"
+          },
+          "crowd_status": {
+            "type": "string",
+            "title": "Crowd Status",
+            "description": "Current visitor crowd status ('Low', 'Moderate', 'High')"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "category",
+          "verified_cost",
+          "trust_score",
+          "crowd_status"
+        ],
+        "title": "GroundingEntity",
+        "description": "Authoritative platform destination or partner entity retrieved for grounding."
+      },
+      "GroundingMetadata": {
+        "properties": {
+          "is_grounded": {
+            "type": "boolean",
+            "title": "Is Grounded",
+            "description": "Whether response is grounded in LankaLens data",
+            "default": true
+          },
+          "entities_found": {
+            "items": {
+              "$ref": "#/components/schemas/GroundingEntity"
+            },
+            "type": "array",
+            "title": "Entities Found",
+            "description": "Authoritative entities retrieved"
+          },
+          "hallucination_check_passed": {
+            "type": "boolean",
+            "title": "Hallucination Check Passed",
+            "description": "Whether hallucination guardrail validated generated numbers/names",
+            "default": true
+          },
+          "retrieval_confidence": {
+            "type": "number",
+            "title": "Retrieval Confidence",
+            "description": "Confidence rating of grounded context retrieval (0.0 to 1.0)",
+            "default": 0.95
+          },
+          "sources_used": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Sources Used",
+            "description": "Platform database tables/modules used as grounding sources"
+          }
+        },
+        "type": "object",
+        "title": "GroundingMetadata",
+        "description": "Audit metadata proving factual retrieval and hallucination validation."
+      },
       "GuideApplicationRequest": {
         "properties": {
           "author_name": {
@@ -5550,6 +5735,58 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "HallucinationValidationRequest": {
+        "properties": {
+          "generated_text": {
+            "type": "string",
+            "title": "Generated Text",
+            "description": "Text generated by AI model"
+          },
+          "mentioned_destination_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Mentioned Destination Ids",
+            "description": "Destination IDs to validate against"
+          }
+        },
+        "type": "object",
+        "required": [
+          "generated_text"
+        ],
+        "title": "HallucinationValidationRequest",
+        "description": "Request payload for standalone hallucination validation guardrail."
+      },
+      "HallucinationValidationResponse": {
+        "properties": {
+          "passed": {
+            "type": "boolean",
+            "title": "Passed",
+            "description": "Whether generated text passed hallucination checks"
+          },
+          "corrected_text": {
+            "type": "string",
+            "title": "Corrected Text",
+            "description": "Text with hallucinated prices/names corrected to authoritative data"
+          },
+          "hallucinations_detected": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Hallucinations Detected",
+            "description": "List of detected anomalies"
+          }
+        },
+        "type": "object",
+        "required": [
+          "passed",
+          "corrected_text"
+        ],
+        "title": "HallucinationValidationResponse",
+        "description": "Response payload from hallucination validation guardrail."
       },
       "HazardReport": {
         "properties": {

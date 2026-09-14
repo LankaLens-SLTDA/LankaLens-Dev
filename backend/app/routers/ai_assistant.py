@@ -1,43 +1,45 @@
-from fastapi import APIRouter
+"""FastAPI Router for EPIC 18 — AI Travel Assistant (Grounded Multilingual Intelligence)."""
 
-from app.schemas.ai_assistant import ChatRequest, ChatResponse
+from fastapi import APIRouter, status
+
+from app.routers.destinations import IN_MEMORY_DESTINATIONS
+from app.schemas.ai_assistant import (
+    ChatRequest,
+    ChatResponse,
+    HallucinationValidationRequest,
+    HallucinationValidationResponse,
+)
+from app.services.ai_assistant_service import GroundedAIAssistantService
 
 router = APIRouter(prefix="/api/ai-assistant", tags=["AI Assistant"])
+
+service = GroundedAIAssistantService()
 
 
 @router.post(
     "/query",
     response_model=ChatResponse,
-    summary="Query AI Travel Assistant",
-    description="Submit user prompt to receive intelligent itinerary recommendations, context cards, and interactive follow-ups.",
+    status_code=status.HTTP_200_OK,
+    summary="Query Grounded Multilingual AI Travel Assistant",
+    description=(
+        "Processes natural language travel questions across destination, budget, itinerary, crowd, "
+        "and partner queries. Retrieves authoritative LankaLens database facts and enforces hallucination safeguards."
+    ),
 )
-def query_ai_assistant(req: ChatRequest):
-    """Process natural language queries and generate contextual trip suggestions."""
-    msg = req.message.lower()
+def query_ai_assistant(req: ChatRequest) -> ChatResponse:
+    """Processes natural language travel query with grounded RAG retrieval and hallucination validation."""
+    return service.process_query(req, IN_MEMORY_DESTINATIONS)
 
-    if "tea" in msg or "kandy" in msg or "ella" in msg:
-        return {
-            "reply": "The journey from Kandy to Ella passes through tea country. I recommend stopping at Nuwara Eliya for historic colonial architecture and tea tasting at high-altitude estates.",
-            "hasCard": True,
-            "cardData": {
-                "title": "Damro Labookellie High Tea Estate",
-                "type": "Cultural Tea Estate",
-                "desc": "Experience high-altitude Ceylon tea picking, factory tours, and panoramic tasting rooms.",
-                "image": "/stitch_images/planner.png",
-                "duration": "Recommended: 3.5 hrs",
-            },
-            "followUps": [
-                "Add Nuwara Eliya stop to Day 3 of Itinerary",
-                "Show nearby boutique heritage hotels",
-                "Check train ticket availability for this stretch",
-            ],
-        }
 
-    return {
-        "reply": f"I've updated your trip parameters based on '{req.message}'. Would you like me to adjust your accommodation bookings or sync this with your offline map?",
-        "hasCard": False,
-        "followUps": [
-            "Sync with Mapbox offline layer",
-            "Export PDF itinerary summary",
-        ],
-    }
+@router.post(
+    "/validate",
+    response_model=HallucinationValidationResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Validate AI text against hallucination guardrails",
+    description="Inspects generated travel text and corrects any hallucinated prices or destination names to official SLTDA data.",
+)
+def validate_hallucination_guardrail(
+    req: HallucinationValidationRequest,
+) -> HallucinationValidationResponse:
+    """Standalone hallucination guardrail verification endpoint."""
+    return service.validate_hallucinations(req, IN_MEMORY_DESTINATIONS)

@@ -997,3 +997,69 @@ export async function compareAlternatives(
     `/alternatives/compare/${originalId}/${alternativeId}`
   );
 }
+
+export interface GroundingEntity {
+  id: number;
+  name: string;
+  category: string;
+  verified_cost: number;
+  trust_score: number;
+  crowd_status: string;
+}
+
+export interface GroundingMetadata {
+  is_grounded: boolean;
+  entities_found: GroundingEntity[];
+  hallucination_check_passed: boolean;
+  retrieval_confidence: number;
+  sources_used: string[];
+}
+
+export interface AIChatCardData {
+  id: number;
+  title: string;
+  type: string;
+  desc: string;
+  image: string;
+  duration: string;
+  cost: number;
+  rating: number;
+  crowd_status: string;
+}
+
+export interface AIChatRequest {
+  message: string;
+  language?: string;
+  context?: Record<string, unknown>;
+}
+
+export interface AIChatResponse {
+  reply: string;
+  hasCard: boolean;
+  cardData?: AIChatCardData | null;
+  followUps: string[];
+  detected_intent: string;
+  language: string;
+  grounding_metadata: GroundingMetadata;
+}
+
+export async function queryAIAssistant(payload: AIChatRequest): Promise<AIChatResponse | null> {
+  return fetchFromBackend<AIChatResponse>('/ai-assistant/query', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function validateAIGrounding(payload: {
+  generated_text: string;
+  mentioned_destination_ids?: number[];
+}): Promise<{ passed: boolean; corrected_text: string; hallucinations_detected: string[] } | null> {
+  return fetchFromBackend<{
+    passed: boolean;
+    corrected_text: string;
+    hallucinations_detected: string[];
+  }>('/ai-assistant/validate', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
