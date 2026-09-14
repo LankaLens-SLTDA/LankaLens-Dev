@@ -179,6 +179,8 @@ export interface ContributionRecord {
   created_at: string;
 }
 
+export type Contribution = ContributionRecord;
+
 export interface ModerationQueueResponse {
   queue: ContributionRecord[];
   total_pending: number;
@@ -1349,5 +1351,191 @@ export async function upgradeContributorToPartner(
   return fetchFromBackend<ConvertedPartnerGuideResponse>('/reputation/upgrade-to-partner', {
     method: 'POST',
     body: JSON.stringify(payload),
+  });
+}
+
+export interface AdminDashboardMetrics {
+  total_users: number;
+  total_destinations: number;
+  pending_moderation_count: number;
+  active_partners_count: number;
+  total_referrals_count: number;
+  platform_health_score: number;
+  flagged_hazards_count: number;
+  system_status: string;
+}
+
+export interface AdminAuditLogRecord {
+  id: number;
+  admin_name: string;
+  admin_role: string;
+  action_type: string;
+  target_type: string;
+  target_id: string;
+  details: string;
+  created_at: string;
+}
+
+export interface DestinationUpdatePayload {
+  name?: string;
+  category?: string;
+  district?: string;
+  province?: string;
+  baseline_cost?: number;
+  crowd_status?: string;
+  description?: string;
+}
+
+export interface PartnerApprovalPayload {
+  partner_id: number;
+  is_verified?: boolean;
+  verification_state?: string;
+  is_featured?: boolean;
+  featured_tier?: string;
+  admin_notes?: string;
+}
+
+export interface GuideVerificationPayload {
+  application_id: number;
+  status: string;
+  admin_notes?: string;
+}
+
+export interface HazardVerificationPayload {
+  hazard_id: number;
+  status: string;
+  admin_notes?: string;
+}
+
+export async function getAdminMetrics(role = 'super_admin'): Promise<AdminDashboardMetrics | null> {
+  return fetchFromBackend<AdminDashboardMetrics>('/admin/metrics', {
+    headers: { 'X-Admin-Role': role },
+  });
+}
+
+export async function getAdminModerationQueue(
+  role = 'moderator'
+): Promise<ModerationQueueResponse | null> {
+  return fetchFromBackend<ModerationQueueResponse>('/admin/moderation/queue', {
+    headers: { 'X-Admin-Role': role },
+  });
+}
+
+export async function moderateContentItem(
+  contributionId: number,
+  action: 'approve' | 'reject',
+  moderatorName?: string,
+  feedback?: string,
+  role = 'moderator'
+): Promise<{ status: string; message: string; item: Contribution } | null> {
+  return fetchFromBackend<{ status: string; message: string; item: Contribution }>(
+    `/admin/moderation/action/${contributionId}`,
+    {
+      method: 'POST',
+      headers: { 'X-Admin-Role': role },
+      body: JSON.stringify({ action, moderator_name: moderatorName, feedback }),
+    }
+  );
+}
+
+export async function getAdminReports(
+  role = 'moderator'
+): Promise<Array<Record<string, unknown>> | null> {
+  return fetchFromBackend<Array<Record<string, unknown>>>('/admin/reports', {
+    headers: { 'X-Admin-Role': role },
+  });
+}
+
+export async function resolveAdminReport(
+  reportId: number,
+  adminName = 'Admin',
+  notes?: string,
+  role = 'moderator'
+): Promise<{ status: string; message: string } | null> {
+  const query = new URLSearchParams({ admin_name: adminName });
+  if (notes) query.append('notes', notes);
+  return fetchFromBackend<{ status: string; message: string }>(
+    `/admin/reports/${reportId}/resolve?${query.toString()}`,
+    {
+      method: 'POST',
+      headers: { 'X-Admin-Role': role },
+    }
+  );
+}
+
+export async function updateAdminDestination(
+  destinationId: number,
+  payload: DestinationUpdatePayload,
+  adminName = 'Admin Editor',
+  role = 'content_editor'
+): Promise<{ status: string; message: string; destination: Destination } | null> {
+  const query = new URLSearchParams({ admin_name: adminName });
+  return fetchFromBackend<{ status: string; message: string; destination: Destination }>(
+    `/admin/destinations/${destinationId}?${query.toString()}`,
+    {
+      method: 'PUT',
+      headers: { 'X-Admin-Role': role },
+      body: JSON.stringify(payload),
+    }
+  );
+}
+
+export async function approveAdminPartner(
+  partnerId: number,
+  payload: PartnerApprovalPayload,
+  adminName = 'Partner Manager',
+  role = 'partner_manager'
+): Promise<{ status: string; message: string; partner: PartnerProfile } | null> {
+  const query = new URLSearchParams({ admin_name: adminName });
+  return fetchFromBackend<{ status: string; message: string; partner: PartnerProfile }>(
+    `/admin/partners/${partnerId}/approval?${query.toString()}`,
+    {
+      method: 'POST',
+      headers: { 'X-Admin-Role': role },
+      body: JSON.stringify(payload),
+    }
+  );
+}
+
+export async function verifyAdminGuide(
+  applicationId: number,
+  payload: GuideVerificationPayload,
+  adminName = 'Guide Certifier',
+  role = 'partner_manager'
+): Promise<{ status: string; message: string } | null> {
+  const query = new URLSearchParams({ admin_name: adminName });
+  return fetchFromBackend<{ status: string; message: string }>(
+    `/admin/guides/${applicationId}/verification?${query.toString()}`,
+    {
+      method: 'POST',
+      headers: { 'X-Admin-Role': role },
+      body: JSON.stringify(payload),
+    }
+  );
+}
+
+export async function verifyAdminHazard(
+  hazardId: number,
+  payload: HazardVerificationPayload,
+  adminName = 'Environmental Inspector',
+  role = 'moderator'
+): Promise<{ status: string; message: string } | null> {
+  const query = new URLSearchParams({ admin_name: adminName });
+  return fetchFromBackend<{ status: string; message: string }>(
+    `/admin/hazards/${hazardId}/verify?${query.toString()}`,
+    {
+      method: 'POST',
+      headers: { 'X-Admin-Role': role },
+      body: JSON.stringify(payload),
+    }
+  );
+}
+
+export async function getAdminAuditLogs(
+  limit = 50,
+  role = 'super_admin'
+): Promise<AdminAuditLogRecord[] | null> {
+  return fetchFromBackend<AdminAuditLogRecord[]>(`/admin/audit-logs?limit=${limit}`, {
+    headers: { 'X-Admin-Role': role },
   });
 }
