@@ -5,7 +5,13 @@ import { useState, use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { DestinationDetailsResponse, getDestinationDetails } from '@/lib/api';
+import {
+  DestinationDetailsResponse,
+  getDestinationDetails,
+  getAlternativeDestinationList,
+  compareAlternatives,
+  SideBySideComparisonResponse,
+} from '@/lib/api';
 
 export default function DestinationDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -17,6 +23,7 @@ export default function DestinationDetailsPage({ params }: { params: Promise<{ i
   >('hotels');
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [copiedShare, setCopiedShare] = useState<boolean>(false);
+  const [selectedCompareAltId, setSelectedCompareAltId] = useState<number | null>(null);
 
   // Fetch full authoritative destination profile payload via React Query
   const { data: detailsData } = useQuery({
@@ -25,6 +32,25 @@ export default function DestinationDetailsPage({ params }: { params: Promise<{ i
       const res = await getDestinationDetails(destId);
       return res;
     },
+  });
+
+  // Fetch dedicated explainable alternative destinations via React Query
+  const { data: alternativesData } = useQuery({
+    queryKey: ['explainableAlternatives', destId],
+    queryFn: async () => {
+      const res = await getAlternativeDestinationList(destId, 4);
+      return res;
+    },
+  });
+
+  // Fetch side-by-side comparison data when an alternative is selected for comparison
+  const { data: comparisonData } = useQuery<SideBySideComparisonResponse | null>({
+    queryKey: ['sideBySideComparison', destId, selectedCompareAltId],
+    queryFn: async () => {
+      if (!selectedCompareAltId) return null;
+      return await compareAlternatives(destId, selectedCompareAltId);
+    },
+    enabled: !!selectedCompareAltId,
   });
 
   const fallbackData: DestinationDetailsResponse = {
@@ -842,46 +868,221 @@ export default function DestinationDetailsPage({ params }: { params: Promise<{ i
               </div>
             </div>
 
-            {/* Recommended Nearby Alternatives */}
+            {/* Dedicated Explainable Alternative Destinations Engine (EPIC 17) */}
             <div className="bg-surface rounded-2xl p-6 shadow-sm border border-line-200 space-y-4">
-              <h3 className="font-heading-md text-on-surface flex items-center justify-between">
-                <span>Nearby Alternatives</span>
-                <span className="text-label-xs text-outline font-normal">Similar Category</span>
-              </h3>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-heading-md text-on-surface flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary text-[20px]">
+                      alt_route
+                    </span>
+                    <span>Explainable Alternatives</span>
+                  </h3>
+                  <p className="text-label-xs text-outline">
+                    Lower-crowd sites matched by distance, activities & trust
+                  </p>
+                </div>
+                <span className="px-2.5 py-1 bg-emerald-500/10 text-emerald-600 rounded text-label-xs font-bold">
+                  EPIC 17 Engine
+                </span>
+              </div>
 
               <div className="space-y-3">
-                {payload.nearby_alternatives.map((alt) => (
-                  <Link
-                    key={alt.id}
-                    href={`/destinations/${alt.id}`}
-                    className="p-3 bg-canvas-50 hover:bg-surface-container rounded-xl border border-line-200 transition-colors flex items-center gap-3 block"
-                  >
-                    <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-ink-950 flex-shrink-0">
-                      <Image
-                        src={alt.image || alt.image_url || '/stitch_images/planner.png'}
-                        alt={alt.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-body-sm text-on-surface truncate">
-                        {alt.title || alt.name}
-                      </h4>
-                      <span className="text-label-xs text-outline block">
-                        {alt.category} · {alt.district}
-                      </span>
-                      <span className="text-label-xs font-bold text-signal-amber-500">
-                        ★ {alt.rating}
-                      </span>
-                    </div>
-                  </Link>
-                ))}
+                {alternativesData && alternativesData.alternatives.length > 0 ? (
+                  alternativesData.alternatives.map((match) => {
+                    const alt = match.alternative_destination;
+                    const exp = match.explanation;
+
+                    return (
+                      <div
+                        key={alt.id}
+                        className="p-4 bg-canvas-50 rounded-xl border border-line-200 space-y-3 transition-all hover:border-primary/40 shadow-xs"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-3">
+                            <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-ink-950 flex-shrink-0">
+                              <Image
+                                src={alt.image || alt.image_url || '/stitch_images/planner.png'}
+                                alt={alt.name}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                            <div>
+                              <Link
+                                href={`/destinations/${alt.id}`}
+                                className="font-semibold text-body-sm text-on-surface hover:text-primary transition-colors truncate block"
+                              >
+                                {alt.title || alt.name}
+                              </Link>
+                              <span className="text-label-xs text-outline block">
+                                {alt.category} · {alt.district} ({exp.distance_km} km /{' '}
+                                {exp.drive_time_formatted})
+                              </span>
+                            </div>
+                          </div>
+
+                          <span className="px-2.5 py-1 rounded bg-primary/10 text-primary text-label-xs font-bold">
+                            {exp.match_percentage}% Match
+                          </span>
+                        </div>
+
+                        {/* Rationale Bullet Points */}
+                        {exp.key_reasons && exp.key_reasons.length > 0 && (
+                          <div className="bg-surface p-2.5 rounded-lg border border-line-200 text-label-xs text-on-surface-variant space-y-1">
+                            {exp.key_reasons.slice(0, 2).map((reason, idx) => (
+                              <div key={idx} className="flex items-start gap-1.5">
+                                <span className="text-primary font-bold">•</span>
+                                <span>{reason}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="flex items-center justify-between pt-1">
+                          <span className="text-label-xs font-bold text-emerald-600 flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[14px]">
+                              trending_down
+                            </span>
+                            <span>-{exp.crowd_reduction_pct}% Crowd</span>
+                          </span>
+
+                          <button
+                            onClick={() => setSelectedCompareAltId(alt.id)}
+                            className="text-label-xs text-primary font-bold hover:underline flex items-center gap-1 cursor-pointer"
+                          >
+                            <span>Compare Side-by-Side</span>
+                            <span className="material-symbols-outlined text-[14px]">
+                              compare_arrows
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="text-label-xs text-outline text-center py-4">
+                    Scanning regional alternatives...
+                  </p>
+                )}
               </div>
             </div>
           </div>
         </div>
       </main>
+
+      {/* Side-by-Side Comparison Modal */}
+      {selectedCompareAltId && (
+        <div className="fixed inset-0 z-50 bg-ink-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-surface rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-line-200 max-h-[90vh] overflow-y-auto space-y-6">
+            <div className="flex items-center justify-between border-b border-line-200 pb-4">
+              <div>
+                <span className="text-label-xs text-primary font-bold uppercase tracking-wider">
+                  EPIC 17 Matching Analytics
+                </span>
+                <h3 className="font-heading-lg text-on-surface mt-0.5">
+                  Side-by-Side Alternative Comparison
+                </h3>
+              </div>
+
+              <button
+                onClick={() => setSelectedCompareAltId(null)}
+                className="w-8 h-8 rounded-full bg-canvas-50 hover:bg-canvas-100 flex items-center justify-center text-outline cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+
+            {comparisonData ? (
+              <div className="space-y-6">
+                {/* Side-by-Side Header Cards */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 bg-canvas-50 rounded-xl border border-line-200">
+                    <span className="text-label-xs text-coral-500 font-bold uppercase tracking-wider block mb-1">
+                      Original Destination
+                    </span>
+                    <h4 className="font-heading-sm text-on-surface">
+                      {comparisonData.original_destination.name ||
+                        comparisonData.original_destination.title}
+                    </h4>
+                    <span className="text-label-xs text-outline block mt-1">
+                      {comparisonData.original_destination.category} ·{' '}
+                      {comparisonData.original_destination.district}
+                    </span>
+                  </div>
+
+                  <div className="p-4 bg-primary/10 rounded-xl border border-primary/30">
+                    <span className="text-label-xs text-primary font-bold uppercase tracking-wider block mb-1">
+                      Recommended Alternative ({comparisonData.explanation.match_percentage}% Match)
+                    </span>
+                    <h4 className="font-heading-sm text-primary">
+                      {comparisonData.alternative_destination.name ||
+                        comparisonData.alternative_destination.title}
+                    </h4>
+                    <span className="text-label-xs text-primary/80 block mt-1">
+                      {comparisonData.alternative_destination.category} ·{' '}
+                      {comparisonData.alternative_destination.district}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Summary Box */}
+                <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-body-sm text-emerald-800 leading-relaxed font-medium">
+                  💡 <strong>Recommendation Rationale:</strong>{' '}
+                  {comparisonData.recommendation_summary}
+                </div>
+
+                {/* Feature Comparison Matrix Table */}
+                <div className="space-y-3">
+                  <h4 className="font-heading-sm text-on-surface">Feature Matrix Comparison</h4>
+                  <div className="overflow-x-auto rounded-xl border border-line-200">
+                    <table className="w-full text-left text-body-sm">
+                      <thead className="bg-canvas-50 text-label-xs text-outline uppercase border-b border-line-200">
+                        <tr>
+                          <th className="p-3 font-semibold">Attribute</th>
+                          <th className="p-3 font-semibold">Original</th>
+                          <th className="p-3 font-semibold">Alternative</th>
+                          <th className="p-3 font-semibold">Impact / Note</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-line-200">
+                        {comparisonData.feature_differences.map((diff, idx) => (
+                          <tr key={idx} className="hover:bg-canvas-50/50">
+                            <td className="p-3 font-semibold text-on-surface">{diff.attribute}</td>
+                            <td className="p-3 text-on-surface-variant">{diff.original_value}</td>
+                            <td className="p-3 font-bold text-primary">{diff.alternative_value}</td>
+                            <td className="p-3 text-label-xs text-outline">{diff.note}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-4 border-t border-line-200">
+                  <button
+                    onClick={() => setSelectedCompareAltId(null)}
+                    className="px-4 py-2 bg-canvas-50 text-on-surface rounded-xl text-label-sm font-semibold hover:bg-canvas-100 cursor-pointer"
+                  >
+                    Close Comparison
+                  </button>
+                  <Link
+                    href={`/destinations/${comparisonData.alternative_destination.id}`}
+                    onClick={() => setSelectedCompareAltId(null)}
+                    className="px-5 py-2 bg-primary text-on-primary rounded-xl text-label-sm font-semibold hover:bg-primary-container cursor-pointer"
+                  >
+                    Explore Alternative →
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="py-12 text-center text-body-sm text-outline">
+                Loading side-by-side comparison...
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
