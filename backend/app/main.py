@@ -5,6 +5,7 @@ from app.config import settings
 from app.routers import (
     admin,
     ai_assistant,
+    analytics,
     alternatives,
     arrangements,
     community,
@@ -112,6 +113,7 @@ app.include_router(alternatives.router)
 app.include_router(partners.router)
 app.include_router(arrangements.router)
 app.include_router(admin.router)
+app.include_router(analytics.router)
 
 
 @app.get(
