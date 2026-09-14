@@ -4496,8 +4496,8 @@
         "tags": [
           "Health"
         ],
-        "summary": "Health check endpoint",
-        "description": "Returns current API operational status, service name, and active environment.",
+        "summary": "Enhanced Health Check & System Diagnostics",
+        "description": "Returns live status for API services, database connection, Redis cache state, memory usage, and uptime.",
         "operationId": "health_check_api_health_get",
         "responses": {
           "200": {
@@ -10985,6 +10985,10 @@
     {
       "name": "Admin & Moderation Platform",
       "description": "Centralized control panel managing content, users, destinations, partner approvals, guide verifications, hazard reviews, and audit logs."
+    },
+    {
+      "name": "Analytics & Product Intelligence",
+      "description": "Privacy-first telemetry tracking, product usage KPIs, alternative destination redirection funnels, and marketplace metrics."
     }
   ]
 }
