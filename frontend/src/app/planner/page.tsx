@@ -283,6 +283,13 @@ export default function PlannerPage() {
                 <span>Share Trip</span>
               </button>
               <Link
+                href="/planner/arrange"
+                className="px-4 py-2 bg-emerald-700 text-white hover:bg-emerald-800 rounded-lg text-body-sm font-semibold transition-colors flex items-center gap-2 shadow-sm"
+              >
+                <span className="material-symbols-outlined text-[18px]">handshake</span>
+                <span>Arrange Your Trip</span>
+              </Link>
+              <Link
                 href="/ai-assistant"
                 className="px-5 py-2 bg-primary text-on-primary hover:bg-primary-container rounded-lg text-body-sm font-semibold transition-colors flex items-center gap-2 shadow-sm"
               >

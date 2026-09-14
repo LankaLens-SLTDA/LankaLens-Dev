@@ -5,6 +5,7 @@ from app.config import settings
 from app.routers import (
     ai_assistant,
     alternatives,
+    arrangements,
     community,
     contribution,
     destinations,
@@ -47,6 +48,14 @@ tags_metadata = [
     {
         "name": "Trust, Reputation & Gamification",
         "description": "Contributor recognition ladder, badges, reputation score analytics, and guide marketplace onboarding.",
+    },
+    {
+        "name": "Local Partner Network",
+        "description": "Local tourism partner onboarding, verified listings, and PostGIS spatial proximity discovery.",
+    },
+    {
+        "name": "Trip Arrangement Broker",
+        "description": "Matches trip itineraries against verified local guides, agencies, hotels, vehicle rentals, and transport services.",
     },
 ]
 
@@ -96,6 +105,7 @@ app.include_router(reputation.router)
 app.include_router(recommendations.router)
 app.include_router(alternatives.router)
 app.include_router(partners.router)
+app.include_router(arrangements.router)
 
 
 @app.get(

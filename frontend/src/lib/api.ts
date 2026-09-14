@@ -1177,3 +1177,103 @@ export async function getDestinationPartnersList(
 ): Promise<PartnerListResponse | null> {
   return fetchFromBackend<PartnerListResponse>(`/partners/destination/${destinationId}`);
 }
+
+export type ArrangementMode = 'guided' | 'independent';
+
+export interface ArrangementMatchRequest {
+  trip_id?: number;
+  mode?: ArrangementMode;
+  destination_ids?: number[];
+  starting_location?: string;
+  district?: string;
+  partner_type_filter?: string;
+}
+
+export interface TripPartnerMatchItem {
+  partner: PartnerProfile;
+  match_score: number;
+  matching_destinations: string[];
+  recommended_for_mode: ArrangementMode;
+  relevance_reason: string;
+  estimated_cost_per_day: number;
+}
+
+export interface TripArrangementResponse {
+  trip_id?: number;
+  mode: ArrangementMode;
+  matched_partners: TripPartnerMatchItem[];
+  guided_options_count: number;
+  independent_options_count: number;
+  total_matched: number;
+  query_time_ms: number;
+}
+
+export interface ReferralInquiryPayload {
+  trip_id?: number;
+  partner_id: number;
+  arrangement_mode: ArrangementMode;
+  customer_name: string;
+  customer_contact: string;
+  customer_email?: string;
+  start_date?: string;
+  end_date?: string;
+  group_size?: number;
+  custom_notes?: string;
+}
+
+export interface ReferralInquiryRecord {
+  referral_id: number;
+  referral_code: string;
+  trip_id?: number;
+  partner_id: number;
+  partner_name: string;
+  partner_type: string;
+  arrangement_mode: ArrangementMode;
+  customer_name: string;
+  customer_contact: string;
+  customer_email?: string;
+  start_date?: string;
+  end_date?: string;
+  group_size: number;
+  status: string;
+  estimated_cost: number;
+  custom_notes?: string;
+  created_at: string;
+}
+
+export async function matchTripArrangements(
+  payload: ArrangementMatchRequest
+): Promise<TripArrangementResponse | null> {
+  return fetchFromBackend<TripArrangementResponse>('/arrangements/match', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getTripArrangementsByTripId(
+  tripId: number,
+  mode: ArrangementMode = 'guided',
+  partnerTypeFilter?: string
+): Promise<TripArrangementResponse | null> {
+  const query = new URLSearchParams();
+  query.append('mode', mode);
+  if (partnerTypeFilter) query.append('partner_type_filter', partnerTypeFilter);
+  return fetchFromBackend<TripArrangementResponse>(
+    `/arrangements/trip/${tripId}?${query.toString()}`
+  );
+}
+
+export async function createReferralInquiry(
+  payload: ReferralInquiryPayload
+): Promise<ReferralInquiryRecord | null> {
+  return fetchFromBackend<ReferralInquiryRecord>('/arrangements/inquire', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getReferralStatus(
+  referralCode: string
+): Promise<ReferralInquiryRecord | null> {
+  return fetchFromBackend<ReferralInquiryRecord>(`/arrangements/referrals/${referralCode}`);
+}
