@@ -291,5 +291,127 @@ CREATE POLICY "Moderators can view and create moderation history" ON public.mode
 CREATE POLICY "Public profiles are viewable by everyone" ON public.user_profiles FOR SELECT USING (true);
 CREATE POLICY "Users can manage guide applications" ON public.guide_applications FOR ALL USING (true);
 
+-- 10. LOCAL TOURISM PARTNER NETWORK TABLE (EPIC 19)
+CREATE TABLE IF NOT EXISTS public.partners (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    business_name VARCHAR(255) NOT NULL,
+    partner_type VARCHAR(50) NOT NULL, -- 'guide', 'agency', 'hotel', 'vehicle', 'transport'
+    district VARCHAR(100) NOT NULL,
+    province VARCHAR(100) NOT NULL,
+    latitude NUMERIC(10, 7) NOT NULL,
+    longitude NUMERIC(10, 7) NOT NULL,
+    geom GEOMETRY(Point, 4326),
+    address TEXT,
+    contact_number VARCHAR(50) NOT NULL,
+    email VARCHAR(100),
+    website VARCHAR(255),
+    sltda_license_number VARCHAR(100),
+    verification_state VARCHAR(50) DEFAULT 'verified', -- 'verified', 'pending_verification', 'unverified'
+    is_verified BOOLEAN DEFAULT true,
+    is_featured BOOLEAN DEFAULT false,
+    featured_tier VARCHAR(50) DEFAULT 'standard', -- 'gold', 'silver', 'standard'
+    rating NUMERIC(3, 2) DEFAULT 4.80,
+    reviews_count INTEGER DEFAULT 0,
+    price_range VARCHAR(20) DEFAULT '$$', -- '$', '$$', '$$$', '$$$$'
+    baseline_rate NUMERIC(10, 2) DEFAULT 25.00,
+    services TEXT[] DEFAULT '{}',
+    associated_destination_ids BIGINT[] DEFAULT '{}',
+    image_url TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- PostGIS Spatial Index for lightning fast partner geospatial queries
+CREATE INDEX IF NOT EXISTS idx_partners_geom ON public.partners USING GIST (geom);
+CREATE INDEX IF NOT EXISTS idx_partners_type ON public.partners (partner_type);
+CREATE INDEX IF NOT EXISTS idx_partners_district ON public.partners (district);
+CREATE INDEX IF NOT EXISTS idx_partners_verification ON public.partners (verification_state);
+CREATE INDEX IF NOT EXISTS idx_partners_is_featured ON public.partners (is_featured);
+
+-- Trigger to calculate PostGIS point geometry from Lat/Lng on partners
+CREATE OR REPLACE FUNCTION update_partners_geom()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.latitude IS NOT NULL AND NEW.longitude IS NOT NULL THEN
+        NEW.geom := ST_SetSRID(ST_MakePoint(NEW.longitude, NEW.latitude), 4326);
+    END IF;
+    NEW.updated_at := timezone('utc'::text, now());
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_partners_geom ON public.partners;
+CREATE TRIGGER trg_partners_geom
+BEFORE INSERT OR UPDATE ON public.partners
+FOR EACH ROW EXECUTE FUNCTION update_partners_geom();
+
+-- PostGIS Nearby Partner Spatial Discovery RPC Function
+CREATE OR REPLACE FUNCTION nearby_partners(
+    lat FLOAT,
+    lng FLOAT,
+    radius_km FLOAT DEFAULT 50.0,
+    filter_type VARCHAR DEFAULT NULL
+)
+RETURNS TABLE (
+    id BIGINT,
+    name VARCHAR,
+    business_name VARCHAR,
+    partner_type VARCHAR,
+    district VARCHAR,
+    province VARCHAR,
+    latitude NUMERIC,
+    longitude NUMERIC,
+    contact_number VARCHAR,
+    verification_state VARCHAR,
+    is_verified BOOLEAN,
+    is_featured BOOLEAN,
+    rating NUMERIC,
+    price_range VARCHAR,
+    baseline_rate NUMERIC,
+    services TEXT[],
+    image_url TEXT,
+    distance_km FLOAT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        p.id,
+        p.name,
+        p.business_name,
+        p.partner_type,
+        p.district,
+        p.province,
+        p.latitude,
+        p.longitude,
+        p.contact_number,
+        p.verification_state,
+        p.is_verified,
+        p.is_featured,
+        p.rating,
+        p.price_range,
+        p.baseline_rate,
+        p.services,
+        p.image_url,
+        ST_DistanceSphere(
+            p.geom, 
+            ST_SetSRID(ST_MakePoint(lng, lat), 4326)
+        ) / 1000.0 AS distance_km
+    FROM public.partners p
+    WHERE (filter_type IS NULL OR p.partner_type = filter_type)
+      AND ST_DWithin(
+            p.geom::geography, 
+            ST_SetSRID(ST_MakePoint(lng, lat), 4326)::geography, 
+            radius_km * 1000.0
+      )
+    ORDER BY p.is_featured DESC, distance_km ASC;
+END;
+$$ LANGUAGE plpgsql;
+
+ALTER TABLE public.partners ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public partners are viewable by everyone" ON public.partners FOR SELECT USING (true);
+CREATE POLICY "Partners can be created by authenticated users" ON public.partners FOR INSERT WITH CHECK (true);
+
+
 
 

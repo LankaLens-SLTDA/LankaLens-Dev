@@ -1063,3 +1063,117 @@ export async function validateAIGrounding(payload: {
     body: JSON.stringify(payload),
   });
 }
+
+export type PartnerType = 'guide' | 'agency' | 'hotel' | 'vehicle' | 'transport';
+
+export interface PartnerOnboardingPayload {
+  name: string;
+  business_name: string;
+  partner_type: PartnerType | string;
+  district: string;
+  province: string;
+  latitude: number;
+  longitude: number;
+  address?: string;
+  contact_number: string;
+  email?: string;
+  website?: string;
+  sltda_license_number?: string;
+  price_range?: string;
+  baseline_rate?: number;
+  services?: string[];
+  associated_destination_ids?: number[];
+  image_url?: string;
+}
+
+export interface PartnerProfile {
+  id: number;
+  name: string;
+  business_name: string;
+  partner_type: string;
+  district: string;
+  province: string;
+  latitude: number;
+  longitude: number;
+  address?: string;
+  contact_number: string;
+  email?: string;
+  website?: string;
+  sltda_license_number?: string;
+  verification_state: string;
+  is_verified: boolean;
+  is_featured: boolean;
+  featured_tier: string;
+  rating: number;
+  reviews_count: number;
+  price_range: string;
+  baseline_rate: number;
+  services: string[];
+  associated_destination_ids: number[];
+  image_url: string;
+  distance_km?: number;
+  created_at?: string;
+}
+
+export interface PartnerListResponse {
+  partners: PartnerProfile[];
+  total: number;
+  featured_count: number;
+  filter_type?: string;
+  filter_district?: string;
+  query_time_ms: number;
+}
+
+export async function onboardPartner(
+  payload: PartnerOnboardingPayload
+): Promise<PartnerProfile | null> {
+  return fetchFromBackend<PartnerProfile>('/partners/onboard', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getPartners(params?: {
+  partner_type?: string;
+  district?: string;
+  province?: string;
+  verified_only?: boolean;
+  featured_only?: boolean;
+  destination_id?: number;
+}): Promise<PartnerListResponse | null> {
+  const query = new URLSearchParams();
+  if (params?.partner_type) query.append('partner_type', params.partner_type);
+  if (params?.district) query.append('district', params.district);
+  if (params?.province) query.append('province', params.province);
+  if (params?.verified_only) query.append('verified_only', 'true');
+  if (params?.featured_only) query.append('featured_only', 'true');
+  if (params?.destination_id) query.append('destination_id', params.destination_id.toString());
+  const queryString = query.toString();
+  return fetchFromBackend<PartnerListResponse>(`/partners${queryString ? `?${queryString}` : ''}`);
+}
+
+export async function getNearbyPartners(params: {
+  lat: number;
+  lng: number;
+  radius_km?: number;
+  partner_type?: string;
+  destination_id?: number;
+}): Promise<PartnerListResponse | null> {
+  const query = new URLSearchParams();
+  query.append('lat', params.lat.toString());
+  query.append('lng', params.lng.toString());
+  if (params.radius_km) query.append('radius_km', params.radius_km.toString());
+  if (params.partner_type) query.append('partner_type', params.partner_type);
+  if (params.destination_id) query.append('destination_id', params.destination_id.toString());
+  return fetchFromBackend<PartnerListResponse>(`/partners/nearby?${query.toString()}`);
+}
+
+export async function getPartnerById(partnerId: number): Promise<PartnerProfile | null> {
+  return fetchFromBackend<PartnerProfile>(`/partners/${partnerId}`);
+}
+
+export async function getDestinationPartnersList(
+  destinationId: number
+): Promise<PartnerListResponse | null> {
+  return fetchFromBackend<PartnerListResponse>(`/partners/destination/${destinationId}`);
+}

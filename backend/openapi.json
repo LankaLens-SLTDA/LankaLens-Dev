@@ -2963,6 +2963,372 @@
         }
       }
     },
+    "/api/partners/onboard": {
+      "post": {
+        "tags": [
+          "Local Partner Network"
+        ],
+        "summary": "Onboard new local tourism partner",
+        "description": "Registers new tour guide, agency, hotel, vehicle rental, or transport service partner and assigns SLTDA verification state.",
+        "operationId": "onboard_partner_api_partners_onboard_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PartnerOnboardingPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerProfile"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/partners": {
+      "get": {
+        "tags": [
+          "Local Partner Network"
+        ],
+        "summary": "Search & filter local tourism partner listings",
+        "description": "Filter partners by partner type (guide, agency, hotel, vehicle, transport), district, province, and verification status.",
+        "operationId": "get_partners_api_partners_get",
+        "parameters": [
+          {
+            "name": "partner_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Type: 'guide', 'agency', 'hotel', 'vehicle', 'transport'",
+              "title": "Partner Type"
+            },
+            "description": "Type: 'guide', 'agency', 'hotel', 'vehicle', 'transport'"
+          },
+          {
+            "name": "district",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "District filter (e.g. Matale, Badulla)",
+              "title": "District"
+            },
+            "description": "District filter (e.g. Matale, Badulla)"
+          },
+          {
+            "name": "province",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Province filter (e.g. Central, Uva)",
+              "title": "Province"
+            },
+            "description": "Province filter (e.g. Central, Uva)"
+          },
+          {
+            "name": "verified_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Filter for SLTDA verified partners only",
+              "default": false,
+              "title": "Verified Only"
+            },
+            "description": "Filter for SLTDA verified partners only"
+          },
+          {
+            "name": "featured_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Filter for featured partners only",
+              "default": false,
+              "title": "Featured Only"
+            },
+            "description": "Filter for featured partners only"
+          },
+          {
+            "name": "destination_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter for partners associated with destination ID",
+              "title": "Destination Id"
+            },
+            "description": "Filter for partners associated with destination ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/partners/nearby": {
+      "get": {
+        "tags": [
+          "Local Partner Network"
+        ],
+        "summary": "Discover nearby partners using spatial proximity matching",
+        "description": "Executes Haversine & PostGIS spatial proximity search to find partners near target lat/lng coordinates or destination ID.",
+        "operationId": "discover_nearby_partners_api_partners_nearby_get",
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "Target origin latitude",
+              "default": 7.957,
+              "title": "Lat"
+            },
+            "description": "Target origin latitude"
+          },
+          {
+            "name": "lng",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "description": "Target origin longitude",
+              "default": 80.76,
+              "title": "Lng"
+            },
+            "description": "Target origin longitude"
+          },
+          {
+            "name": "radius_km",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 500.0,
+              "minimum": 1.0,
+              "description": "Proximity radius in km",
+              "default": 50.0,
+              "title": "Radius Km"
+            },
+            "description": "Proximity radius in km"
+          },
+          {
+            "name": "partner_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional partner type filter",
+              "title": "Partner Type"
+            },
+            "description": "Optional partner type filter"
+          },
+          {
+            "name": "destination_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional destination ID association",
+              "title": "Destination Id"
+            },
+            "description": "Optional destination ID association"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/partners/destination/{destination_id}": {
+      "get": {
+        "tags": [
+          "Local Partner Network"
+        ],
+        "summary": "Get partners associated with a specific trip destination",
+        "description": "Retrieves partners associated with a specific destination ID.",
+        "operationId": "get_destination_partners_api_partners_destination__destination_id__get",
+        "parameters": [
+          {
+            "name": "destination_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Destination Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/partners/{partner_id}": {
+      "get": {
+        "tags": [
+          "Local Partner Network"
+        ],
+        "summary": "Get detailed partner profile by ID",
+        "description": "Fetches partner profile details by ID.",
+        "operationId": "get_partner_by_id_api_partners__partner_id__get",
+        "parameters": [
+          {
+            "name": "partner_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Partner Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PartnerProfile"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/health": {
       "get": {
         "tags": [
@@ -6227,6 +6593,60 @@
         "type": "object",
         "title": "PartnerInfo"
       },
+      "PartnerListResponse": {
+        "properties": {
+          "partners": {
+            "items": {
+              "$ref": "#/components/schemas/PartnerProfile"
+            },
+            "type": "array",
+            "title": "Partners"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "featured_count": {
+            "type": "integer",
+            "title": "Featured Count"
+          },
+          "filter_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filter Type"
+          },
+          "filter_district": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filter District"
+          },
+          "query_time_ms": {
+            "type": "number",
+            "title": "Query Time Ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "partners",
+          "total",
+          "featured_count",
+          "query_time_ms"
+        ],
+        "title": "PartnerListResponse",
+        "description": "Response payload containing partner listings and discovery metadata."
+      },
       "PartnerLocation": {
         "properties": {
           "id": {
@@ -6294,6 +6714,345 @@
           "longitude"
         ],
         "title": "PartnerLocation"
+      },
+      "PartnerOnboardingPayload": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Contact person or primary representative name"
+          },
+          "business_name": {
+            "type": "string",
+            "title": "Business Name",
+            "description": "Official registered business or agency name"
+          },
+          "partner_type": {
+            "$ref": "#/components/schemas/PartnerTypeEnum",
+            "description": "Type of tourism service offered"
+          },
+          "district": {
+            "type": "string",
+            "title": "District",
+            "description": "Primary district of operation (e.g. Matale, Badulla, Galle)"
+          },
+          "province": {
+            "type": "string",
+            "title": "Province",
+            "description": "Primary province (e.g. Central, Uva, Southern)"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude",
+            "description": "Business latitude coordinate"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude",
+            "description": "Business longitude coordinate"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address",
+            "description": "Physical address or dispatch station"
+          },
+          "contact_number": {
+            "type": "string",
+            "title": "Contact Number",
+            "description": "Official phone or WhatsApp contact"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email",
+            "description": "Business email address"
+          },
+          "website": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Website",
+            "description": "Official website or social page link"
+          },
+          "sltda_license_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sltda License Number",
+            "description": "SLTDA license or registration number"
+          },
+          "price_range": {
+            "type": "string",
+            "title": "Price Range",
+            "description": "Pricing tier ('$', '$$', '$$$', '$$$$')",
+            "default": "$$"
+          },
+          "baseline_rate": {
+            "type": "number",
+            "title": "Baseline Rate",
+            "description": "Baseline rate per day or service unit in USD",
+            "default": 25.0
+          },
+          "services": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Services",
+            "description": "List of offered services"
+          },
+          "associated_destination_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Associated Destination Ids",
+            "description": "Destination IDs associated with this partner"
+          },
+          "image_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Image Url",
+            "description": "Profile or business storefront image URL"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "business_name",
+          "partner_type",
+          "district",
+          "province",
+          "latitude",
+          "longitude",
+          "contact_number"
+        ],
+        "title": "PartnerOnboardingPayload",
+        "description": "Payload submitted during partner registration & onboarding."
+      },
+      "PartnerProfile": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id",
+            "description": "Unique partner ID"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "business_name": {
+            "type": "string",
+            "title": "Business Name"
+          },
+          "partner_type": {
+            "type": "string",
+            "title": "Partner Type"
+          },
+          "district": {
+            "type": "string",
+            "title": "District"
+          },
+          "province": {
+            "type": "string",
+            "title": "Province"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "contact_number": {
+            "type": "string",
+            "title": "Contact Number"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "website": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Website"
+          },
+          "sltda_license_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sltda License Number"
+          },
+          "verification_state": {
+            "type": "string",
+            "title": "Verification State",
+            "description": "'verified', 'pending_verification', 'unverified'",
+            "default": "verified"
+          },
+          "is_verified": {
+            "type": "boolean",
+            "title": "Is Verified",
+            "default": true
+          },
+          "is_featured": {
+            "type": "boolean",
+            "title": "Is Featured",
+            "default": false
+          },
+          "featured_tier": {
+            "type": "string",
+            "title": "Featured Tier",
+            "description": "'gold', 'silver', 'standard'",
+            "default": "standard"
+          },
+          "rating": {
+            "type": "number",
+            "title": "Rating",
+            "default": 4.8
+          },
+          "reviews_count": {
+            "type": "integer",
+            "title": "Reviews Count",
+            "default": 0
+          },
+          "price_range": {
+            "type": "string",
+            "title": "Price Range",
+            "default": "$$"
+          },
+          "baseline_rate": {
+            "type": "number",
+            "title": "Baseline Rate",
+            "default": 25.0
+          },
+          "services": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Services"
+          },
+          "associated_destination_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Associated Destination Ids"
+          },
+          "image_url": {
+            "type": "string",
+            "title": "Image Url",
+            "default": "/stitch_images/discover.png"
+          },
+          "distance_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance Km",
+            "description": "Distance from requested search coordinate in km"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "business_name",
+          "partner_type",
+          "district",
+          "province",
+          "latitude",
+          "longitude",
+          "contact_number"
+        ],
+        "title": "PartnerProfile",
+        "description": "Full partner profile record for display and spatial discovery."
+      },
+      "PartnerTypeEnum": {
+        "type": "string",
+        "enum": [
+          "guide",
+          "agency",
+          "hotel",
+          "vehicle",
+          "transport"
+        ],
+        "title": "PartnerTypeEnum",
+        "description": "Allowed tourism partner types."
       },
       "PlannerOverview": {
         "properties": {
