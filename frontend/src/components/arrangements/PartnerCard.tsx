@@ -60,6 +60,11 @@ export default function PartnerCard({ matchItem, onInquire }: PartnerCardProps) 
               {partner.featured_tier} Partner
             </span>
           )}
+          {partner.hidden_gem_badge && (
+            <span className="rounded-full bg-indigo-600/90 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+              💎 Hidden-Gem Guide
+            </span>
+          )}
         </div>
 
         {/* Match Percentage Pill */}
@@ -93,6 +98,14 @@ export default function PartnerCard({ matchItem, onInquire }: PartnerCardProps) 
             <div className="text-[10px] text-neutral-400">per day baseline</div>
           </div>
         </div>
+
+        {/* Contributor Reputation History Pill */}
+        {partner.contributor_rank && (
+          <div className="mt-2.5 flex items-center justify-between rounded-lg bg-emerald-50 px-3 py-1.5 text-xs text-emerald-900 border border-emerald-200/80">
+            <span className="font-semibold">🏅 {partner.contributor_rank}</span>
+            <span>{partner.contributor_eco_points || 750} Eco-Points</span>
+          </div>
+        )}
 
         {/* Relevance Explanation */}
         <div className="mt-3 rounded-xl bg-teal-50/60 p-3 text-xs text-teal-900 border border-teal-100">

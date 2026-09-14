@@ -2,9 +2,13 @@ from fastapi import APIRouter, HTTPException, status
 
 from app.routers.community import IN_MEMORY_POSTS
 from app.routers.contribution import IN_MEMORY_CONTRIBUTIONS, IN_MEMORY_REPORTS
+from app.routers.partners import IN_MEMORY_PARTNERS
 from app.schemas.reputation import (
+    ConvertedPartnerGuideResponse,
+    EligibilityCheckResponse,
     GuideApplicationRequest,
     GuideApplicationResponse,
+    GuideUpgradePayload,
     UserReputationProfile,
 )
 from app.services.reputation import ReputationEngine
@@ -127,4 +131,57 @@ def apply_for_guide_upgrade(payload: GuideApplicationRequest):
         application_id=app_id,
         status="pending_verification",
         message=f"Congratulations {payload.author_name}! Your Guide Marketplace application #{app_id} has been submitted for SLTDA verification.",
+    )
+
+
+@router.get(
+    "/eligibility/{author_name}",
+    response_model=EligibilityCheckResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Check automatic guide marketplace eligibility for contributor",
+    description="Evaluates contributor Eco-Points, AI pass rate, approved contributions, and reputation score to compute itemized guide eligibility.",
+)
+def check_guide_eligibility(author_name: str) -> EligibilityCheckResponse:
+    """Calculates automatic multi-factor guide marketplace eligibility checklist."""
+    return ReputationEngine.check_guide_eligibility(
+        author_name=author_name,
+        contributions=IN_MEMORY_CONTRIBUTIONS,
+        community_posts=IN_MEMORY_POSTS,
+        reports=IN_MEMORY_REPORTS,
+        guide_applications=IN_MEMORY_GUIDE_APPLICATIONS,
+    )
+
+
+@router.post(
+    "/upgrade-to-partner",
+    response_model=ConvertedPartnerGuideResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Upgrade high-trust contributor to listed Local Partner Guide",
+    description="Converts eligible community contributor into a listed Local Partner Network guide with retained reputation history & 5% preferential fee tier.",
+)
+def upgrade_contributor_to_partner(
+    payload: GuideUpgradePayload,
+) -> ConvertedPartnerGuideResponse:
+    """Upgrades eligible contributor into listed Partner Network guide."""
+    check = ReputationEngine.check_guide_eligibility(
+        author_name=payload.author_name,
+        contributions=IN_MEMORY_CONTRIBUTIONS,
+        community_posts=IN_MEMORY_POSTS,
+        reports=IN_MEMORY_REPORTS,
+        guide_applications=IN_MEMORY_GUIDE_APPLICATIONS,
+    )
+
+    if not check.is_eligible:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Author '{payload.author_name}' is not currently eligible for Partner Guide onboarding. {check.message}",
+        )
+
+    return ReputationEngine.upgrade_contributor_to_partner(
+        payload=payload,
+        contributions=IN_MEMORY_CONTRIBUTIONS,
+        community_posts=IN_MEMORY_POSTS,
+        reports=IN_MEMORY_REPORTS,
+        guide_applications=IN_MEMORY_GUIDE_APPLICATIONS,
+        partner_dataset=IN_MEMORY_PARTNERS,
     )

@@ -165,3 +165,167 @@ class ReputationEngine:
             guide_upgrade_status=guide_status,
             daily_points_accrued=daily_accrued,
         )
+
+    @classmethod
+    def check_guide_eligibility(
+        cls,
+        author_name: str,
+        contributions: list[dict[str, Any]],
+        community_posts: list[dict[str, Any]],
+        reports: list[dict[str, Any]],
+        guide_applications: list[dict[str, Any]],
+    ):
+        """Calculates itemized multi-factor guide marketplace eligibility checklist."""
+        from app.schemas.reputation import (
+            EligibilityCheckResponse,
+            EligibilityCriterionItem,
+        )
+
+        profile = cls.compute_user_profile(
+            author_name=author_name,
+            contributions=contributions,
+            community_posts=community_posts,
+            reports=reports,
+            guide_applications=guide_applications,
+        )
+
+        crit_points = EligibilityCriterionItem(
+            metric="Eco-Points Threshold",
+            required_value=">= 250 Eco-Points",
+            actual_value=f"{profile.eco_points} Eco-Points",
+            passed=profile.eco_points >= 250,
+        )
+        crit_ai_pass = EligibilityCriterionItem(
+            metric="AI Verification Pass Rate",
+            required_value=">= 80.0%",
+            actual_value=f"{profile.ai_pass_rate}%",
+            passed=profile.ai_pass_rate >= 80.0,
+        )
+        crit_approved = EligibilityCriterionItem(
+            metric="Approved Contributions",
+            required_value=">= 1 Approved Contribution",
+            actual_value=f"{profile.approved_count} Contributions",
+            passed=profile.approved_count >= 1,
+        )
+        crit_rep = EligibilityCriterionItem(
+            metric="Reputation Score",
+            required_value=">= 50.00",
+            actual_value=f"{profile.reputation_score}",
+            passed=profile.reputation_score >= 50.0,
+        )
+
+        criteria = [crit_points, crit_ai_pass, crit_approved, crit_rep]
+        all_passed = all(c.passed for c in criteria)
+
+        if profile.rank == "Trusted Guide" or profile.eco_points >= 750:
+            guide_level = "certified_trusted_guide"
+            msg = f"Author '{author_name}' is fully eligible for Top-Tier Trusted Guide Marketplace Onboarding (5% Preferential Fee & +10% Matching Boost)."
+        elif all_passed:
+            guide_level = "community_local_guide"
+            msg = f"Author '{author_name}' meets Community Local Guide eligibility requirements."
+        else:
+            guide_level = "not_eligible"
+            msg = f"Author '{author_name}' does not yet meet all guide eligibility criteria."
+
+        return EligibilityCheckResponse(
+            author_name=author_name,
+            is_eligible=all_passed,
+            rank=profile.rank,
+            guide_level=guide_level,
+            criteria_breakdown=criteria,
+            preferential_commission_pct=(
+                5.00 if guide_level == "certified_trusted_guide" else 8.00
+            ),
+            matching_boost_pct=10.0,
+            message=msg,
+        )
+
+    @classmethod
+    def upgrade_contributor_to_partner(
+        cls,
+        payload,
+        contributions: list[dict[str, Any]],
+        community_posts: list[dict[str, Any]],
+        reports: list[dict[str, Any]],
+        guide_applications: list[dict[str, Any]],
+        partner_dataset: list[dict[str, Any]],
+    ):
+        """Upgrades an eligible contributor into a listed Local Partner Network guide."""
+        from app.schemas.reputation import ConvertedPartnerGuideResponse
+
+        profile = cls.compute_user_profile(
+            author_name=payload.author_name,
+            contributions=contributions,
+            community_posts=community_posts,
+            reports=reports,
+            guide_applications=guide_applications,
+        )
+
+        # Build business title
+        title = (
+            payload.custom_title
+            or f"{payload.author_name} — {payload.niche_specialization} Guide"
+        )
+        new_partner_id = max([p.get("id", 0) for p in partner_dataset], default=0) + 1
+
+        is_trusted = profile.rank == "Trusted Guide" or profile.eco_points >= 500
+        feat_tier = "gold" if is_trusted else "silver"
+        pref_fee = 5.00 if is_trusted else 8.00
+
+        partner_record = {
+            "id": new_partner_id,
+            "name": payload.author_name,
+            "business_name": title,
+            "partner_type": "guide",
+            "district": payload.district,
+            "province": payload.province,
+            "latitude": 7.957 if payload.district == "Matale" else 6.927,
+            "longitude": 80.760 if payload.district == "Matale" else 79.861,
+            "address": f"{payload.district} District Tourism Station",
+            "contact_number": payload.contact_number,
+            "email": f"{payload.author_name.lower().replace(' ', '.')}@lankalens.lk",
+            "website": f"https://lankalens.lk/guides/{payload.author_name.lower().replace(' ', '-')}",
+            "sltda_license_number": payload.sltda_license_number
+            or f"SLTDA/COMM/{new_partner_id:04d}",
+            "verification_state": "verified",
+            "is_verified": True,
+            "is_featured": True,
+            "featured_tier": feat_tier,
+            "rating": max(
+                4.7, min(5.0, round(4.5 + (profile.reputation_score / 200.0), 1))
+            ),
+            "reviews_count": profile.approved_count + profile.total_likes_received,
+            "price_range": "$$",
+            "baseline_rate": payload.baseline_rate,
+            "services": payload.services,
+            "associated_destination_ids": payload.associated_destination_ids,
+            "image_url": "/stitch_images/discover.png",
+            "contributor_author_name": payload.author_name,
+            "contributor_eco_points": profile.eco_points,
+            "contributor_rank": profile.rank,
+            "preferential_commission_pct": pref_fee,
+            "hidden_gem_badge": True,
+        }
+
+        partner_dataset.append(partner_record)
+
+        return ConvertedPartnerGuideResponse(
+            partner_id=new_partner_id,
+            author_name=payload.author_name,
+            business_name=title,
+            partner_type="guide",
+            district=payload.district,
+            province=payload.province,
+            verification_state="verified",
+            is_verified=True,
+            is_featured=True,
+            featured_tier=feat_tier,
+            reputation_score=profile.reputation_score,
+            contributor_eco_points=profile.eco_points,
+            contributor_rank=profile.rank,
+            approved_contributions_count=profile.approved_count,
+            preferential_commission_pct=pref_fee,
+            matching_boost_pct=10.00,
+            hidden_gem_badge=True,
+            message=f"Congratulations {payload.author_name}! You are now listed as a Verified Partner Guide #{new_partner_id} with a {pref_fee}% preferential fee tier.",
+        )
