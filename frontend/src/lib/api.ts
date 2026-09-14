@@ -1552,7 +1552,7 @@ export interface AnalyticsEventRecord {
   event_name: string;
   entity_type?: string;
   entity_id?: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   device_type: string;
   created_at: string;
 }

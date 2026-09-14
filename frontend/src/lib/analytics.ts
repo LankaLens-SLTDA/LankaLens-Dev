@@ -10,7 +10,7 @@ export interface TrackEventOptions {
   eventName: string;
   entityType?: string;
   entityId?: string;
-  properties?: Record<string, any>;
+  properties?: Record<string, unknown>;
 }
 
 /**
@@ -55,7 +55,8 @@ export async function trackEvent({
         entity_type: entityType,
         entity_id: entityId,
         properties,
-        device_type: typeof window !== 'undefined' && window.innerWidth < 768 ? 'mobile' : 'desktop',
+        device_type:
+          typeof window !== 'undefined' && window.innerWidth < 768 ? 'mobile' : 'desktop',
       }),
     });
   } catch (err) {
