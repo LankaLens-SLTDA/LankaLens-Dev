@@ -819,3 +819,87 @@ export async function suggestTripItinerary(payload: TripCreatePayload): Promise<
 export async function exportTrip(id: number): Promise<TripExportResponse | null> {
   return fetchFromBackend<TripExportResponse>(`/planner/trips/${id}/export`);
 }
+
+export interface CrowdStatusInfo {
+  destination_id: number;
+  destination_name: string;
+  crowd_score: number;
+  crowd_status: string;
+  is_overcrowded: boolean;
+  current_capacity_pct: number;
+  peak_hours: string;
+  warning_message?: string | null;
+}
+
+export interface AlternativeDestinationSuggestion {
+  destination_id: number;
+  name: string;
+  category: string;
+  district: string;
+  crowd_status: string;
+  crowd_reduction_pct: number;
+  distance_km: number;
+  rating: number;
+  image_url: string;
+  recommendation_reason: string;
+}
+
+export interface DensityPoint {
+  hour: string;
+  density: number;
+}
+
+export interface VisitorLoadCurveResponse {
+  destination_id: number;
+  destination_name: string;
+  hourly_curve: DensityPoint[];
+  peak_hour: string;
+  recommended_offpeak_hours: string[];
+}
+
+export interface EnvironmentalReportRecord {
+  id: number;
+  location: string;
+  description: string;
+  reporter_name: string;
+  status: string;
+  reward_points_awarded: number;
+  created_at: string;
+}
+
+export async function getCrowdStatus(destinationId: number): Promise<CrowdStatusInfo | null> {
+  return fetchFromBackend<CrowdStatusInfo>(`/sustainability/crowd-status/${destinationId}`);
+}
+
+export async function getCrowdAlternatives(
+  destinationId: number,
+  limit = 3
+): Promise<AlternativeDestinationSuggestion[] | null> {
+  return fetchFromBackend<AlternativeDestinationSuggestion[]>(
+    `/sustainability/alternatives/${destinationId}?limit=${limit}`
+  );
+}
+
+export async function getVisitorLoadCurve(
+  destinationId: number
+): Promise<VisitorLoadCurveResponse | null> {
+  return fetchFromBackend<VisitorLoadCurveResponse>(`/sustainability/visitor-load/${destinationId}`);
+}
+
+export async function submitHazardReport(payload: {
+  location: string;
+  description: string;
+  reporter_name?: string;
+}): Promise<{ status: string; message: string; rewardPoints: number } | null> {
+  return fetchFromBackend<{ status: string; message: string; rewardPoints: number }>(
+    '/sustainability/report',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }
+  );
+}
+
+export async function getHazardReports(): Promise<EnvironmentalReportRecord[] | null> {
+  return fetchFromBackend<EnvironmentalReportRecord[]>('/sustainability/reports');
+}
