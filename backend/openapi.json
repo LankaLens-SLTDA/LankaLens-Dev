@@ -3329,6 +3329,205 @@
         }
       }
     },
+    "/api/arrangements/match": {
+      "post": {
+        "tags": [
+          "Trip Arrangement Broker"
+        ],
+        "summary": "Match partners for trip context (Guided or Independent)",
+        "description": "Matches local guides, tour agencies, vehicle rentals, hotels, and transport services against destinations in trip plan.",
+        "operationId": "match_trip_arrangements_api_arrangements_match_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArrangementMatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripArrangementResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/arrangements/trip/{trip_id}": {
+      "get": {
+        "tags": [
+          "Trip Arrangement Broker"
+        ],
+        "summary": "Get partner arrangement options for saved trip ID",
+        "description": "Extracts destinations from saved trip record and returns ranked partner options for Guided or Independent path.",
+        "operationId": "get_trip_arrangements_by_id_api_arrangements_trip__trip_id__get",
+        "parameters": [
+          {
+            "name": "trip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Trip Id"
+            }
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/ArrangementModeEnum",
+              "description": "'guided' or 'independent'",
+              "default": "guided"
+            },
+            "description": "'guided' or 'independent'"
+          },
+          {
+            "name": "partner_type_filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional partner type sub-filter ('guide', 'agency', 'hotel', 'vehicle', 'transport')",
+              "title": "Partner Type Filter"
+            },
+            "description": "Optional partner type sub-filter ('guide', 'agency', 'hotel', 'vehicle', 'transport')"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripArrangementResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/arrangements/inquire": {
+      "post": {
+        "tags": [
+          "Trip Arrangement Broker"
+        ],
+        "summary": "Submit booking referral inquiry to local partner",
+        "description": "Creates a booking referral inquiry with a unique referral tracking code (e.g. LL-REF-89123).",
+        "operationId": "submit_referral_inquiry_api_arrangements_inquire_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReferralInquiryPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferralInquiryRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/arrangements/referrals/{referral_code}": {
+      "get": {
+        "tags": [
+          "Trip Arrangement Broker"
+        ],
+        "summary": "Track referral inquiry status by referral code",
+        "description": "Fetches referral booking inquiry details and active status ('pending', 'confirmed', 'completed', 'cancelled').",
+        "operationId": "get_referral_status_api_arrangements_referrals__referral_code__get",
+        "parameters": [
+          {
+            "name": "referral_code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Referral Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReferralInquiryRecord"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/health": {
       "get": {
         "tags": [
@@ -3874,6 +4073,94 @@
         ],
         "title": "AlternativeMatchSubScores",
         "description": "Sub-scores breakdown for multi-criteria alternative matching (0.0 to 1.0)."
+      },
+      "ArrangementMatchRequest": {
+        "properties": {
+          "trip_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trip Id",
+            "description": "Optional trip ID to match against",
+            "example": 1
+          },
+          "mode": {
+            "$ref": "#/components/schemas/ArrangementModeEnum",
+            "description": "Arrangement path ('guided' or 'independent')",
+            "default": "guided",
+            "example": "guided"
+          },
+          "destination_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Destination Ids",
+            "description": "List of destination IDs in trip itinerary",
+            "example": [
+              1,
+              2,
+              4
+            ]
+          },
+          "starting_location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Starting Location",
+            "description": "Origin city",
+            "default": "Colombo",
+            "example": "Colombo"
+          },
+          "district": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "District",
+            "description": "Target district filter",
+            "example": "Matale"
+          },
+          "partner_type_filter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Partner Type Filter",
+            "description": "Optional partner sub-type filter ('guide', 'agency', 'hotel', 'vehicle', 'transport')",
+            "example": "guide"
+          }
+        },
+        "type": "object",
+        "title": "ArrangementMatchRequest",
+        "description": "Payload to request partner arrangement recommendations for a trip context."
+      },
+      "ArrangementModeEnum": {
+        "type": "string",
+        "enum": [
+          "guided",
+          "independent"
+        ],
+        "title": "ArrangementModeEnum",
+        "description": "Travel arrangement mode options."
       },
       "Badge": {
         "properties": {
@@ -7446,6 +7733,244 @@
         ],
         "title": "RecommendedDestination"
       },
+      "ReferralInquiryPayload": {
+        "properties": {
+          "trip_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trip Id",
+            "description": "Optional associated trip ID"
+          },
+          "partner_id": {
+            "type": "integer",
+            "title": "Partner Id",
+            "description": "ID of selected partner",
+            "example": 1
+          },
+          "arrangement_mode": {
+            "$ref": "#/components/schemas/ArrangementModeEnum",
+            "description": "'guided' or 'independent'",
+            "default": "guided"
+          },
+          "customer_name": {
+            "type": "string",
+            "title": "Customer Name",
+            "description": "Traveler full name",
+            "example": "Jane Doe"
+          },
+          "customer_contact": {
+            "type": "string",
+            "title": "Customer Contact",
+            "description": "Phone or WhatsApp contact",
+            "example": "+94771234567"
+          },
+          "customer_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Customer Email",
+            "description": "Customer email address",
+            "example": "jane@example.com"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date",
+            "description": "Travel start date YYYY-MM-DD",
+            "default": "2026-10-01"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date",
+            "description": "Travel end date YYYY-MM-DD",
+            "default": "2026-10-05"
+          },
+          "group_size": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Group Size",
+            "description": "Number of travelers",
+            "default": 2
+          },
+          "custom_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Notes",
+            "description": "Special requests or itinerary preferences"
+          }
+        },
+        "type": "object",
+        "required": [
+          "partner_id",
+          "customer_name",
+          "customer_contact"
+        ],
+        "title": "ReferralInquiryPayload",
+        "description": "Payload to initiate a booking referral inquiry with a local partner."
+      },
+      "ReferralInquiryRecord": {
+        "properties": {
+          "referral_id": {
+            "type": "integer",
+            "title": "Referral Id",
+            "description": "Unique inquiry ID"
+          },
+          "referral_code": {
+            "type": "string",
+            "title": "Referral Code",
+            "description": "Unique referral tracking code (e.g. LL-REF-89123)",
+            "example": "LL-REF-89123"
+          },
+          "trip_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trip Id",
+            "description": "Associated trip ID"
+          },
+          "partner_id": {
+            "type": "integer",
+            "title": "Partner Id",
+            "description": "Target partner ID"
+          },
+          "partner_name": {
+            "type": "string",
+            "title": "Partner Name",
+            "description": "Target business/guide name"
+          },
+          "partner_type": {
+            "type": "string",
+            "title": "Partner Type",
+            "description": "Partner service category"
+          },
+          "arrangement_mode": {
+            "$ref": "#/components/schemas/ArrangementModeEnum",
+            "description": "Arrangement mode"
+          },
+          "customer_name": {
+            "type": "string",
+            "title": "Customer Name"
+          },
+          "customer_contact": {
+            "type": "string",
+            "title": "Customer Contact"
+          },
+          "customer_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Customer Email"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "group_size": {
+            "type": "integer",
+            "title": "Group Size",
+            "default": 1
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "'pending', 'confirmed', 'completed', 'cancelled'",
+            "default": "pending"
+          },
+          "estimated_cost": {
+            "type": "number",
+            "title": "Estimated Cost",
+            "description": "Estimated engagement cost USD",
+            "default": 0.0
+          },
+          "custom_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Notes"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "referral_id",
+          "referral_code",
+          "partner_id",
+          "partner_name",
+          "partner_type",
+          "arrangement_mode",
+          "customer_name",
+          "customer_contact",
+          "created_at"
+        ],
+        "title": "ReferralInquiryRecord",
+        "description": "Confirmed booking referral inquiry record with tracking code."
+      },
       "ReportRequest": {
         "properties": {
           "target_type": {
@@ -7653,6 +8178,64 @@
         "title": "SideBySideComparisonResponse",
         "description": "Detailed side-by-side comparison response between original and alternative destination."
       },
+      "TripArrangementResponse": {
+        "properties": {
+          "trip_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trip Id",
+            "description": "Target trip ID if matched from saved record"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/ArrangementModeEnum",
+            "description": "Active arrangement mode"
+          },
+          "matched_partners": {
+            "items": {
+              "$ref": "#/components/schemas/TripPartnerMatchItem"
+            },
+            "type": "array",
+            "title": "Matched Partners",
+            "description": "Ranked partner options matching trip itinerary"
+          },
+          "guided_options_count": {
+            "type": "integer",
+            "title": "Guided Options Count",
+            "description": "Total available guided partners"
+          },
+          "independent_options_count": {
+            "type": "integer",
+            "title": "Independent Options Count",
+            "description": "Total available independent partners"
+          },
+          "total_matched": {
+            "type": "integer",
+            "title": "Total Matched",
+            "description": "Count of matched options in current view"
+          },
+          "query_time_ms": {
+            "type": "number",
+            "title": "Query Time Ms",
+            "description": "Calculation latency in milliseconds"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode",
+          "guided_options_count",
+          "independent_options_count",
+          "total_matched",
+          "query_time_ms"
+        ],
+        "title": "TripArrangementResponse",
+        "description": "Response payload containing partner arrangement recommendations for trip."
+      },
       "TripCreatePayload": {
         "properties": {
           "title": {
@@ -7813,6 +8396,60 @@
           "trip"
         ],
         "title": "TripExportResponse"
+      },
+      "TripPartnerMatchItem": {
+        "properties": {
+          "partner": {
+            "$ref": "#/components/schemas/PartnerProfile",
+            "description": "Full partner profile metadata"
+          },
+          "match_score": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Match Score",
+            "description": "Contextual match score percentage (0-100%)",
+            "example": 94.5
+          },
+          "matching_destinations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Matching Destinations",
+            "description": "Names or titles of destinations matched from trip",
+            "example": [
+              "Sigiriya Ancient Rock Fortress",
+              "Dambulla Cave Temple"
+            ]
+          },
+          "recommended_for_mode": {
+            "$ref": "#/components/schemas/ArrangementModeEnum",
+            "description": "Recommended travel mode ('guided' or 'independent')"
+          },
+          "relevance_reason": {
+            "type": "string",
+            "title": "Relevance Reason",
+            "description": "Human-readable explanation of why partner fits trip plan",
+            "example": "Certified guide covering your scheduled visit to Sigiriya"
+          },
+          "estimated_cost_per_day": {
+            "type": "number",
+            "title": "Estimated Cost Per Day",
+            "description": "Estimated cost USD per day for service",
+            "example": 45.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "partner",
+          "match_score",
+          "recommended_for_mode",
+          "relevance_reason",
+          "estimated_cost_per_day"
+        ],
+        "title": "TripPartnerMatchItem",
+        "description": "Matched partner item with match confidence score and contextual relevance."
       },
       "TripRecord": {
         "properties": {
@@ -8426,6 +9063,14 @@
     {
       "name": "Trust, Reputation & Gamification",
       "description": "Contributor recognition ladder, badges, reputation score analytics, and guide marketplace onboarding."
+    },
+    {
+      "name": "Local Partner Network",
+      "description": "Local tourism partner onboarding, verified listings, and PostGIS spatial proximity discovery."
+    },
+    {
+      "name": "Trip Arrangement Broker",
+      "description": "Matches trip itineraries against verified local guides, agencies, hotels, vehicle rentals, and transport services."
     }
   ]
 }
