@@ -4330,6 +4330,167 @@
         }
       }
     },
+    "/api/analytics/track": {
+      "post": {
+        "tags": [
+          "Analytics & Product Intelligence"
+        ],
+        "summary": "Track Anonymized Telemetry Event",
+        "description": "Ingests user telemetry event, automatically sanitizing PII fields before persistence.",
+        "operationId": "track_event_api_analytics_track_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalyticsEventCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsEventResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/dashboard": {
+      "get": {
+        "tags": [
+          "Analytics & Product Intelligence"
+        ],
+        "summary": "Get Aggregated Analytics Dashboard Metrics",
+        "description": "Returns product usage KPIs, alternative destination redirection success, marketplace conversion rates, and event volume breakdown.",
+        "operationId": "get_dashboard_api_analytics_dashboard_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsDashboardMetrics"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/funnels": {
+      "get": {
+        "tags": [
+          "Analytics & Product Intelligence"
+        ],
+        "summary": "Get Key Conversion Funnels",
+        "description": "Returns multi-stage conversion funnels for Sustainability (Crowd Redirection), Marketplace (Guide Referral), and Discovery to Planning.",
+        "operationId": "get_funnels_api_analytics_funnels_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FunnelAnalysis"
+                  },
+                  "type": "array",
+                  "title": "Response Get Funnels Api Analytics Funnels Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/events": {
+      "get": {
+        "tags": [
+          "Analytics & Product Intelligence"
+        ],
+        "summary": "Query Anonymized Telemetry Events",
+        "description": "Returns recent anonymized telemetry events with optional category filter.",
+        "operationId": "get_events_api_analytics_events_get",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Category filter ('discovery', 'planning', 'community', 'sustainability', 'marketplace')",
+              "default": "all",
+              "title": "Category"
+            },
+            "description": "Category filter ('discovery', 'planning', 'community', 'sustainability', 'marketplace')"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "description": "Max event logs to return",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "Max event logs to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AnalyticsEventResponse"
+                  },
+                  "title": "Response Get Events Api Analytics Events Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/health": {
       "get": {
         "tags": [
@@ -4999,6 +5160,233 @@
         ],
         "title": "AlternativeMatchSubScores",
         "description": "Sub-scores breakdown for multi-criteria alternative matching (0.0 to 1.0)."
+      },
+      "AnalyticsCategory": {
+        "type": "string",
+        "enum": [
+          "discovery",
+          "planning",
+          "community",
+          "sustainability",
+          "marketplace"
+        ],
+        "title": "AnalyticsCategory"
+      },
+      "AnalyticsDashboardMetrics": {
+        "properties": {
+          "total_events": {
+            "type": "integer",
+            "title": "Total Events"
+          },
+          "active_sessions": {
+            "type": "integer",
+            "title": "Active Sessions"
+          },
+          "alternative_acceptance_rate": {
+            "type": "number",
+            "title": "Alternative Acceptance Rate",
+            "description": "Percentage of high-crowd warning viewers who clicked an alternative destination"
+          },
+          "marketplace_conversion_rate": {
+            "type": "number",
+            "title": "Marketplace Conversion Rate",
+            "description": "Percentage of partner profile viewers who submitted an arrangement request"
+          },
+          "sustainable_traffic_diversions": {
+            "type": "integer",
+            "title": "Sustainable Traffic Diversions"
+          },
+          "category_breakdown": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Category Breakdown"
+          },
+          "funnels": {
+            "items": {
+              "$ref": "#/components/schemas/FunnelAnalysis"
+            },
+            "type": "array",
+            "title": "Funnels"
+          },
+          "recent_events": {
+            "items": {
+              "$ref": "#/components/schemas/AnalyticsEventResponse"
+            },
+            "type": "array",
+            "title": "Recent Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_events",
+          "active_sessions",
+          "alternative_acceptance_rate",
+          "marketplace_conversion_rate",
+          "sustainable_traffic_diversions",
+          "category_breakdown",
+          "funnels",
+          "recent_events"
+        ],
+        "title": "AnalyticsDashboardMetrics"
+      },
+      "AnalyticsEventCreate": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "title": "Session Id",
+            "description": "Anonymous browser session identifier"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id",
+            "description": "Anonymized user identifier"
+          },
+          "category": {
+            "$ref": "#/components/schemas/AnalyticsCategory",
+            "description": "Telemetry event category"
+          },
+          "event_name": {
+            "type": "string",
+            "title": "Event Name",
+            "description": "Name of the tracked action"
+          },
+          "entity_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Type",
+            "description": "Optional target entity type (e.g. destination, partner)"
+          },
+          "entity_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Id",
+            "description": "Optional target entity ID"
+          },
+          "properties": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Properties",
+            "description": "Non-PII event metadata properties"
+          },
+          "device_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Type",
+            "description": "Client device category",
+            "default": "desktop"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "category",
+          "event_name"
+        ],
+        "title": "AnalyticsEventCreate"
+      },
+      "AnalyticsEventResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "event_name": {
+            "type": "string",
+            "title": "Event Name"
+          },
+          "entity_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Type"
+          },
+          "entity_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Id"
+          },
+          "properties": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Properties",
+            "default": {}
+          },
+          "device_type": {
+            "type": "string",
+            "title": "Device Type",
+            "default": "desktop"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "session_id",
+          "category",
+          "event_name",
+          "created_at"
+        ],
+        "title": "AnalyticsEventResponse"
       },
       "ArrangementMatchRequest": {
         "properties": {
@@ -7420,6 +7808,57 @@
         ],
         "title": "FeatureDifference",
         "description": "Individual feature comparison between original and alternative destination."
+      },
+      "FunnelAnalysis": {
+        "properties": {
+          "funnel_name": {
+            "type": "string",
+            "title": "Funnel Name"
+          },
+          "stages": {
+            "items": {
+              "$ref": "#/components/schemas/FunnelStageMetric"
+            },
+            "type": "array",
+            "title": "Stages"
+          },
+          "overall_conversion_rate": {
+            "type": "number",
+            "title": "Overall Conversion Rate",
+            "description": "Percentage converting from first to final stage"
+          }
+        },
+        "type": "object",
+        "required": [
+          "funnel_name",
+          "stages",
+          "overall_conversion_rate"
+        ],
+        "title": "FunnelAnalysis"
+      },
+      "FunnelStageMetric": {
+        "properties": {
+          "stage_name": {
+            "type": "string",
+            "title": "Stage Name"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "conversion_rate": {
+            "type": "number",
+            "title": "Conversion Rate",
+            "description": "Percentage relative to preceding stage"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stage_name",
+          "count",
+          "conversion_rate"
+        ],
+        "title": "FunnelStageMetric"
       },
       "GroundingEntity": {
         "properties": {

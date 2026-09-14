@@ -1539,3 +1539,60 @@ export async function getAdminAuditLogs(
     headers: { 'X-Admin-Role': role },
   });
 }
+
+// =========================================================
+// EPIC 23 — ANALYTICS & INTELLIGENCE API METHODS
+// =========================================================
+
+export interface AnalyticsEventRecord {
+  id: number;
+  session_id: string;
+  user_id?: string;
+  category: string;
+  event_name: string;
+  entity_type?: string;
+  entity_id?: string;
+  properties: Record<string, unknown>;
+  device_type: string;
+  created_at: string;
+}
+
+export interface FunnelStageMetric {
+  stage_name: string;
+  count: number;
+  conversion_rate: number;
+}
+
+export interface FunnelAnalysis {
+  funnel_name: string;
+  stages: FunnelStageMetric[];
+  overall_conversion_rate: number;
+}
+
+export interface AnalyticsDashboardMetrics {
+  total_events: number;
+  active_sessions: number;
+  alternative_acceptance_rate: number;
+  marketplace_conversion_rate: number;
+  sustainable_traffic_diversions: number;
+  category_breakdown: Record<string, number>;
+  funnels: FunnelAnalysis[];
+  recent_events: AnalyticsEventRecord[];
+}
+
+export async function getAnalyticsDashboard(): Promise<AnalyticsDashboardMetrics | null> {
+  return fetchFromBackend<AnalyticsDashboardMetrics>('/analytics/dashboard');
+}
+
+export async function getAnalyticsFunnels(): Promise<FunnelAnalysis[] | null> {
+  return fetchFromBackend<FunnelAnalysis[]>('/analytics/funnels');
+}
+
+export async function getAnalyticsEvents(
+  category = 'all',
+  limit = 50
+): Promise<AnalyticsEventRecord[] | null> {
+  return fetchFromBackend<AnalyticsEventRecord[]>(
+    `/analytics/events?category=${category}&limit=${limit}`
+  );
+}
